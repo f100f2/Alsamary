@@ -183,13 +183,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .empty{text-align:center;padding:3rem 1rem;color:var(--ink3)}
 .empty-ico{font-size:2.5rem;margin-bottom:.7rem;opacity:.5}
 .empty p{font-size:.86rem}
-.filter-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
-.chip{background:var(--white);border:1.5px solid var(--sand3);color:var(--ink3);font-family:'Tajawal',sans-serif;font-size:.78rem;padding:.3rem .75rem;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.chip.on{background:var(--gold);border-color:var(--gold);color:var(--white);font-weight:600}
-.chip:active{transform:scale(.96)}
-.stat{cursor:pointer;transition:all .15s}
-.stat:active{transform:scale(.96)}
-.stat.active-filter{border-color:var(--gold);background:rgba(184,147,90,.08)}
 @media(min-width:600px){
   .form-grid{grid-template-columns:1fr 1fr}
   .overlay{align-items:center}
@@ -253,18 +246,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <input class="search" placeholder="ابحث بالاسم أو الاسم الكامل أو الوظيفة…" id="members-q" oninput="filterMembers()">
         <span class="search-ico">🔍</span>
       </div>
-      <span id="am-add" style="display:none;gap:.4rem;align-items:center">
-        <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button>
-        <button class="btn btn-sm" onclick="exportMembersExcel()" style="border-color:var(--ok);color:var(--ok)" title="تصدير Excel">📤</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteAllMembers()" title="حذف الكل">🗑️</button>
-      </span>
-    </div>
-    <div class="filter-chips" id="filter-chips">
-      <button class="chip on" onclick="setFilter('all')">الكل</button>
-      <button class="chip" onclick="setFilter('male')">ذكور ♂</button>
-      <button class="chip" onclick="setFilter('female')">إناث ♀</button>
-      <button class="chip" onclick="setFilter('alive')">أحياء</button>
-      <button class="chip" onclick="setFilter('deceased')">متوفون 🕊</button>
+      <span id="am-add" style="display:none"><button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button></span>
     </div>
     <div class="members-list" id="members-grid"></div>
   </div>
@@ -371,7 +353,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="d-body"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
-      <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -483,7 +464,7 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 //  🔧 ضع إعدادات Firebase هنا
 // ═══════════════════════════════════
 const firebaseConfig={
-  apiKey: "AIzaSyDn1DsyQYv6L5Q3r-ZezMOAEBsE_Dhyv5U",
+apiKey: "AIzaSyDn1DsyQYv6L5Q3r-ZezMOAEBsE_Dhyv5U",
   authDomain: "alsamary-70c96.firebaseapp.com",
   projectId: "alsamary-70c96",
   storageBucket: "alsamary-70c96.firebasestorage.app",
@@ -639,32 +620,17 @@ function updateUI(){
 }
 
 // ══ STATS ══
-let activeFilter='all';
 function renderStats(){
   const roots=members.filter(m=>!m.parentId);
-  const males=members.filter(m=>m.gender==='ذكر').length;
   const females=members.filter(m=>m.gender==='أنثى').length;
-  const alive=members.filter(m=>m.status!=='متوفى').length;
   const deceased=members.filter(m=>m.status==='متوفى').length;
-  const s=(f,lbl,n)=>`<div class="stat${activeFilter===f?' active-filter':''}" onclick="goPage('members');setFilter('${f}')"><div class="stat-n">${n}</div><div class="stat-l">${lbl}</div></div>`;
-  document.getElementById('stats-row').innerHTML=
-    s('all','أفراد',members.length)+
-    s('male','ذكور ♂',males)+
-    s('female','إناث ♀',females)+
-    s('alive','أحياء',alive)+
-    s('deceased','متوفون 🕊',deceased)+
-    `<div class="stat" onclick="goPage('events')"><div class="stat-n">${events.length}</div><div class="stat-l">فعاليات</div></div>`;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat"><div class="stat-n">${members.length}</div><div class="stat-l">أفراد</div></div>
+    <div class="stat"><div class="stat-n">${roots.length}</div><div class="stat-l">جذور</div></div>
+    <div class="stat"><div class="stat-n">${females}</div><div class="stat-l">إناث</div></div>
+    <div class="stat"><div class="stat-n">${deceased}</div><div class="stat-l">متوفى</div></div>
+    <div class="stat"><div class="stat-n">${events.length}</div><div class="stat-l">فعاليات</div></div>`;
 }
-window.setFilter=function(f){
-  activeFilter=f;
-  // sync chips
-  document.querySelectorAll('.chip').forEach(c=>{
-    const map={'all':'الكل','male':'ذكور ♂','female':'إناث ♀','alive':'أحياء','deceased':'متوفون 🕊'};
-    c.classList.toggle('on', c.textContent.trim()===map[f]||c.getAttribute('onclick').includes("'"+f+"'"));
-  });
-  renderMembers(document.getElementById('members-q').value);
-  renderStats();
-};
 
 // ══════════════════════════════════════════
 //  CANVAS TREE ENGINE
@@ -992,11 +958,6 @@ function renderMembers(q=''){
       (m.city&&m.city.includes(qq))
     );
   }
-  // Apply active filter
-  if(activeFilter==='male')    list=list.filter(m=>m.gender==='ذكر');
-  else if(activeFilter==='female')  list=list.filter(m=>m.gender==='أنثى');
-  else if(activeFilter==='alive')   list=list.filter(m=>m.status!=='متوفى');
-  else if(activeFilter==='deceased')list=list.filter(m=>m.status==='متوفى');
   const g=document.getElementById('members-grid');
   if(!list.length){g.innerHTML='<div class="empty"><div class="empty-ico">👥</div><p>لا نتائج</p></div>';return;}
   const isFem=m=>m.gender==='أنثى';
@@ -1048,11 +1009,10 @@ window.showDetail=function(id){
     </div>
     <div class="d-section"><div class="d-sec-title">الشجرة</div>
       <div class="d-row"><span class="d-lbl">الأب</span><span class="d-val">${par?par.name:'جذر العائلة'}</span></div>
-      <div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">${kids.length?kids.map(c=>'<span onclick="closeOv(\'ov-detail\');setTimeout(()=>showDetail(\''+c.id+'\'),220)" style="cursor:pointer;color:var(--gold);border-bottom:1px dashed var(--gold3)">'+c.name+'</span>').join('، '):'—'}</span></div>
+      <div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">${kids.length?kids.map(c=>c.name).join('، '):'—'}</span></div>
     </div>
     ${isAdmin?`<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember('${m.id}')">حذف الفرد</button></div>`:''}`;
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
-  document.getElementById('d-addson').style.display=isAdmin?'inline-flex':'none';
   openOv('ov-detail');
 };
 window.editCurrent=function(){
@@ -1078,37 +1038,224 @@ window.delMember=async function(id){
   renderTree();renderMembers();renderStats();toast('تم الحذف');
 };
 
-window.deleteAllMembers=async function(){
-  if(!confirm(`⚠️ تحذير!
-
-سيتم حذف جميع الأعضاء (${members.length} فرد) نهائياً.
-
-هل أنت متأكد؟`))return;
-  if(!confirm('تأكيد أخير — هذا الإجراء لا يمكن التراجع عنه!'))return;
-  const ids=[...members.map(m=>m.id)];
-  for(const id of ids) await dbDel('members',id);
-  members=[];
-  renderTree();renderMembers();renderStats();
-  toast(`تم حذف ${ids.length} عضو بنجاح`);
+// ══ ADD MEMBER ══
+window.openAddMember=function(){
+  haptic();editingId=null;pendingPhoto=null;fillParentSel(null);
+  ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-birth').value='';
+  document.getElementById('m-parent').value='';
+  document.getElementById('m-gender').value='';
+  document.getElementById('m-status').value='حي';
+  document.getElementById('m-fullname').value='';
+  document.getElementById('mm-title').textContent='إضافة فرد جديد';
+  document.getElementById('photo-ring').innerHTML=`<span id="photo-init">؟</span><div class="photo-ov">📷</div>`;
+  document.getElementById('children-wrap').style.display='none';
+  openOv('ov-member');
 };
-
-window.exportMembersExcel=function(){
-  if(!members.length){toast('لا يوجد أعضاء للتصدير',true);return;}
-  var hdrs=['الاسم الكامل','الاسم','الجوال','البريد','جهة العمل','الوظيفة','المدينة','الميلاد','LinkedIn','المنصب','الجنس','الحالة','الأب'];
-  function esc(v){var s=String(v||'');return (s.indexOf(',')>=0||s.indexOf('"')>=0)?'"'+s.split('"').join('""')+'"':s;}
-  var rows=members.map(function(m){
-    var par=m.parentId?members.find(function(p){return p.id===m.parentId;}):null;
-    return [m._fullName||m.fullName||m.name,m.name,m.phone||'',m.email||'',m.company||'',m.job||'',m.city||'',m.birth||'',m.linkedin||'',m.role||'',m.gender||'',m.status||'',par?par.name:''].map(esc).join(',');
+function fillParentSel(exc){
+  const s=document.getElementById('m-parent');
+  s.innerHTML='<option value="">— جذر (بدون أب) —</option>';
+  members.filter(m=>m.id!==exc).forEach(m=>{
+    const fn=m.fullName||m._fullName||m.name;
+    s.innerHTML+=`<option value="${m.id}">${m.name}${fn&&fn!==m.name?' — '+fn:''}</option>`;
   });
-  var csv='\uFEFF'+hdrs.map(esc).join(',')+String.fromCharCode(13,10)+rows.join(String.fromCharCode(13,10));
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;a.download='family_'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('تم تصدير '+members.length+' عضو ✓');
+}
+function fillChildren(mid){
+  document.getElementById('children-list').innerHTML=members.filter(m=>m.id!==mid).map(m=>`
+    <label class="child-chip"><input type="checkbox" value="${m.id}" ${m.parentId===mid?'checked':''}>${m.name}</label>`).join('');
+}
+// يحدّث حقل الاسم الكامل عند تغيير الأب
+window.updateFullNameField=function(){
+  const parentId=document.getElementById('m-parent').value;
+  const myName=document.getElementById('m-name').value.trim();
+  if(!parentId){document.getElementById('m-fullname').value=myName||'';return;}
+  const parentFull=buildFullName(parentId);
+  document.getElementById('m-fullname').value=myName?myName+' '+parentFull:parentFull;
 };
+window.syncInit=function(){
+  if(pendingPhoto)return;
+  const s=document.getElementById('photo-init');
+  if(s)s.textContent=(document.getElementById('m-name').value.trim().charAt(0)||'؟');
+  updateFullNameField();
+};
+window.saveMember=async function(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){document.getElementById('m-name').style.borderColor='var(--err)';return;}
+  document.getElementById('m-name').style.borderColor='';
+  const parentId=document.getElementById('m-parent').value||null;
+  const fullName=parentId?name+' '+buildFullName(parentId):name;
+  const data={
+    name,fullName,_fullName:fullName,
+    role:document.getElementById('m-role').value,
+    gender:document.getElementById('m-gender').value,
+    status:document.getElementById('m-status').value||'حي',
+    phone:document.getElementById('m-phone').value,
+    email:document.getElementById('m-email').value,
+    company:document.getElementById('m-company').value,
+    job:document.getElementById('m-job').value,
+    city:document.getElementById('m-city').value,
+    birth:document.getElementById('m-birth').value,
+    linkedin:document.getElementById('m-linkedin').value,
+    parentId,photo:pendingPhoto
+  };
+  if(editingId)data.id=editingId;
+  await dbSet('members',data);
+  if(editingId){
+    const boxes=document.querySelectorAll('#children-list input[type=checkbox]');
+    for(const b of boxes){
+      const child=members.find(m=>m.id===b.value);if(!child)continue;
+      if(b.checked&&child.parentId!==editingId)await dbSet('members',{...child,parentId:editingId});
+      if(!b.checked&&child.parentId===editingId)await dbSet('members',{...child,parentId:null});
+    }
+  }
+  closeOv('ov-member');haptic();
+  if(!configured){renderTree();renderMembers();renderStats();}
+  toast(editingId?'تم التحديث ✓':'تمت الإضافة ✓');
+};
+
+// ══ PHOTO ══
+window.onPhoto=function(e){
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image(),r=new FileReader();
+  r.onload=ev=>{img.src=ev.target.result;};
+  img.onload=()=>{
+    const MAX=400,c2=document.createElement('canvas');
+    let w=img.width,h=img.height;
+    if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+    c2.width=w;c2.height=h;c2.getContext('2d').drawImage(img,0,0,w,h);
+    pendingPhoto=c2.toDataURL('image/jpeg',.78);
+    document.getElementById('photo-ring').innerHTML=`<img src="${pendingPhoto}"><div class="photo-ov">📷</div>`;
+  };r.readAsDataURL(f);
+};
+
+// ══ MEDIA ══
+function readFiles(files,cb){
+  Promise.all(Array.from(files).map(f=>new Promise(res=>{
+    const img=new Image(),r=new FileReader();
+    r.onload=ev=>{
+      if(f.type.startsWith('video')){res({type:'video',src:ev.target.result});return;}
+      img.src=ev.target.result;img.onload=()=>{
+        const MAX=900,c2=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+        c2.width=w;c2.height=h;c2.getContext('2d').drawImage(img,0,0,w,h);
+        res({type:'image',src:c2.toDataURL('image/jpeg',.74)});
+      };
+    };r.readAsDataURL(f);
+  }))).then(cb);
+}
+window.onEvMedia=function(e,mode){
+  readFiles(e.target.files,rs=>{
+    if(mode==='new'){pendingMedia=[...pendingMedia,...rs];renderPrevs('ev-prev',pendingMedia,'new');}
+    else{pendingExtraMedia=[...pendingExtraMedia,...rs];renderPrevs('ev-prev-ex',pendingExtraMedia,'ex');}
+  });
+};
+function renderPrevs(cid,arr,mode){
+  document.getElementById(cid).innerHTML=arr.map((m,i)=>`
+    <div class="up-th">${m.type==='video'?`<div class="up-th up-th-v">🎬</div>`:`<img src="${m.src}">`}
+    <button class="up-rm" onclick="rmPrev(${i},'${mode}')">✕</button></div>`).join('');
+}
+window.rmPrev=function(i,mode){
+  if(mode==='new'){pendingMedia.splice(i,1);renderPrevs('ev-prev',pendingMedia,'new');}
+  else{pendingExtraMedia.splice(i,1);renderPrevs('ev-prev-ex',pendingExtraMedia,'ex');}
+};
+
+// ══ EVENTS ══
+function renderEvents(){
+  const g=document.getElementById('events-grid');
+  if(!events.length){g.innerHTML='<div class="empty"><div class="empty-ico">📅</div><p>لا توجد فعاليات</p></div>';return;}
+  g.innerHTML=events.map(ev=>{
+    const media=ev.media||[];
+    const imgs=media.filter(x=>x.type==='image'),vids=media.filter(x=>x.type==='video');
+    let gh='';
+    if(media.length){
+      const f=media[0];
+      gh=`<div class="gal-wrap">
+        <div id="gm-${ev.id}">${f.type==='video'?`<video class="gal-main-vid" controls src="${f.src}"></video>`:`<img class="gal-main-img" src="${f.src}" onclick="openLb('${ev.id}',0)">`}</div>
+        ${media.length>1?`<div class="gal-thumbs" id="gt-${ev.id}">${media.map((x,i)=>x.type==='video'?`<div class="g-th-v${i===0?' on':''}" onclick="swMedia('${ev.id}',${i})">🎬</div>`:`<img class="g-th${i===0?' on':''}" src="${x.src}" onclick="swMedia('${ev.id}',${i})">`).join('')}</div>`:''}
+        ${media.length>1?`<div class="gal-count">📷${imgs.length}${vids.length?' · 🎬'+vids.length:''}</div>`:''}
+      </div>`;
+    }else{gh=`<div class="gal-wrap"><div class="no-media"><span>🖼️</span>لا توجد صور</div></div>`;}
+    return `<div class="ev-card">${gh}
+      <div class="ev-body">
+        <div class="ev-top"><div class="ev-title">${ev.title}</div><div class="ev-date">${ev.date}</div></div>
+        <div class="ev-desc">${ev.desc}</div>
+        <div class="ev-meta">📍 ${ev.place}</div>
+        ${isAdmin?`<div class="ev-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openExMedia('${ev.id}')">+ وسائط</button>
+          <button class="btn btn-danger btn-sm" onclick="delEv('${ev.id}')">حذف</button>
+        </div>`:''}
+      </div></div>`;
+  }).join('');
+  window._evMedia={};events.forEach(e=>window._evMedia[e.id]=e.media||[]);
+}
+window.swMedia=function(evId,idx){
+  const m=(window._evMedia[evId]||[])[idx];if(!m)return;
+  document.getElementById('gm-'+evId).innerHTML=m.type==='video'?`<video class="gal-main-vid" controls autoplay src="${m.src}"></video>`:`<img class="gal-main-img" src="${m.src}" onclick="openLb('${evId}',${idx})">`;
+  const tr=document.getElementById('gt-'+evId);if(tr)tr.querySelectorAll('.g-th,.g-th-v').forEach((t,i)=>t.classList.toggle('on',i===idx));
+};
+window.openLb=function(evId,idx){
+  const m=(window._evMedia[evId]||[])[idx];if(!m)return;
+  document.getElementById('lb-content').innerHTML=m.type==='video'?`<video controls src="${m.src}" style="max-width:96vw;max-height:88vh;"></video>`:`<img src="${m.src}">`;
+  document.getElementById('lightbox').classList.add('on');
+};
+window.closeLb=function(){document.getElementById('lightbox').classList.remove('on');document.getElementById('lb-content').innerHTML='';};
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLb();});
+window.openExMedia=function(evId){haptic();targetEvId=evId;pendingExtraMedia=[];document.getElementById('ev-prev-ex').innerHTML='';document.getElementById('ev-files-ex').value='';openOv('ov-evmedia');};
+window.saveExtraMedia=async function(){
+  if(!pendingExtraMedia.length)return;
+  const ev=events.find(e=>e.id===targetEvId);
+  if(ev){const u={...ev,media:[...(ev.media||[]),...pendingExtraMedia]};await dbSet('events',u);if(!configured)renderEvents();}
+  pendingExtraMedia=[];targetEvId=null;closeOv('ov-evmedia');renderEvents();toast('تمت الإضافة ✓');
+};
+window.openAddEvent=function(){haptic();pendingMedia=[];document.getElementById('ev-prev').innerHTML='';document.getElementById('ev-files').value='';openOv('ov-event');};
+window.saveEvent=async function(){
+  const title=document.getElementById('ev-title').value.trim();if(!title)return;
+  const data={title,date:document.getElementById('ev-date').value,place:document.getElementById('ev-place').value,desc:document.getElementById('ev-desc').value,media:[...pendingMedia]};
+  await dbSet('events',data);['ev-title','ev-date','ev-place','ev-desc'].forEach(id=>document.getElementById(id).value='');
+  pendingMedia=[];closeOv('ov-event');if(!configured)renderEvents();toast('تمت الإضافة ✓');haptic();
+};
+window.delEv=async function(id){if(!confirm('حذف الفعالية؟'))return;await dbDel('events',id);renderEvents();toast('تم الحذف');};
+
+// ══ NEWS ══
+function renderNews(){
+  const l=document.getElementById('news-list');
+  if(!news.length){l.innerHTML='<div class="empty"><div class="empty-ico">📰</div><p>لا توجد أخبار</p></div>';return;}
+  l.innerHTML=[...news].sort((a,b)=>b.date.localeCompare(a.date)).map(n=>`
+    <div class="nw-card">
+      <div class="nw-tag">${n.cat}</div>
+      <div><div class="nw-title">${n.title}</div><div class="nw-body">${n.body}</div>
+        <div class="nw-date">📅 ${n.date}${isAdmin?` <button class="btn btn-danger btn-sm" style="margin-right:.5rem;margin-top:.3rem" onclick="delNw('${n.id}')">حذف</button>`:''}</div>
+      </div>
+    </div>`).join('');
+}
+window.openAddNews=function(){haptic();openOv('ov-news');};
+window.saveNews=async function(){
+  const title=document.getElementById('nw-title').value.trim();if(!title)return;
+  const data={title,cat:document.getElementById('nw-cat').value,body:document.getElementById('nw-body').value,date:new Date().toISOString().split('T')[0]};
+  await dbSet('news',data);['nw-title','nw-body'].forEach(id=>document.getElementById(id).value='');
+  closeOv('ov-news');if(!configured)renderNews();toast('تم النشر ✓');haptic();
+};
+window.delNw=async function(id){if(!confirm('حذف الخبر؟'))return;await dbDel('news',id);renderNews();toast('تم الحذف');};
+
+// ══ MODALS ══
+window.openOv=function(id){haptic();document.getElementById(id).classList.add('on');};
+window.closeOv=function(id){document.getElementById(id).classList.remove('on');};
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+// ══ TOAST ══
+let tTimer;
+function toast(msg,err=false){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='show'+(err?' err':'');clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.className='',3000);
+}
+
+// ══════════════════════════════════════
+//  EXCEL IMPORT
+// ══════════════════════════════════════
+let pendingImport=[];
+
 window.onExcelImport=function(e){
   const file=e.target.files[0];if(!file)return;
   document.getElementById('excel-in').value='';
