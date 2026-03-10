@@ -183,6 +183,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .empty{text-align:center;padding:3rem 1rem;color:var(--ink3)}
 .empty-ico{font-size:2.5rem;margin-bottom:.7rem;opacity:.5}
 .empty p{font-size:.86rem}
+.filter-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+.chip{background:var(--white);border:1.5px solid var(--sand3);color:var(--ink3);font-family:'Tajawal',sans-serif;font-size:.78rem;padding:.3rem .75rem;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip.on{background:var(--gold);border-color:var(--gold);color:var(--white);font-weight:600}
+.chip:active{transform:scale(.96)}
+.stat{cursor:pointer;transition:all .15s}
+.stat:active{transform:scale(.96)}
+.stat.active-filter{border-color:var(--gold);background:rgba(184,147,90,.08)}
 @media(min-width:600px){
   .form-grid{grid-template-columns:1fr 1fr}
   .overlay{align-items:center}
@@ -246,7 +253,18 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <input class="search" placeholder="ابحث بالاسم أو الاسم الكامل أو الوظيفة…" id="members-q" oninput="filterMembers()">
         <span class="search-ico">🔍</span>
       </div>
-      <span id="am-add" style="display:none"><button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button></span>
+      <span id="am-add" style="display:none;gap:.4rem;align-items:center">
+        <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button>
+        <button class="btn btn-sm" onclick="exportMembersExcel()" style="border-color:var(--ok);color:var(--ok)" title="تصدير Excel">📤</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteAllMembers()" title="حذف الكل">🗑️</button>
+      </span>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <button class="chip on" onclick="setFilter('all')">الكل</button>
+      <button class="chip" onclick="setFilter('male')">ذكور ♂</button>
+      <button class="chip" onclick="setFilter('female')">إناث ♀</button>
+      <button class="chip" onclick="setFilter('alive')">أحياء</button>
+      <button class="chip" onclick="setFilter('deceased')">متوفون 🕊</button>
     </div>
     <div class="members-list" id="members-grid"></div>
   </div>
@@ -353,6 +371,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="d-body"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
+      <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -620,17 +639,32 @@ function updateUI(){
 }
 
 // ══ STATS ══
+let activeFilter='all';
 function renderStats(){
   const roots=members.filter(m=>!m.parentId);
+  const males=members.filter(m=>m.gender==='ذكر').length;
   const females=members.filter(m=>m.gender==='أنثى').length;
+  const alive=members.filter(m=>m.status!=='متوفى').length;
   const deceased=members.filter(m=>m.status==='متوفى').length;
-  document.getElementById('stats-row').innerHTML=`
-    <div class="stat"><div class="stat-n">${members.length}</div><div class="stat-l">أفراد</div></div>
-    <div class="stat"><div class="stat-n">${roots.length}</div><div class="stat-l">جذور</div></div>
-    <div class="stat"><div class="stat-n">${females}</div><div class="stat-l">إناث</div></div>
-    <div class="stat"><div class="stat-n">${deceased}</div><div class="stat-l">متوفى</div></div>
-    <div class="stat"><div class="stat-n">${events.length}</div><div class="stat-l">فعاليات</div></div>`;
+  const s=(f,lbl,n)=>`<div class="stat${activeFilter===f?' active-filter':''}" onclick="goPage('members');setFilter('${f}')"><div class="stat-n">${n}</div><div class="stat-l">${lbl}</div></div>`;
+  document.getElementById('stats-row').innerHTML=
+    s('all','أفراد',members.length)+
+    s('male','ذكور ♂',males)+
+    s('female','إناث ♀',females)+
+    s('alive','أحياء',alive)+
+    s('deceased','متوفون 🕊',deceased)+
+    `<div class="stat" onclick="goPage('events')"><div class="stat-n">${events.length}</div><div class="stat-l">فعاليات</div></div>`;
 }
+window.setFilter=function(f){
+  activeFilter=f;
+  // sync chips
+  document.querySelectorAll('.chip').forEach(c=>{
+    const map={'all':'الكل','male':'ذكور ♂','female':'إناث ♀','alive':'أحياء','deceased':'متوفون 🕊'};
+    c.classList.toggle('on', c.textContent.trim()===map[f]||c.getAttribute('onclick').includes("'"+f+"'"));
+  });
+  renderMembers(document.getElementById('members-q').value);
+  renderStats();
+};
 
 // ══════════════════════════════════════════
 //  CANVAS TREE ENGINE
@@ -958,6 +992,11 @@ function renderMembers(q=''){
       (m.city&&m.city.includes(qq))
     );
   }
+  // Apply active filter
+  if(activeFilter==='male')    list=list.filter(m=>m.gender==='ذكر');
+  else if(activeFilter==='female')  list=list.filter(m=>m.gender==='أنثى');
+  else if(activeFilter==='alive')   list=list.filter(m=>m.status!=='متوفى');
+  else if(activeFilter==='deceased')list=list.filter(m=>m.status==='متوفى');
   const g=document.getElementById('members-grid');
   if(!list.length){g.innerHTML='<div class="empty"><div class="empty-ico">👥</div><p>لا نتائج</p></div>';return;}
   const isFem=m=>m.gender==='أنثى';
@@ -1009,10 +1048,11 @@ window.showDetail=function(id){
     </div>
     <div class="d-section"><div class="d-sec-title">الشجرة</div>
       <div class="d-row"><span class="d-lbl">الأب</span><span class="d-val">${par?par.name:'جذر العائلة'}</span></div>
-      <div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">${kids.length?kids.map(c=>c.name).join('، '):'—'}</span></div>
+      <div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">${kids.length?kids.map(c=>`<span onclick="closeOv('ov-detail');setTimeout(()=>showDetail('${c.id}'),220)" style="cursor:pointer;color:var(--gold);border-bottom:1px dashed var(--gold3)">${c.name}</span>`).join('، '):'—'}</span></div>
     </div>
     ${isAdmin?`<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember('${m.id}')">حذف الفرد</button></div>`:''}`;
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
+  document.getElementById('d-addson').style.display=isAdmin?'inline-flex':'none';
   openOv('ov-detail');
 };
 window.editCurrent=function(){
@@ -1038,7 +1078,63 @@ window.delMember=async function(id){
   renderTree();renderMembers();renderStats();toast('تم الحذف');
 };
 
+window.deleteAllMembers=async function(){
+  if(!confirm(`⚠️ تحذير!
+
+سيتم حذف جميع الأعضاء (${members.length} فرد) نهائياً.
+
+هل أنت متأكد؟`))return;
+  if(!confirm('تأكيد أخير — هذا الإجراء لا يمكن التراجع عنه!'))return;
+  const ids=[...members.map(m=>m.id)];
+  for(const id of ids) await dbDel('members',id);
+  members=[];
+  renderTree();renderMembers();renderStats();
+  toast(`تم حذف ${ids.length} عضو بنجاح`);
+};
+
+window.exportMembersExcel=function(){
+  if(!members.length){toast('لا يوجد أعضاء للتصدير',true);return;}
+  // Build CSV with BOM for Arabic support
+  const headers=['الاسم الكامل (سلسلة الأجداد)','الاسم','رقم الجوال','البريد الإلكتروني','جهة العمل','الوظيفة','المدينة','تاريخ الميلاد','رابط LinkedIn','المنصب','الجنس','الحالة','اسم الأب'];
+  const escape=v=>{ const s=String(v||''); return s.includes(',')|| s.includes('"')||s.includes('
+')?`"${s.replace(/"/g,'""')}"`:`${s}`; };
+  const rows=members.map(m=>{
+    const par=m.parentId?members.find(p=>p.id===m.parentId):null;
+    return [m._fullName||m.fullName||m.name,m.name,m.phone,m.email,m.company,m.job,m.city,m.birth,m.linkedin,m.role,m.gender,m.status,par?par.name:''].map(escape).join(',');
+  });
+  const csv='﻿'+headers.map(escape).join(',')+'
+'+rows.join('
+');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='family_export_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast(`✓ تم تصدير ${members.length} عضو`);
+};
+
 // ══ ADD MEMBER ══
+window.addChildOf=function(){
+  // open add member form with current member as parent
+  const parentId=currentId;
+  closeOv('ov-detail');
+  setTimeout(()=>{
+    haptic();editingId=null;pendingPhoto=null;
+    fillParentSel(null);
+    ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('m-birth').value='';
+    document.getElementById('m-gender').value='';
+    document.getElementById('m-status').value='حي';
+    document.getElementById('m-fullname').value='';
+    document.getElementById('mm-title').textContent='إضافة ابن / بنت';
+    document.getElementById('photo-ring').innerHTML=`<span id="photo-init">؟</span><div class="photo-ov">📷</div>`;
+    document.getElementById('children-wrap').style.display='none';
+    // pre-select parent
+    document.getElementById('m-parent').value=parentId||'';
+    updateFullNameField();
+    openOv('ov-member');
+  },280);
+};
+
 window.openAddMember=function(){
   haptic();editingId=null;pendingPhoto=null;fillParentSel(null);
   ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin'].forEach(id=>document.getElementById(id).value='');
