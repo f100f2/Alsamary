@@ -524,6 +524,9 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
+
+
 // ═══════════════════════════════════
 //  🔧 ضع إعدادات Firebase هنا
 // ═══════════════════════════════════
@@ -550,6 +553,7 @@ async function init(){
   if(!configured){
     // وضع demo — بدون Firebase
     loadDemo();
+    loadSettings();
     hideLoader();
     setTimeout(treeInit, 50);
     return;
@@ -574,11 +578,13 @@ async function init(){
     fsdb.collection('events').onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='events')renderEvents();});
     fsdb.collection('news').onSnapshot(s=>{news=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='news')renderNews();});
 
+    loadSettings();
     hideLoader();
     setTimeout(treeInit,50);
   }catch(e){
     console.error('Firebase error:',e);
     loadDemo();
+    loadSettings();
     hideLoader();
     setTimeout(treeInit, 50);
     toast('تعذّر الاتصال — تم التشغيل بالبيانات التجريبية',true);
@@ -615,6 +621,7 @@ async function dbSet(col,data){
     if(!data.id)data.id='local_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     if(col==='members'){members=members.filter(m=>m.id!==data.id);members.push(data);}
     else if(col==='events'){events=events.filter(e=>e.id!==data.id);events.push(data);}
+    else if(col==='photos'){photos=photos.filter(p=>p.id!==data.id);photos.push(data);}
     else{news=news.filter(n=>n.id!==data.id);news.unshift(data);}
     return;
   }
@@ -626,6 +633,7 @@ async function dbDel(col,id){
   if(!configured){
     if(col==='members')members=members.filter(m=>m.id!==id);
     else if(col==='events')events=events.filter(e=>e.id!==id);
+    else if(col==='photos')photos=photos.filter(p=>p.id!==id);
     else news=news.filter(n=>n.id!==id);
     return;
   }
@@ -676,8 +684,16 @@ window.doLogin=function(){
 };
 function updateUI(){
   const s=isAdmin;
-  ['at-add','am-add'].forEach(id=>document.getElementById(id).style.display=s?'flex':'none');
+  ['at-add','am-add','aph-add'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=s?'flex':'none';});
   ['aev-bar','anw-bar'].forEach(id=>document.getElementById(id).style.display=s?'flex':'none');
+  {const _sb=document.getElementById('settings-btn');if(_sb)_sb.style.display=s?'block':'none';}
+  // Album add button
+  const aphAdd=document.getElementById('aph-add');
+  if(aphAdd) aphAdd.style.display=s?'flex':'none';
+  // Settings / dashboard button
+  const sb=document.getElementById('settings-btn');
+  if(sb) sb.style.display=s?'block':'none';
+  // Admin button label
   if(!isAdmin){const b=document.getElementById('adm-btn');b.textContent='🔐 المدير';b.classList.remove('on');}
   renderStats();renderTree();renderMembers();
   if(active==='events')renderEvents();if(active==='news')renderNews();
@@ -1597,8 +1613,8 @@ window.saveSettings=function(){
 // Show settings gear when admin
 var _origUpdateUI=typeof updateUI==='function'?updateUI:null;
 function updateSettingsUI(){
-  var sb=document.getElementById('settings-btn');
-  if(sb) sb.style.display=isAdmin?'block':'none';
+  var _sb2=document.getElementById('settings-btn');
+  if(_sb2) _sb2.style.display=isAdmin?'block':'none';
 }
 
 // ══════════════════════════════════════════════════
@@ -1786,8 +1802,10 @@ if(document.readyState==='loading'){
 }else{
   init();
 }
-</script>
 
+
+
+</script>
 <!-- PHOTO DETAIL -->
 <div class="overlay" id="ov-photo-detail">
   <div class="modal" style="max-width:520px">
@@ -1884,5 +1902,7 @@ if(document.readyState==='loading'){
   </div>
 </div>
 
+</body>
+</html
 </body>
 </html>
