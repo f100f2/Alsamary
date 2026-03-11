@@ -528,6 +528,10 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 
 
 
+
+
+
+
 // ═══════════════════════════════════
 //  🔧 ضع إعدادات Firebase هنا
 // ═══════════════════════════════════
@@ -566,18 +570,21 @@ async function init(){
     const fsdb  = fbApp.firestore();
     db = fsdb;
 
-    const[ms,es,ns]=await Promise.all([
+    const[ms,es,ns,ps]=await Promise.all([
       fsdb.collection('members').get(),
       fsdb.collection('events').get(),
-      fsdb.collection('news').get()
+      fsdb.collection('news').get(),
+      fsdb.collection('photos').get()
     ]);
     members = ms.docs.map(d=>({id:d.id,...d.data()}));
     events  = es.docs.map(d=>({id:d.id,...d.data()}));
     news    = ns.docs.map(d=>({id:d.id,...d.data()}));
+    photos  = ps.docs.map(d=>({id:d.id,...d.data()}));
 
     fsdb.collection('members').onSnapshot(s=>{members=s.docs.map(d=>({id:d.id,...d.data()}));renderTree();renderMembers();renderStats();});
     fsdb.collection('events').onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='events')renderEvents();});
     fsdb.collection('news').onSnapshot(s=>{news=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='news')renderNews();});
+    fsdb.collection('photos').onSnapshot(s=>{photos=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='album')renderAlbum();});
 
     loadSettings();
     hideLoader();
@@ -622,7 +629,7 @@ async function dbSet(col,data){
     if(!data.id)data.id='local_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     if(col==='members'){members=members.filter(m=>m.id!==data.id);members.push(data);}
     else if(col==='events'){events=events.filter(e=>e.id!==data.id);events.push(data);}
-    else if(col==='photos'){photos=photos.filter(p=>p.id!==data.id);photos.push(data);}
+    else if(col==='photos'){if(!data.id)data.id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2);photos=photos.filter(p=>p.id!==data.id);photos.push(Object.assign({},data));}
     else{news=news.filter(n=>n.id!==data.id);news.unshift(data);}
     return;
   }
@@ -664,6 +671,7 @@ window.goPage=function(p){
   if(p==='news')renderNews();
   if(p==='tree'){renderTree();setTimeout(treeFit,100);}
   if(p==='members')renderMembers();
+  if(p==='album')renderAlbum();
 };
 
 // ══ ADMIN ══
@@ -1693,8 +1701,8 @@ window.openPhotoDetail=function(id){
 
 window.deleteCurrentPhoto=async function(){
   if(!confirm('حذف هذه الصورة؟'))return;
-  await dbDel('photos',currentPhotoId);
   photos=photos.filter(function(p){return p.id!==currentPhotoId;});
+  if(configured){try{await db.collection('photos').doc(currentPhotoId).delete();}catch(e){}}
   closeOv('ov-photo-detail');
   renderAlbum();toast('تم الحذف');
 };
@@ -1784,6 +1792,7 @@ function renderSelectedTags(){
 window.savePhoto=async function(){
   if(!pendingPhotoData){toast('الرجاء اختيار صورة أولاً',true);return;}
   var data={
+    id:'ph_'+Date.now()+'_'+Math.random().toString(36).slice(2),
     src:pendingPhotoData,
     date:document.getElementById('ph-date').value,
     caption:document.getElementById('ph-caption').value.trim(),
@@ -1792,7 +1801,14 @@ window.savePhoto=async function(){
     tags:selectedPhotoTags.slice(),
     createdAt:new Date().toISOString()
   };
-  await dbSet('photos',data);
+  // Add to local array immediately (works in both demo and Firebase mode)
+  photos.push(data);
+  // Also persist to Firebase if configured
+  if(configured){
+    try{ await db.collection('photos').doc(data.id).set(data); }catch(e){ console.warn('Firebase save failed',e); }
+  }
+  pendingPhotoData=null;
+  selectedPhotoTags=[];
   closeOv('ov-add-photo');
   renderAlbum();
   toast('تمت إضافة الصورة ✓');
@@ -1805,6 +1821,10 @@ if(document.readyState==='loading'){
 }else{
   init();
 }
+
+
+
+
 
 
 
