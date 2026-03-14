@@ -198,7 +198,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 }
 
 /* ── ALBUM ── */
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:.7rem}
 .album-item{position:relative;border-radius:var(--r2);overflow:hidden;background:var(--sand2);aspect-ratio:1;cursor:pointer;box-shadow:var(--shadow)}
 .album-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
 .album-item:active img{transform:scale(.97)}
@@ -524,6 +524,7 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
 
 
 
@@ -1053,14 +1054,26 @@ function renderMembers(q=''){
   let list=members;
   if(q){
     const qq=q.trim();
-    list=members.filter(m=>
-      (m.name&&m.name.includes(qq))||
-      (m.fullName&&m.fullName.includes(qq))||
-      (m._fullName&&m._fullName.includes(qq))||
-      (m.job&&m.job.includes(qq))||
-      (m.company&&m.company.includes(qq))||
-      (m.city&&m.city.includes(qq))
+    // Priority 1: first name matches
+    const nameMatches=members.filter(m=>m.name&&m.name.includes(qq));
+    const nameIds=new Set(nameMatches.map(m=>m.id));
+    // Priority 2: full name matches (but not already in nameMatches)
+    const fullNameMatches=members.filter(m=>
+      !nameIds.has(m.id)&&(
+        (m.fullName&&m.fullName.includes(qq))||
+        (m._fullName&&m._fullName.includes(qq))
+      )
     );
+    const fnIds=new Set(fullNameMatches.map(m=>m.id));
+    // Priority 3: job/company/city (not already matched)
+    const otherMatches=members.filter(m=>
+      !nameIds.has(m.id)&&!fnIds.has(m.id)&&(
+        (m.job&&m.job.includes(qq))||
+        (m.company&&m.company.includes(qq))||
+        (m.city&&m.city.includes(qq))
+      )
+    );
+    list=[...nameMatches,...fullNameMatches,...otherMatches];
   }
   // Apply active filter
   if(activeFilter==='male')    list=list.filter(m=>m.gender==='ذكر');
@@ -1105,6 +1118,7 @@ window.showDetail=function(id){
       <div class="d-row"><span class="d-lbl">الجنس</span><span class="d-val">${m.gender||'—'}</span></div>
       <div class="d-row"><span class="d-lbl">الحالة</span><span class="d-val">${m.status||'حي'}</span></div>
       <div class="d-row"><span class="d-lbl">المنصب</span><span class="d-val">${m.role||'—'}</span></div>
+      ${m.spouse?`<div class="d-row"><span class="d-lbl">${m.gender==='أنثى'?'الزوج':'الزوجة'}</span><span class="d-val">${m.spouse}</span></div>`:''}
       <div class="d-row"><span class="d-lbl">تاريخ الميلاد</span><span class="d-val">${m.birth||'—'}</span></div>
       <div class="d-row"><span class="d-lbl">المدينة</span><span class="d-val">${m.city||'—'}</span></div>
     </div>
@@ -1130,7 +1144,8 @@ window.editCurrent=function(){
   const m=members.find(x=>x.id===currentId);if(!m)return;
   editingId=m.id;pendingPhoto=m.photo||null;
   fillParentSel(m.id);fillChildren(m.id);
-  ['name','role','phone','email','company','job','city','birth','linkedin'].forEach(f=>document.getElementById('m-'+f).value=m[f]||'');
+  ['name','role','phone','email','company','job','city','birth','linkedin','spouse'].forEach(f=>document.getElementById('m-'+f).value=m[f]||'');
+  updateSpouseLbl();
   document.getElementById('m-gender').value=m.gender||'';
   document.getElementById('m-status').value=m.status||'حي';
   document.getElementById('m-parent').value=m.parentId||'';
@@ -1319,7 +1334,7 @@ window.addChildOf=function(){
   setTimeout(function(){
     haptic();editingId=null;pendingPhoto=null;
     fillParentSel(null);
-    ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin'].forEach(function(id){document.getElementById(id).value='';});
+    ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('m-birth').value='';
     document.getElementById('m-gender').value='';
     document.getElementById('m-status').value='حي';
@@ -1335,11 +1350,12 @@ window.addChildOf=function(){
 
 window.openAddMember=function(){
   haptic();editingId=null;pendingPhoto=null;fillParentSel(null);
-  ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin'].forEach(function(id){document.getElementById(id).value='';});
+  ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('m-birth').value='';
   document.getElementById('m-parent').value='';
   document.getElementById('m-gender').value='';
   document.getElementById('m-status').value='حي';
+  updateSpouseLbl();
   document.getElementById('m-fullname').value='';
   document.getElementById('mm-title').textContent='إضافة فرد جديد';
   document.getElementById('photo-ring').innerHTML='<span id="photo-init">؟</span><div class="photo-ov">📷</div>';
@@ -1395,6 +1411,7 @@ window.saveMember=async function(){
     city:document.getElementById('m-city').value,
     birth:document.getElementById('m-birth').value,
     linkedin:document.getElementById('m-linkedin').value,
+    spouse:document.getElementById('m-spouse').value.trim(),
     parentId:parentId,photo:pendingPhoto
   };
   if(editingId)data.id=editingId;
@@ -1662,7 +1679,13 @@ function renderAlbum(q){
   }
   grid.innerHTML=list.map(function(ph){
     var tagLabels=(ph.tags||[]).map(function(tid){
-      var m=members.find(function(x){return x.id===tid;});return m?m.name:'';
+      var m=members.find(function(x){return x.id===tid;});
+      if(!m)return '';
+      // Build 3-part name: own name + father name + grandfather name
+      var parts=[m.name];
+      var p1=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
+      if(p1){parts.push(p1.name);var p2=p1.parentId?members.find(function(x){return x.id===p1.parentId;}):null;if(p2)parts.push(p2.name);}
+      return parts.join(' ');
     }).filter(Boolean).slice(0,3);
     var ev=ph.eventId?events.find(function(e){return e.id===ph.eventId;}):null;
     return '<div class="album-item" onclick="openPhotoDetail(\''+ph.id+'\')">'
@@ -1815,12 +1838,19 @@ window.savePhoto=async function(){
   haptic();
 };
 
+function updateSpouseLbl(){
+  var g=document.getElementById('m-gender');
+  var lbl=document.getElementById('m-spouse-lbl');
+  if(!g||!lbl)return;
+  lbl.textContent=g.value==='أنثى'?'الزوج':'الزوجة';
+}
 // Wait for DOM to be fully ready
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
   init();
 }
+
 
 
 
