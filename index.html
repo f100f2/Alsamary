@@ -357,7 +357,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       <div class="field"><label>الاسم *</label><input id="m-name" placeholder="الاسم الأول" oninput="syncInit()"></div>
       <div class="field"><label>المنصب / اللقب</label><input id="m-role" placeholder="مثال: الجد الأكبر"></div>
       <div class="field"><label>الجنس</label>
-        <select id="m-gender">
+        <select id="m-gender" onchange="updateSpouseLbl()">
           <option value="">— اختر —</option>
           <option value="ذكر">ذكر ♂</option>
           <option value="أنثى">أنثى ♀</option>
@@ -369,6 +369,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
           <option value="متوفى">متوفى 🕊</option>
         </select>
       </div>
+      <div class="field" id="m-spouse-wrap" style="grid-column:1/-1"><label id="m-spouse-lbl">الزوجة</label><input id="m-spouse" placeholder="الاسم الكامل للزوجة/الزوج"></div>
       <div class="field"><label>الجوال</label><input id="m-phone" placeholder="05xxxxxxxx" dir="ltr" type="tel"></div>
       <div class="field"><label>البريد</label><input id="m-email" placeholder="email@..." dir="ltr" type="email"></div>
       <div class="field"><label>جهة العمل</label><input id="m-company" placeholder="الشركة"></div>
@@ -524,6 +525,8 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
+
 
 
 
@@ -694,17 +697,14 @@ window.doLogin=function(){
 };
 function updateUI(){
   const s=isAdmin;
-  ['at-add','am-add','aph-add'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=s?'flex':'none';});
-  ['aev-bar','anw-bar'].forEach(id=>document.getElementById(id).style.display=s?'flex':'none');
-  {const _sb=document.getElementById('settings-btn');if(_sb)_sb.style.display=s?'block':'none';}
-  // Album add button
-  const aphAdd=document.getElementById('aph-add');
-  if(aphAdd) aphAdd.style.display=s?'flex':'none';
-  // Settings / dashboard button
-  const sb=document.getElementById('settings-btn');
-  if(sb) sb.style.display=s?'block':'none';
-  // Admin button label
-  if(!isAdmin){const b=document.getElementById('adm-btn');b.textContent='🔐 المدير';b.classList.remove('on');}
+  ['at-add','am-add','aph-add'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.style.display=s?'flex':'none';
+  });
+  ['aev-bar','anw-bar'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.style.display=s?'flex':'none';
+  });
+  var sb=document.getElementById('settings-btn');if(sb)sb.style.display=s?'block':'none';
+  if(!isAdmin){var b=document.getElementById('adm-btn');b.textContent='🔐 المدير';b.classList.remove('on');}
   renderStats();renderTree();renderMembers();
   if(active==='events')renderEvents();if(active==='news')renderNews();
 }
@@ -1638,10 +1638,7 @@ window.saveSettings=function(){
 
 // Show settings gear when admin
 var _origUpdateUI=typeof updateUI==='function'?updateUI:null;
-function updateSettingsUI(){
-  var _sb2=document.getElementById('settings-btn');
-  if(_sb2) _sb2.style.display=isAdmin?'block':'none';
-}
+
 
 // ══════════════════════════════════════════════════
 //  ALBUM
@@ -1850,6 +1847,8 @@ if(document.readyState==='loading'){
 }else{
   init();
 }
+
+
 
 
 
