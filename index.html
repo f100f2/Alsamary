@@ -198,13 +198,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 }
 
 /* ── ALBUM ── */
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:.7rem}
-.album-item{position:relative;border-radius:var(--r2);overflow:hidden;background:var(--sand2);aspect-ratio:1;cursor:pointer;box-shadow:var(--shadow)}
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem}
+.album-item{position:relative;border-radius:var(--r2);overflow:hidden;background:var(--sand2);aspect-ratio:4/3;cursor:pointer;box-shadow:var(--shadow)}
 .album-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
 .album-item:active img{transform:scale(.97)}
-.album-tags{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,22,18,.7));padding:.35rem .4rem .3rem;display:flex;flex-wrap:wrap;gap:.2rem}
-.album-tag{background:rgba(184,147,90,.85);color:#fff;font-size:.6rem;padding:.1rem .35rem;border-radius:10px;white-space:nowrap}
+.album-tags{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,22,18,.75));padding:.5rem .5rem .4rem;display:flex;flex-wrap:wrap;gap:.3rem}
+.album-tag{background:rgba(184,147,90,.88);color:#fff;font-size:.72rem;padding:.2rem .45rem;border-radius:10px;white-space:normal;line-height:1.3;max-width:100%}
 .album-date{position:absolute;top:.3rem;right:.3rem;background:rgba(26,22,18,.55);color:#fff;font-size:.6rem;padding:.1rem .35rem;border-radius:8px}
+.version-badge{display:inline-flex;align-items:center;gap:.5rem;margin-top:2rem;padding:.45rem .9rem;background:var(--sand2);border:1px solid var(--sand3);border-radius:20px;font-size:.78rem;color:var(--ink3)}
+.version-num{font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;font-size:.9rem}
+.version-date{color:var(--ink3)}
 .album-filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
 /* ── ABOUT ── */
 .about-content{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);min-height:120px;font-size:.9rem;line-height:1.9;color:var(--ink);white-space:pre-wrap}
@@ -328,6 +331,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="page-hero"><h1>حول العائلة</h1><p></p></div>
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
+    <div class="version-badge" id="version-badge">
+      <span class="version-num">V14</span>
+      <span class="version-date">14 مارس 2026 — 17:30</span>
+    </div>
   </div>
 </div>
 
