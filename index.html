@@ -334,7 +334,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V18</span>
+      <span class="version-num">V19</span>
       <span class="version-date">14 مارس 2026 — 17:30</span>
     </div>
   </div>
@@ -378,7 +378,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
           <option value="متوفى">متوفى 🕊</option>
         </select>
       </div>
-      <div class="field" id="m-spouse-wrap" style="grid-column:1/-1"><label id="m-spouse-lbl">الزوجة</label><input id="m-spouse" placeholder="الاسم الكامل للزوجة/الزوج"></div>
+      <div class="field" id="m-spouse-wrap" style="grid-column:1/-1"><label id="m-spouse-lbl">اسم الزوجة</label><input id="m-spouse" id="m-spouse" placeholder="الاسم الكامل"></div>
       <div class="field"><label>الجوال</label><input id="m-phone" placeholder="05xxxxxxxx" dir="ltr" type="tel"></div>
       <div class="field"><label>البريد</label><input id="m-email" placeholder="email@..." dir="ltr" type="email"></div>
       <div class="field"><label>جهة العمل</label><input id="m-company" placeholder="الشركة"></div>
@@ -398,11 +398,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <input id="m-fullname" readonly placeholder="يُحسب تلقائياً من سلسلة الأجداد">
       </div>
       <div id="children-wrap" style="display:none">
-        <div class="tree-sec-lbl" style="margin-bottom:.4rem">الأبناء (في الشجرة)</div>
+        <div class="tree-sec-lbl" style="margin-bottom:.4rem">الأبناء</div>
         <div class="children-list" id="children-list"></div>
       </div>
       <div id="ext-kids-wrap" style="display:none;margin-top:.6rem">
-        <div class="tree-sec-lbl" style="margin-bottom:.3rem">أبناء خارج الشجرة (للأنثى)</div>
+        <div class="tree-sec-lbl" style="margin-bottom:.3rem">الأبناء</div>
         <input id="m-ext-kids" placeholder="أسماء الأبناء مفصولة بفاصلة" style="width:100%;background:var(--sand);border:1.5px solid var(--sand3);color:var(--ink);font-family:'Tajawal',sans-serif;font-size:.9rem;padding:.5rem .8rem;border-radius:10px;outline:none;direction:rtl">
       </div>
     </div>
@@ -535,7 +535,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="field"><input id="login-phone" type="tel" placeholder="05xxxxxxxx" dir="ltr" style="text-align:center;font-size:1.05rem;letter-spacing:.08em" onkeydown="if(event.key==='Enter')doPhoneLogin()"></div>
     <div class="modal-footer" style="flex-direction:column;gap:.5rem">
       <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doPhoneLogin()">دخول</button>
-      <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.8rem" onclick="doGuestLogin()">متابعة كضيف</button>
     </div>
   </div>
 </div>
@@ -553,6 +552,8 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
+
 
 
 
@@ -1196,16 +1197,16 @@ window.editCurrent=function(){
   editingId=m.id;pendingPhoto=m.photo||null;
   fillParentSel(m.id);fillChildren(m.id);
   ['name','role','phone','email','company','job','city','birth','linkedin','spouse','bio'].forEach(f=>document.getElementById('m-'+f).value=m[f]||'');
-  document.getElementById('m-ext-kids').value=(m.externalKids||[]).join(', ');
-  updateSpouseLbl();
+  document.getElementById('m-ext-kids').value=(m.externalKids||[]).join('، ');
   document.getElementById('m-gender').value=m.gender||'';
   document.getElementById('m-status').value=m.status||'حي';
   document.getElementById('m-parent').value=m.parentId||'';
+  updateSpouseLbl();
   updateFullNameField();
   const ring=document.getElementById('photo-ring');
   ring.innerHTML=m.photo?`<img src="${m.photo}"><div class="photo-ov">📷</div>`:`<span id="photo-init">${(m.name||'?').charAt(0)}</span><div class="photo-ov">📷</div>`;
   document.getElementById('mm-title').textContent='تعديل بيانات الفرد';
-  document.getElementById('children-wrap').style.display='block';
+  if(m.gender!=='أنثى') document.getElementById('children-wrap').style.display='block';
   openOv('ov-member');
 };
 window.delMember=async function(id){
@@ -1928,10 +1929,13 @@ function updateSpouseLbl(){
   var g=document.getElementById('m-gender');
   var lbl=document.getElementById('m-spouse-lbl');
   var ekw=document.getElementById('ext-kids-wrap');
+  var ckw=document.getElementById('children-wrap');
   if(!g||!lbl)return;
   var isFem=g.value==='أنثى';
-  lbl.textContent=isFem?'الزوج':'الزوجة';
+  lbl.textContent=isFem?'اسم الزوج':'اسم الزوجة';
+  // للأنثى: حقل الأبناء النصي + إخفاء ربط شجرة الأبناء
   if(ekw) ekw.style.display=isFem?'block':'none';
+  if(ckw&&editingId) ckw.style.display=isFem?'none':'block';
 }
 
 // ══ PHONE LOGIN ══
@@ -1966,9 +1970,6 @@ window.doPhoneLogin=function(){
   showWelcomeMsg(m.id);
 };
 
-window.doGuestLogin=function(){
-  closeOv('ov-phone-login');
-};
 
 // Wait for DOM to be fully ready
 if(document.readyState==='loading'){
@@ -1976,6 +1977,8 @@ if(document.readyState==='loading'){
 }else{
   init();
 }
+
+
 
 
 
