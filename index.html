@@ -206,6 +206,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .album-tag{background:rgba(184,147,90,.85);color:#fff;font-size:.6rem;padding:.1rem .35rem;border-radius:10px;white-space:nowrap}
 .album-date{position:absolute;top:.3rem;right:.3rem;background:rgba(26,22,18,.55);color:#fff;font-size:.6rem;padding:.1rem .35rem;border-radius:8px}
 .album-filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+.d-bio{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r2);padding:.85rem 1rem;margin-bottom:1rem;
+  font-size:.84rem;line-height:1.8;color:var(--ink2);white-space:pre-wrap;
+}
 /* ── ABOUT ── */
 .about-content{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);min-height:120px;font-size:.9rem;line-height:1.9;color:var(--ink);white-space:pre-wrap}
 .about-logo-wrap{display:flex;justify-content:center;margin-bottom:1.4rem}
@@ -329,7 +334,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V17</span>
+      <span class="version-num">V18</span>
       <span class="version-date">14 مارس 2026 — 17:30</span>
     </div>
   </div>
@@ -382,6 +387,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       <div class="field"><label>تاريخ الميلاد</label><input id="m-birth" type="date"></div>
     </div>
     <div class="field"><label>LinkedIn</label><input id="m-linkedin" placeholder="https://linkedin.com/in/..." dir="ltr" type="url"></div>
+    <div class="field" style="grid-column:1/-1"><label>نبذة شخصية</label><textarea id="m-bio" rows="3" placeholder="اكتب نبذة قصيرة عن الشخص…" style="resize:vertical"></textarea></div>
     <div class="tree-section">
       <div class="tree-sec-lbl">ربط الشجرة</div>
       <div class="field" style="margin-bottom:.5rem"><label>الأب</label>
@@ -392,8 +398,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <input id="m-fullname" readonly placeholder="يُحسب تلقائياً من سلسلة الأجداد">
       </div>
       <div id="children-wrap" style="display:none">
-        <div class="tree-sec-lbl" style="margin-bottom:.4rem">الأبناء</div>
+        <div class="tree-sec-lbl" style="margin-bottom:.4rem">الأبناء (في الشجرة)</div>
         <div class="children-list" id="children-list"></div>
+      </div>
+      <div id="ext-kids-wrap" style="display:none;margin-top:.6rem">
+        <div class="tree-sec-lbl" style="margin-bottom:.3rem">أبناء خارج الشجرة (للأنثى)</div>
+        <input id="m-ext-kids" placeholder="أسماء الأبناء مفصولة بفاصلة" style="width:100%;background:var(--sand);border:1.5px solid var(--sand3);color:var(--ink);font-family:'Tajawal',sans-serif;font-size:.9rem;padding:.5rem .8rem;border-radius:10px;outline:none;direction:rtl">
       </div>
     </div>
     <div class="modal-footer">
@@ -515,6 +525,20 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
   </div>
 </div>
 
+
+<!-- PHONE LOGIN -->
+<div class="overlay" id="ov-phone-login">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="text-align:center">👋 مرحباً</div>
+    <p style="font-size:.84rem;color:var(--ink3);text-align:center;margin-bottom:1.2rem;line-height:1.7">أدخل رقم جوالك المسجل للدخول</p>
+    <div class="field"><input id="login-phone" type="tel" placeholder="05xxxxxxxx" dir="ltr" style="text-align:center;font-size:1.05rem;letter-spacing:.08em" onkeydown="if(event.key==='Enter')doPhoneLogin()"></div>
+    <div class="modal-footer" style="flex-direction:column;gap:.5rem">
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doPhoneLogin()">دخول</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.8rem" onclick="doGuestLogin()">متابعة كضيف</button>
+    </div>
+  </div>
+</div>
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-x" onclick="closeLb()">✕</button>
@@ -529,6 +553,7 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
 
 
 
@@ -571,6 +596,7 @@ async function init(){
     loadSettings();
     hideLoader();
     setTimeout(treeInit, 50);
+    setTimeout(checkPhoneLogin, 600);
     return;
   }
 
@@ -599,6 +625,7 @@ async function init(){
     loadSettings();
     hideLoader();
     setTimeout(treeInit,50);
+    setTimeout(checkPhoneLogin, 600);
   }catch(e){
     console.error('Firebase error:',e);
     loadDemo();
@@ -752,7 +779,7 @@ const TC={
   dragging:false,lastX:0,lastY:0,
   nodes:[],
   pinchDist:0,
-  NW:148,NH:70,HGAP:20,VGAP:60,
+  NW:160,NH:76,HGAP:28,VGAP:68,
 };
 
 function treeInit(){
@@ -1118,29 +1145,47 @@ window.showDetail=function(id){
   if(m.linkedin){li.href=m.linkedin;li.style.display='inline-flex';}else li.style.display='none';
   const par=m.parentId?members.find(x=>x.id===m.parentId):null;
   const kids=members.filter(x=>x.parentId===id);
-  document.getElementById('d-body').innerHTML=`
-    <div class="d-section"><div class="d-sec-title">المعلومات</div>
-      <div class="d-row"><span class="d-lbl">الاسم الكامل</span><span class="d-val">${m.fullName||m._fullName||'—'}</span></div>
-      <div class="d-row"><span class="d-lbl">الجنس</span><span class="d-val">${m.gender||'—'}</span></div>
-      <div class="d-row"><span class="d-lbl">الحالة</span><span class="d-val">${m.status||'حي'}</span></div>
-      <div class="d-row"><span class="d-lbl">الكنية</span><span class="d-val">${m.role||'—'}</span></div>
-      ${m.spouse?`<div class="d-row"><span class="d-lbl">${m.gender==='أنثى'?'الزوج':'الزوجة'}</span><span class="d-val">${m.spouse}</span></div>`:''}
-      <div class="d-row"><span class="d-lbl">تاريخ الميلاد</span><span class="d-val">${m.birth||'—'}</span></div>
-      <div class="d-row"><span class="d-lbl">المدينة</span><span class="d-val">${m.city||'—'}</span></div>
-    </div>
-    <div class="d-section"><div class="d-sec-title">التواصل</div>
-      <div class="d-row"><span class="d-lbl">الجوال</span><span class="d-val" dir="ltr">${m.phone||'—'}</span></div>
-      <div class="d-row"><span class="d-lbl">البريد</span><span class="d-val" dir="ltr">${m.email||'—'}</span></div>
-    </div>
-    <div class="d-section"><div class="d-sec-title">العمل</div>
-      <div class="d-row"><span class="d-lbl">جهة العمل</span><span class="d-val">${m.company||'—'}</span></div>
-      <div class="d-row"><span class="d-lbl">الوظيفة</span><span class="d-val">${m.job||'—'}</span></div>
-    </div>
-    <div class="d-section"><div class="d-sec-title">الشجرة</div>
-      <div class="d-row"><span class="d-lbl">الأب</span><span class="d-val">${par?par.name:'جذر العائلة'}</span></div>
-      <div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">${kids.length?kids.map(c=>'<span onclick="closeOv(\'ov-detail\');setTimeout(()=>showDetail(\''+c.id+'\'),220)" style="cursor:pointer;color:var(--gold);border-bottom:1px dashed var(--gold3)">'+c.name+'</span>').join('، '):'—'}</span></div>
-    </div>
-    ${isAdmin?`<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember('${m.id}')">حذف الفرد</button></div>`:''}`;
+  // Helper: only show row if value exists
+  function dRow(lbl,val,dir){
+    if(!val)return '';
+    return '<div class="d-row"><span class="d-lbl">'+lbl+'</span><span class="d-val"'+(dir?' dir="'+dir+'"':'')+'>'+val+'</span></div>';
+  }
+  // All children (tree kids + external kids for female)
+  var allKids=kids.slice();
+  if(m.externalKids&&m.externalKids.length){
+    allKids=allKids.concat(m.externalKids.map(function(k){return {id:null,name:k,external:true};}));
+  }
+  var kidsHtml=allKids.length?allKids.map(function(c){
+    if(c.external) return '<span style="color:var(--ink3)">'+c.name+'</span>';
+    return '<span onclick="closeOv(\'ov-detail\');setTimeout(function(){showDetail(\''+c.id+'\')},220)" style="cursor:pointer;color:var(--gold);border-bottom:1px dashed var(--gold3)">'+c.name+'</span>';
+  }).join('، '):'—';
+  var parHtml=par
+    ?'<span onclick="closeOv(\'ov-detail\');setTimeout(function(){showDetail(\''+par.id+'\')},220)" style="cursor:pointer;color:var(--gold);border-bottom:1px dashed var(--gold3)">'+par.name+'</span>'
+    :'جذر العائلة';
+  document.getElementById('d-body').innerHTML=
+    (m.bio?'<div class="d-bio">'+m.bio+'</div>':'')+
+    '<div class="d-section"><div class="d-sec-title">المعلومات</div>'+
+      dRow('الاسم الكامل',m.fullName||m._fullName)+
+      dRow('الجنس',m.gender)+
+      dRow('الحالة',m.status&&m.status!=='حي'?m.status:'')+
+      dRow('الكنية',m.role)+
+      dRow(m.gender==='أنثى'?'الزوج':'الزوجة',m.spouse)+
+      dRow('تاريخ الميلاد',m.birth)+
+      dRow('المدينة',m.city)+
+    '</div>'+
+    ((m.phone||m.email)?'<div class="d-section"><div class="d-sec-title">التواصل</div>'+
+      dRow('الجوال',m.phone,'ltr')+
+      dRow('البريد',m.email,'ltr')+
+    '</div>':'')+
+    ((m.company||m.job)?'<div class="d-section"><div class="d-sec-title">العمل</div>'+
+      dRow('جهة العمل',m.company)+
+      dRow('الوظيفة',m.job)+
+    '</div>':'')+
+    '<div class="d-section"><div class="d-sec-title">الشجرة</div>'+
+      '<div class="d-row"><span class="d-lbl">الأب</span><span class="d-val">'+parHtml+'</span></div>'+
+      '<div class="d-row"><span class="d-lbl">الأبناء</span><span class="d-val">'+kidsHtml+'</span></div>'+
+    '</div>'+
+    (isAdmin?'<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember(\''+m.id+'\')">حذف الفرد</button></div>':'');
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
   document.getElementById('d-addson').style.display=isAdmin?'inline-flex':'none';
   openOv('ov-detail');
@@ -1150,7 +1195,8 @@ window.editCurrent=function(){
   const m=members.find(x=>x.id===currentId);if(!m)return;
   editingId=m.id;pendingPhoto=m.photo||null;
   fillParentSel(m.id);fillChildren(m.id);
-  ['name','role','phone','email','company','job','city','birth','linkedin','spouse'].forEach(f=>document.getElementById('m-'+f).value=m[f]||'');
+  ['name','role','phone','email','company','job','city','birth','linkedin','spouse','bio'].forEach(f=>document.getElementById('m-'+f).value=m[f]||'');
+  document.getElementById('m-ext-kids').value=(m.externalKids||[]).join(', ');
   updateSpouseLbl();
   document.getElementById('m-gender').value=m.gender||'';
   document.getElementById('m-status').value=m.status||'حي';
@@ -1244,6 +1290,8 @@ function parseExcelRows(rows){
       role:String(row[8]||'').trim(),
       gender:String(row[9]||'').trim()||'',
       status:String(row[10]||'').trim()||'حي',
+      spouse:String(row[13]||'').trim(),
+      bio:String(row[14]||'').trim(),
       photo:null,parentId:null,
       id:'imp_'+Math.random().toString(36).slice(2),
     });
@@ -1308,6 +1356,8 @@ window.confirmExcelImport=async function(){
       role:m.role,gender:m.gender,status:m.status||'حي',
       phone:m.phone,email:m.email,company:m.company,job:m.job,
       city:m.city,birth:m.birth,linkedin:m.linkedin,
+      spouse:m.spouse||'',bio:m.bio||'',
+      externalKids:[],
       photo:null,parentId:m.parentId,
     });
   }
@@ -1341,7 +1391,11 @@ window.addChildOf=function(){
   setTimeout(function(){
     haptic();editingId=null;pendingPhoto=null;
     fillParentSel(null);
-    ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse'].forEach(function(id){document.getElementById(id).value='';});
+    ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse','m-bio'].forEach(function(id){document.getElementById(id).value='';})
+    document.getElementById('m-ext-kids').value='';
+    document.getElementById('ext-kids-wrap').style.display='none';
+  document.getElementById('m-ext-kids').value='';
+  document.getElementById('ext-kids-wrap').style.display='none';;
     document.getElementById('m-birth').value='';
     document.getElementById('m-gender').value='';
     document.getElementById('m-status').value='حي';
@@ -1357,7 +1411,9 @@ window.addChildOf=function(){
 
 window.openAddMember=function(){
   haptic();editingId=null;pendingPhoto=null;fillParentSel(null);
-  ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse'].forEach(function(id){document.getElementById(id).value='';});
+  ['m-name','m-role','m-phone','m-email','m-company','m-job','m-city','m-linkedin','m-spouse','m-bio'].forEach(function(id){document.getElementById(id).value='';})
+  document.getElementById('m-ext-kids').value='';
+  document.getElementById('ext-kids-wrap').style.display='none';;
   document.getElementById('m-birth').value='';
   document.getElementById('m-parent').value='';
   document.getElementById('m-gender').value='';
@@ -1419,6 +1475,8 @@ window.saveMember=async function(){
     birth:document.getElementById('m-birth').value,
     linkedin:document.getElementById('m-linkedin').value,
     spouse:document.getElementById('m-spouse').value.trim(),
+    bio:document.getElementById('m-bio').value.trim(),
+    externalKids:(document.getElementById('m-ext-kids').value.trim()?document.getElementById('m-ext-kids').value.split(',').map(function(s){return s.trim();}).filter(Boolean):[]),
     parentId:parentId,photo:pendingPhoto
   };
   if(editingId)data.id=editingId;
@@ -1734,17 +1792,19 @@ window.deleteCurrentPhoto=async function(){
   renderAlbum();toast('تم الحذف');
 };
 
+// Multi-photo pending list
+var pendingMultiPhotos=[];
+
 window.openAddPhoto=function(){
-  pendingPhotoData=null;selectedPhotoTags=[];
+  pendingMultiPhotos=[];pendingPhotoData=null;selectedPhotoTags=[];
   document.getElementById('ph-file-in').value='';
-  document.getElementById('ph-preview-wrap').style.display='none';
+  document.getElementById('ph-multi-preview').innerHTML='';
   document.getElementById('ph-upload-zone').style.display='block';
   document.getElementById('ph-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('ph-caption').value='';
   document.getElementById('ph-tag-search').value='';
   document.getElementById('ph-tag-results').innerHTML='';
   renderSelectedTags();
-  // Fill event/news selects
   var es=document.getElementById('ph-event-link');
   es.innerHTML='<option value="">— لا يوجد —</option>';
   events.forEach(function(ev){es.innerHTML+='<option value="'+ev.id+'">'+ev.title+'</option>';});
@@ -1755,27 +1815,35 @@ window.openAddPhoto=function(){
 };
 
 window.onPhotoFileSelect=function(e){
-  var f=e.target.files[0];if(!f)return;
-  var reader=new FileReader();
-  reader.onload=function(ev){
-    var img=new Image();
-    img.onload=function(){
-      var MAX=1200,c=document.createElement('canvas');
-      var w=img.width,h=img.height;
-      var scale=Math.min(1,MAX/Math.max(w,h));
-      w=Math.round(w*scale);h=Math.round(h*scale);
-      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
-      pendingPhotoData=c.toDataURL('image/jpeg',.82);
-      var pw=document.getElementById('ph-preview-wrap');
-      var pi=document.getElementById('ph-preview-img');
-      var uz=document.getElementById('ph-upload-zone');
-      if(pi) pi.src=pendingPhotoData;
-      if(pw) pw.style.display='block';
-      if(uz) uz.style.display='none';
+  var files=Array.from(e.target.files);if(!files.length)return;
+  var MAX=1200;
+  var prev=document.getElementById('ph-multi-preview');
+  prev.innerHTML='';
+  pendingMultiPhotos=[];
+  files.forEach(function(f,fi){
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');
+        var w=img.width,h=img.height;
+        var sc=Math.min(1,MAX/Math.max(w,h));
+        w=Math.round(w*sc);h=Math.round(h*sc);
+        c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+        var src=c.toDataURL('image/jpeg',.82);
+        pendingMultiPhotos.push(src);
+        // thumbnail
+        var th=document.createElement('div');
+        th.className='up-th';
+        th.innerHTML='<img src="'+src+'">';
+        prev.appendChild(th);
+        if(fi===0) pendingPhotoData=src;
+      };
+      img.src=ev.target.result;
     };
-    img.src=ev.target.result;
-  };
-  reader.readAsDataURL(f);
+    reader.readAsDataURL(f);
+  });
+  document.getElementById('ph-upload-zone').style.display='none';
 };
 
 window.searchPhotoTags=function(){
@@ -1817,43 +1885,98 @@ function renderSelectedTags(){
 }
 
 window.savePhoto=async function(){
-  if(!pendingPhotoData){toast('الرجاء اختيار صورة أولاً',true);return;}
-  var data={
-    id:'ph_'+Date.now()+'_'+Math.random().toString(36).slice(2),
-    src:pendingPhotoData,
-    date:document.getElementById('ph-date').value,
-    caption:document.getElementById('ph-caption').value.trim(),
-    eventId:document.getElementById('ph-event-link').value||null,
-    newsId:document.getElementById('ph-news-link').value||null,
-    tags:selectedPhotoTags.slice(),
-    createdAt:new Date().toISOString()
-  };
-  // Add to local array immediately (works in both demo and Firebase mode)
-  photos.push(data);
-  // Also persist to Firebase if configured
-  if(configured){
-    try{ await db.collection('photos').doc(data.id).set(data); }catch(e){ console.warn('Firebase save failed',e); }
+  var srcs=pendingMultiPhotos.length?pendingMultiPhotos:(pendingPhotoData?[pendingPhotoData]:[]);
+  if(!srcs.length){toast('الرجاء اختيار صورة أولاً',true);return;}
+  var date=document.getElementById('ph-date').value;
+  var caption=document.getElementById('ph-caption').value.trim();
+  var eventId=document.getElementById('ph-event-link').value||null;
+  var newsId=document.getElementById('ph-news-link').value||null;
+  var tags=selectedPhotoTags.slice();
+  for(var i=0;i<srcs.length;i++){
+    var data={
+      id:'ph_'+Date.now()+'_'+i+'_'+Math.random().toString(36).slice(2),
+      src:srcs[i],date:date,caption:caption,
+      eventId:eventId,newsId:newsId,tags:tags,
+      createdAt:new Date().toISOString()
+    };
+    photos.push(data);
+    if(configured){try{await db.collection('photos').doc(data.id).set(data);}catch(e){}}
   }
-  pendingPhotoData=null;
+  pendingPhotoData=null;pendingMultiPhotos=[];
   selectedPhotoTags=[];
   closeOv('ov-add-photo');
   renderAlbum();
-  toast('تمت إضافة الصورة ✓');
+  toast('تمت إضافة '+srcs.length+' صورة ✓');
   haptic();
 };
 
+
+window.onPhoto=function(e){
+  var f=e.target.files[0];if(!f)return;
+  var img=new Image(),r=new FileReader();
+  r.onload=function(ev){img.src=ev.target.result;};
+  img.onload=function(){
+    var MAX=400,c2=document.createElement('canvas');
+    var w=img.width,h=img.height;
+    if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+    c2.width=w;c2.height=h;c2.getContext('2d').drawImage(img,0,0,w,h);
+    pendingPhoto=c2.toDataURL('image/jpeg',.78);
+    document.getElementById('photo-ring').innerHTML='<img src="'+pendingPhoto+'"><div class="photo-ov">📷</div>';
+  };r.readAsDataURL(f);
+};
 function updateSpouseLbl(){
   var g=document.getElementById('m-gender');
   var lbl=document.getElementById('m-spouse-lbl');
+  var ekw=document.getElementById('ext-kids-wrap');
   if(!g||!lbl)return;
-  lbl.textContent=g.value==='أنثى'?'الزوج':'الزوجة';
+  var isFem=g.value==='أنثى';
+  lbl.textContent=isFem?'الزوج':'الزوجة';
+  if(ekw) ekw.style.display=isFem?'block':'none';
 }
+
+// ══ PHONE LOGIN ══
+var loggedInMemberId=null;
+
+function checkPhoneLogin(){
+  var stored=localStorage.getItem('familyPhoneLogin');
+  if(stored){
+    loggedInMemberId=stored;
+    showWelcomeMsg(stored);
+  } else {
+    openOv('ov-phone-login');
+  }
+}
+
+function showWelcomeMsg(memberId){
+  var m=members.find(function(x){return x.id===memberId;});
+  if(!m)return;
+  var name=m.role||[m.name,(members.find(function(p){return p.id===m.parentId;})||{}).name,(members.find(function(p){return p.id===(members.find(function(q){return q.id===m.parentId;})||{}).parentId;})||{}).name].filter(Boolean).join(' ');
+  toast('مرحباً بك  '+name);
+  setTimeout(function(){document.getElementById('toast').className='';},3000);
+}
+
+window.doPhoneLogin=function(){
+  var phone=document.getElementById('login-phone').value.trim();
+  if(!phone){document.getElementById('login-phone').style.borderColor='var(--err)';return;}
+  var m=members.find(function(x){return (x.phone||'').replace(/\s/g,'')===phone.replace(/\s/g,'');});
+  if(!m){toast('رقم الجوال غير موجود',true);return;}
+  loggedInMemberId=m.id;
+  localStorage.setItem('familyPhoneLogin',m.id);
+  closeOv('ov-phone-login');
+  showWelcomeMsg(m.id);
+};
+
+window.doGuestLogin=function(){
+  closeOv('ov-phone-login');
+};
+
 // Wait for DOM to be fully ready
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
   init();
 }
+
 
 
 
@@ -1887,15 +2010,13 @@ if(document.readyState==='loading'){
 <div class="overlay" id="ov-add-photo">
   <div class="modal" style="max-width:480px">
     <div class="modal-handle"></div>
-    <div class="modal-title">إضافة صورة</div>
+    <div class="modal-title">إضافة صور</div>
     <div class="field">
       <div class="upload-zone" onclick="document.getElementById('ph-file-in').click()" id="ph-upload-zone">
-        <div class="up-icon">📷</div>اضغط لاختيار صورة
-        <input type="file" id="ph-file-in" accept="image/*" style="display:none" onchange="onPhotoFileSelect(event)">
+        <div class="up-icon">📷</div>اضغط لاختيار صورة أو أكثر
+        <input type="file" id="ph-file-in" accept="image/*" multiple style="display:none" onchange="onPhotoFileSelect(event)">
       </div>
-      <div id="ph-preview-wrap" style="display:none;margin-top:.6rem;text-align:center">
-        <img id="ph-preview-img" style="max-height:160px;max-width:100%;border-radius:var(--r2);object-fit:contain">
-      </div>
+      <div id="ph-multi-preview" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem"></div>
     </div>
     <div class="form-grid">
       <div class="field"><label>تاريخ الصورة</label><input type="date" id="ph-date"></div>
