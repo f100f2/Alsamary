@@ -211,6 +211,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
   border-radius:var(--r2);padding:.85rem 1rem;margin-bottom:1rem;
   font-size:.84rem;line-height:1.8;color:var(--ink2);white-space:pre-wrap;
 }
+.req-card{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem;margin-bottom:.7rem;box-shadow:var(--sh0)}
+.req-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem}
+.req-name{font-size:.95rem;font-weight:700;color:var(--ink)}
+.req-phone{font-size:.8rem;color:var(--ink3);margin-top:.1rem}
+.req-status{font-size:.75rem;font-weight:700;white-space:nowrap}
+.req-info{font-size:.78rem;color:var(--ink3);margin-bottom:.4rem}
+.req-bio{font-size:.8rem;color:var(--ink2);background:var(--sand);border-radius:8px;padding:.5rem .7rem;margin-bottom:.5rem;line-height:1.6}
+.req-actions{display:flex;gap:.4rem;flex-wrap:wrap}
 /* ── ABOUT ── */
 .about-content{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);min-height:120px;font-size:.9rem;line-height:1.9;color:var(--ink);white-space:pre-wrap}
 .about-logo-wrap{display:flex;justify-content:center;margin-bottom:1.4rem}
@@ -237,7 +245,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       <span id="top-logo-text">شجرة العائلة</span>
     </div>
     <div class="top-bar-actions">
-      <button id="settings-btn" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;padding:.3rem" onclick="openOv('ov-settings')" title="الإعدادات">⚙️</button>
+      <button id="admin-req-btn" style="display:none;background:none;border:none;cursor:pointer;padding:.3rem;font-size:.75rem;color:var(--gold);font-family:'Tajawal',sans-serif;font-weight:700;border:1.5px solid var(--gold3);border-radius:20px;padding:.2rem .6rem" onclick="openAdminRequests()" title="طلبات التسجيل">📋 الطلبات</button><button id="settings-btn" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;padding:.3rem" onclick="openOv('ov-settings')" title="الإعدادات">⚙️</button>
       <button id="adm-btn" class="adm-btn" onclick="toggleAdmin()">🔐 المدير</button>
     </div>
   </div>
@@ -334,7 +342,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V19</span>
+      <span class="version-num">V21</span>
       <span class="version-date">14 مارس 2026 — 17:30</span>
     </div>
   </div>
@@ -535,6 +543,58 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="field"><input id="login-phone" type="tel" placeholder="05xxxxxxxx" dir="ltr" style="text-align:center;font-size:1.05rem;letter-spacing:.08em" onkeydown="if(event.key==='Enter')doPhoneLogin()"></div>
     <div class="modal-footer" style="flex-direction:column;gap:.5rem">
       <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doPhoneLogin()">دخول</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.85rem;color:var(--gold);border-color:var(--gold3)" onclick="closeOv('ov-phone-login');openRegisterRequest()">📝 طلب تسجيل</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER REQUEST -->
+<div class="overlay" id="ov-register">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📝 طلب تسجيل في الموقع</div>
+    <p style="font-size:.8rem;color:var(--ink3);margin-bottom:1rem;line-height:1.6">أدخل بياناتك وسيصلك رد من مسؤول الموقع</p>
+    <div class="form-grid">
+      <div class="field"><label>الاسم الكامل *</label><input id="reg-name" placeholder="الاسم الأول + اسم الأب…"></div>
+      <div class="field"><label>رقم الجوال *</label><input id="reg-phone" type="tel" placeholder="05xxxxxxxx" dir="ltr"></div>
+      <div class="field"><label>الجنس</label>
+        <select id="reg-gender">
+          <option value="">— اختر —</option>
+          <option value="ذكر">ذكر ♂</option>
+          <option value="أنثى">أنثى ♀</option>
+        </select>
+      </div>
+      <div class="field"><label>الحالة</label>
+        <select id="reg-status">
+          <option value="حي">حي ✓</option>
+          <option value="متوفى">متوفى 🕊</option>
+        </select>
+      </div>
+      <div class="field"><label>الكنية</label><input id="reg-role" placeholder="أبو محمد…"></div>
+      <div class="field"><label>اسم الزوج/الزوجة</label><input id="reg-spouse" placeholder="الاسم الكامل"></div>
+      <div class="field"><label>البريد الإلكتروني</label><input id="reg-email" type="email" placeholder="email@..." dir="ltr"></div>
+      <div class="field"><label>المدينة</label><input id="reg-city" placeholder="مدينة الإقامة"></div>
+      <div class="field"><label>جهة العمل</label><input id="reg-company" placeholder="الشركة"></div>
+      <div class="field"><label>الوظيفة</label><input id="reg-job" placeholder="المسمى الوظيفي"></div>
+      <div class="field"><label>تاريخ الميلاد</label><input id="reg-birth" type="date"></div>
+      <div class="field"><label>LinkedIn</label><input id="reg-linkedin" placeholder="https://linkedin.com/in/..." dir="ltr"></div>
+    </div>
+    <div class="field" style="grid-column:1/-1"><label>نبذة شخصية</label><textarea id="reg-bio" rows="3" placeholder="أي معلومات إضافية…" style="resize:vertical"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-register')">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitRegisterRequest()">إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN REQUESTS -->
+<div class="overlay" id="ov-admin-requests">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📋 طلبات التسجيل</div>
+    <div id="admin-requests-list"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-admin-requests')">إغلاق</button>
     </div>
   </div>
 </div>
@@ -568,6 +628,8 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 
 
 
+
+
 // ═══════════════════════════════════
 //  🔧 ضع إعدادات Firebase هنا
 // ═══════════════════════════════════
@@ -583,7 +645,7 @@ const ADMIN_PASSWORD="admin123"; // ← غيّر كلمة المرور
 
 let db,isAdmin=false,editingId=null,currentId=null;
 let pendingPhoto=null,pendingMedia=[],pendingExtraMedia=[],targetEvId=null;
-let members=[],events=[],news=[];
+let members=[],events=[],news=[],registrationRequests=[];
 window._evMedia={};
 const configured=firebaseConfig.apiKey!=="PASTE_YOUR_API_KEY";
 
@@ -622,6 +684,7 @@ async function init(){
     fsdb.collection('events').onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='events')renderEvents();});
     fsdb.collection('news').onSnapshot(s=>{news=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='news')renderNews();});
     fsdb.collection('photos').onSnapshot(s=>{photos=s.docs.map(d=>({id:d.id,...d.data()}));if(active==='album')renderAlbum();});
+    fsdb.collection('registrationRequests').onSnapshot(s=>{registrationRequests=s.docs.map(d=>({id:d.id,...d.data()}));if(isAdmin)renderAdminRequests();});
 
     loadSettings();
     hideLoader();
@@ -668,6 +731,7 @@ async function dbSet(col,data){
     if(col==='members'){members=members.filter(m=>m.id!==data.id);members.push(data);}
     else if(col==='events'){events=events.filter(e=>e.id!==data.id);events.push(data);}
     else if(col==='photos'){if(!data.id)data.id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2);photos=photos.filter(p=>p.id!==data.id);photos.push(Object.assign({},data));}
+    else if(col==='registrationRequests'){registrationRequests=registrationRequests.filter(r=>r.id!==data.id);registrationRequests.push(data);}
     else{news=news.filter(n=>n.id!==data.id);news.unshift(data);}
     return;
   }
@@ -680,6 +744,7 @@ async function dbDel(col,id){
     if(col==='members')members=members.filter(m=>m.id!==id);
     else if(col==='events')events=events.filter(e=>e.id!==id);
     else if(col==='photos')photos=photos.filter(p=>p.id!==id);
+    else if(col==='registrationRequests')registrationRequests=registrationRequests.filter(r=>r.id!==id);
     else news=news.filter(n=>n.id!==id);
     return;
   }
@@ -741,6 +806,8 @@ function updateUI(){
   if(!isAdmin){var b=document.getElementById('adm-btn');b.textContent='🔐 المدير';b.classList.remove('on');}
   renderStats();renderTree();renderMembers();
   if(active==='events')renderEvents();if(active==='news')renderNews();
+  var rb=document.getElementById('admin-req-btn');
+  if(rb) rb.style.display=isAdmin?'block':'none';
 }
 
 // ══ STATS ══
@@ -1188,7 +1255,7 @@ window.showDetail=function(id){
     '</div>'+
     (isAdmin?'<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember(\''+m.id+'\')">حذف الفرد</button></div>':'');
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
-  document.getElementById('d-addson').style.display=isAdmin?'inline-flex':'none';
+  document.getElementById('d-addson').style.display=(isAdmin&&m.gender!=='أنثى')?'inline-flex':'none';
   openOv('ov-detail');
 };
 window.editCurrent=function(){
@@ -1544,7 +1611,7 @@ function renderEvents(){
     }else{
       gh='<div class="gal-wrap"><div class="no-media"><span>🖼️</span>لا توجد صور</div></div>';
     }
-    return '<div class="ev-card">'+gh+'<div class="ev-body"><div class="ev-top"><div class="ev-title">'+ev.title+'</div><div class="ev-date">'+ev.date+'</div></div><div class="ev-desc">'+ev.desc+'</div><div class="ev-meta">📍 '+ev.place+'</div>'+(isAdmin?'<div class="ev-actions"><button class="btn btn-ghost btn-sm" onclick="openExMedia(\''+ev.id+'\')">+ وسائط</button><button class="btn btn-danger btn-sm" onclick="delEv(\''+ev.id+'\')">حذف</button></div>':'')+'</div></div>';
+    return '<div class="ev-card">'+gh+'<div class="ev-body"><div class="ev-top"><div class="ev-title">'+ev.title+'</div><div class="ev-date">'+ev.date+'</div></div><div class="ev-desc">'+ev.desc+'</div><div class="ev-meta">📍 '+ev.place+'</div>'+(isAdmin?'<div class="ev-actions"><button class="btn btn-ghost btn-sm" onclick="openEditEvent(\''+ev.id+'\')">✏️ تعديل</button><button class="btn btn-ghost btn-sm" onclick="openExMedia(\''+ev.id+'\')">+ وسائط</button><button class="btn btn-danger btn-sm" onclick="delEv(\''+ev.id+'\')">حذف</button></div>':'')+'</div></div>';
   }).join('');
   window._evMedia={};events.forEach(function(e){window._evMedia[e.id]=e.media||[];});
 }
@@ -1569,7 +1636,185 @@ window.saveExtraMedia=async function(){
   if(ev){var u=Object.assign({},ev,{media:(ev.media||[]).concat(pendingExtraMedia)});await dbSet('events',u);if(!configured)renderEvents();}
   pendingExtraMedia=[];targetEvId=null;closeOv('ov-evmedia');renderEvents();toast('تمت الإضافة ✓');
 };
-window.openAddEvent=function(){haptic();pendingMedia=[];document.getElementById('ev-prev').innerHTML='';document.getElementById('ev-files').value='';openOv('ov-event');};
+
+
+// ══ REGISTRATION REQUESTS ══
+window.openRegisterRequest=function(){
+  // Clear form
+  ['reg-name','reg-phone','reg-email','reg-company','reg-job','reg-city','reg-birth','reg-linkedin','reg-spouse','reg-bio'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('reg-gender').value='';
+  document.getElementById('reg-status').value='حي';
+  openOv('ov-register');haptic();
+};
+
+window.submitRegisterRequest=async function(){
+  var name=document.getElementById('reg-name').value.trim();
+  var phone=document.getElementById('reg-phone').value.trim();
+  if(!name||!phone){toast('الاسم ورقم الجوال مطلوبان',true);return;}
+  var data={
+    id:'req_'+Date.now()+'_'+Math.random().toString(36).slice(2),
+    status:'pending',
+    submittedAt:new Date().toISOString(),
+    name:name,
+    phone:phone,
+    email:document.getElementById('reg-email').value.trim(),
+    gender:document.getElementById('reg-gender').value,
+    status2:document.getElementById('reg-status').value||'حي',
+    role:document.getElementById('reg-role').value.trim(),
+    spouse:document.getElementById('reg-spouse').value.trim(),
+    company:document.getElementById('reg-company').value.trim(),
+    job:document.getElementById('reg-job').value.trim(),
+    city:document.getElementById('reg-city').value.trim(),
+    birth:document.getElementById('reg-birth').value,
+    linkedin:document.getElementById('reg-linkedin').value.trim(),
+    bio:document.getElementById('reg-bio').value.trim(),
+  };
+  await dbSet('registrationRequests',data);
+  closeOv('ov-register');
+  toast('تم إرسال طلبك بنجاح ✓ سيتم التواصل معك قريباً');
+  haptic();
+};
+
+// Admin: render requests in admin panel
+function renderAdminRequests(){
+  var el=document.getElementById('admin-requests-list');if(!el)return;
+  var pending=registrationRequests.filter(function(r){return r.status==='pending';});
+  var all=registrationRequests.slice().sort(function(a,b){return b.submittedAt.localeCompare(a.submittedAt);});
+  if(!all.length){el.innerHTML='<div class="empty"><div class="empty-ico">📋</div><p>لا توجد طلبات</p></div>';return;}
+  el.innerHTML=all.map(function(r){
+    var statusLabel={'pending':'⏳ بانتظار المراجعة','approved':'✅ تمت الموافقة','cancelled':'❌ ملغي'}[r.status]||r.status;
+    var statusColor={'pending':'var(--gold)','approved':'var(--ok)','cancelled':'var(--err)'}[r.status]||'var(--ink3)';
+    return '<div class="req-card">'+
+      '<div class="req-header">'+
+        '<div>'+
+          '<div class="req-name">'+r.name+'</div>'+
+          '<div class="req-phone" dir="ltr">'+r.phone+'</div>'+
+        '</div>'+
+        '<span class="req-status" style="color:'+statusColor+'">'+statusLabel+'</span>'+
+      '</div>'+
+      '<div class="req-info">'+
+        (r.city?'📍 '+r.city+' ':'')+
+        (r.job?'• '+r.job+' ':'')+
+        (r.company?'• '+r.company:'')+
+      '</div>'+
+      (r.bio?'<div class="req-bio">'+r.bio+'</div>':'')+
+      (r.status==='pending'?
+        '<div class="req-actions">'+
+          '<button class="btn btn-sm" style="background:var(--ok);color:#fff;border-color:var(--ok)" onclick="approveRequest(\''+r.id+'\')">✅ تم</button>'+
+          '<button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="notifyWhatsapp(\''+r.id+'\')">📱 واتساب</button>'+
+          '<button class="btn btn-sm btn-danger" onclick="cancelRequest(\''+r.id+'\')">❌ إلغاء</button>'+
+        '</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+window.approveRequest=async function(id){
+  var r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
+  r.status='approved';
+  await dbSet('registrationRequests',r);
+  if(!configured)renderAdminRequests();
+  toast('تمت الموافقة على الطلب ✓');haptic();
+};
+
+window.cancelRequest=async function(id){
+  if(!confirm('إلغاء هذا الطلب؟'))return;
+  var r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
+  r.status='cancelled';
+  await dbSet('registrationRequests',r);
+  if(!configured)renderAdminRequests();
+  toast('تم إلغاء الطلب');
+};
+
+window.notifyWhatsapp=function(id){
+  var r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
+  var phone=r.phone.replace(/^0/,'966').replace(/\s/g,'');
+  var msg=encodeURIComponent('السلام عليكم تم تسجيلك في موقع شجرة السماري. بامكانك الان الدخول برقم جوالك. اذا لديك اي ملاحظات بامكانك مراسلتنا هنا');
+  window.open('https://wa.me/'+phone+'?text='+msg,'_blank');
+};
+
+window.openAdminRequests=function(){
+  renderAdminRequests();
+  openOv('ov-admin-requests');haptic();
+};
+// ══ EDIT EVENT ══
+var editingEvId=null;
+window.openEditEvent=function(id){
+  var ev=events.find(function(e){return e.id===id;});if(!ev)return;
+  editingEvId=id;
+  document.getElementById('ev-title').value=ev.title||'';
+  document.getElementById('ev-date').value=ev.date||'';
+  document.getElementById('ev-place').value=ev.place||'';
+  document.getElementById('ev-desc').value=ev.desc||'';
+  pendingMedia=[];
+  document.getElementById('ev-prev').innerHTML='';
+  document.getElementById('ev-files').value='';
+  document.querySelector('#ov-event .modal-title').textContent='تعديل الفعالية';
+  document.querySelector('#ov-event .btn-primary').textContent='حفظ التعديل';
+  document.querySelector('#ov-event .btn-primary').onclick=saveEditEvent;
+  openOv('ov-event');haptic();
+};
+
+window.saveEditEvent=async function(){
+  var title=document.getElementById('ev-title').value.trim();if(!title)return;
+  var ev=events.find(function(e){return e.id===editingEvId;});if(!ev)return;
+  ev.title=title;
+  ev.date=document.getElementById('ev-date').value;
+  ev.place=document.getElementById('ev-place').value;
+  ev.desc=document.getElementById('ev-desc').value;
+  if(pendingMedia.length) ev.media=(ev.media||[]).concat(pendingMedia);
+  await dbSet('events',ev);
+  editingEvId=null;pendingMedia=[];
+  // reset modal
+  document.querySelector('#ov-event .modal-title').textContent='إضافة فعالية';
+  document.querySelector('#ov-event .btn-primary').textContent='حفظ';
+  document.querySelector('#ov-event .btn-primary').onclick=saveEvent;
+  closeOv('ov-event');
+  if(!configured)renderEvents();
+  toast('تم تحديث الفعالية ✓');haptic();
+};
+
+// ══ EDIT NEWS ══
+var editingNwId=null;
+window.openEditNews=function(id){
+  var nw=news.find(function(n){return n.id===id;});if(!nw)return;
+  editingNwId=id;
+  document.getElementById('nw-title').value=nw.title||'';
+  document.getElementById('nw-cat').value=nw.cat||'إعلان';
+  document.getElementById('nw-body').value=nw.body||'';
+  document.querySelector('#ov-news .modal-title').textContent='تعديل الخبر';
+  document.querySelector('#ov-news .btn-primary').textContent='حفظ التعديل';
+  document.querySelector('#ov-news .btn-primary').onclick=saveEditNews;
+  openOv('ov-news');haptic();
+};
+
+window.saveEditNews=async function(){
+  var title=document.getElementById('nw-title').value.trim();if(!title)return;
+  var nw=news.find(function(n){return n.id===editingNwId;});if(!nw)return;
+  nw.title=title;
+  nw.cat=document.getElementById('nw-cat').value;
+  nw.body=document.getElementById('nw-body').value;
+  await dbSet('news',nw);
+  editingNwId=null;
+  // reset modal
+  document.querySelector('#ov-news .modal-title').textContent='إضافة خبر';
+  document.querySelector('#ov-news .btn-primary').textContent='نشر';
+  document.querySelector('#ov-news .btn-primary').onclick=saveNews;
+  closeOv('ov-news');
+  if(!configured)renderNews();
+  toast('تم تحديث الخبر ✓');haptic();
+};
+window.openAddEvent=function(){
+  haptic();editingEvId=null;pendingMedia=[];
+  document.getElementById('ev-prev').innerHTML='';
+  document.getElementById('ev-files').value='';
+  ['ev-title','ev-date','ev-place','ev-desc'].forEach(function(id){document.getElementById(id).value='';});
+  document.querySelector('#ov-event .modal-title').textContent='إضافة فعالية';
+  document.querySelector('#ov-event .btn-primary').textContent='حفظ';
+  document.querySelector('#ov-event .btn-primary').onclick=saveEvent;
+  openOv('ov-event');
+};
 window.saveEvent=async function(){
   var title=document.getElementById('ev-title').value.trim();if(!title)return;
   var data={title:title,date:document.getElementById('ev-date').value,place:document.getElementById('ev-place').value,desc:document.getElementById('ev-desc').value,media:pendingMedia.slice()};
@@ -1584,10 +1829,17 @@ function renderNews(){
   var l=document.getElementById('news-list');
   if(!news.length){l.innerHTML='<div class="empty"><div class="empty-ico">📰</div><p>لا توجد أخبار</p></div>';return;}
   l.innerHTML=news.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(n){
-    return '<div class="nw-card"><div class="nw-tag">'+n.cat+'</div><div><div class="nw-title">'+n.title+'</div><div class="nw-body">'+n.body+'</div><div class="nw-date">📅 '+n.date+(isAdmin?' <button class="btn btn-danger btn-sm" style="margin-right:.5rem;margin-top:.3rem" onclick="delNw(\''+n.id+'\')">حذف</button>':'')+'</div></div></div>';
+    return '<div class="nw-card"><div class="nw-tag">'+n.cat+'</div><div><div class="nw-title">'+n.title+'</div><div class="nw-body">'+n.body+'</div><div class="nw-date">📅 '+n.date+(isAdmin?' <button class="btn btn-ghost btn-sm" style="margin-right:.4rem;margin-top:.3rem" onclick="openEditNews(\''+n.id+'\')">✏️ تعديل</button><button class="btn btn-danger btn-sm" style="margin-right:.5rem;margin-top:.3rem" onclick="delNw(\''+n.id+'\')">حذف</button>':'')+'</div></div></div>';
   }).join('');
 }
-window.openAddNews=function(){haptic();openOv('ov-news');};
+window.openAddNews=function(){
+  haptic();editingNwId=null;
+  ['nw-title','nw-body'].forEach(function(id){document.getElementById(id).value='';});
+  document.querySelector('#ov-news .modal-title').textContent='إضافة خبر';
+  document.querySelector('#ov-news .btn-primary').textContent='نشر';
+  document.querySelector('#ov-news .btn-primary').onclick=saveNews;
+  openOv('ov-news');
+};
 window.saveNews=async function(){
   var title=document.getElementById('nw-title').value.trim();if(!title)return;
   var data={title:title,cat:document.getElementById('nw-cat').value,body:document.getElementById('nw-body').value,date:new Date().toISOString().split('T')[0]};
@@ -1770,21 +2022,74 @@ window.openPhotoDetail=function(id){
   document.getElementById('ph-detail-img').src=ph.src;
   var ev=ph.eventId?events.find(function(e){return e.id===ph.eventId;}):null;
   var nw=ph.newsId?news.find(function(n){return n.id===ph.newsId;}):null;
-  var tagNames=(ph.tags||[]).map(function(tid){
-    var m=members.find(function(x){return x.id===tid;});return m?m.name:'';
+  // Tags with member IDs for click
+  var tagItems=(ph.tags||[]).map(function(tid){
+    var m=members.find(function(x){return x.id===tid;});
+    return m?{id:m.id,name:m.name}:null;
   }).filter(Boolean);
   var info='';
   if(ph.caption) info+='<div style="font-size:.9rem;color:var(--ink);margin-bottom:.5rem">'+ph.caption+'</div>';
   if(ph.date)    info+='<div style="font-size:.78rem;color:var(--ink3);margin-bottom:.3rem">📅 '+ph.date+'</div>';
   if(ev)         info+='<div style="font-size:.78rem;color:var(--gold);margin-bottom:.3rem">📅 الفعالية: '+ev.title+'</div>';
   if(nw)         info+='<div style="font-size:.78rem;color:var(--gold);margin-bottom:.3rem">📰 الخبر: '+nw.title+'</div>';
-  if(tagNames.length) info+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem">'+tagNames.map(function(n){return '<span style="background:rgba(184,147,90,.1);border:1px solid var(--gold3);color:var(--gold);font-size:.75rem;padding:.2rem .5rem;border-radius:12px">👤 '+n+'</span>';}).join('')+'</div>';
+  if(tagItems.length) info+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem">'+
+    tagItems.map(function(t){
+      return '<span onclick="closeOv(\'ov-photo-detail\');setTimeout(function(){showDetail(\''+t.id+'\')},200)" style="background:rgba(184,147,90,.1);border:1px solid var(--gold3);color:var(--gold);font-size:.75rem;padding:.2rem .6rem;border-radius:12px;cursor:pointer">👤 '+t.name+'</span>';
+    }).join('')+'</div>';
   document.getElementById('ph-detail-info').innerHTML=info||'<p style="color:var(--ink3);font-size:.82rem">لا توجد تفاصيل</p>';
   var delBtn=document.getElementById('ph-del-btn');
   if(delBtn) delBtn.style.display=isAdmin?'inline-flex':'none';
+  var editBtn=document.getElementById('ph-edit-btn');
+  if(editBtn) editBtn.style.display=isAdmin?'inline-flex':'none';
   openOv('ov-photo-detail');
 };
 
+
+window.openEditPhoto=function(){
+  var ph=photos.find(function(x){return x.id===currentPhotoId;});if(!ph)return;
+  // Reuse add-photo overlay in edit mode
+  selectedPhotoTags=(ph.tags||[]).slice();
+  document.getElementById('ph-file-in').value='';
+  document.getElementById('ph-multi-preview').innerHTML='';
+  document.getElementById('ph-upload-zone').style.display='none';
+  document.getElementById('ph-date').value=ph.date||'';
+  document.getElementById('ph-caption').value=ph.caption||'';
+  document.getElementById('ph-tag-search').value='';
+  document.getElementById('ph-tag-results').innerHTML='';
+  renderSelectedTags();
+  // Fill selects
+  var es=document.getElementById('ph-event-link');
+  es.innerHTML='<option value="">— لا يوجد —</option>';
+  events.forEach(function(ev){es.innerHTML+='<option value="'+ev.id+'"'+(ph.eventId===ev.id?' selected':'')+'>'+ev.title+'</option>';});
+  var ns=document.getElementById('ph-news-link');
+  ns.innerHTML='<option value="">— لا يوجد —</option>';
+  news.forEach(function(nw){ns.innerHTML+='<option value="'+nw.id+'"'+(ph.newsId===nw.id?' selected':'')+'>'+nw.title+'</option>';});
+  // Change modal title + button to edit mode
+  document.querySelector('#ov-add-photo .modal-title').textContent='تعديل بيانات الصورة';
+  document.querySelector('#ov-add-photo .btn-primary').textContent='حفظ التعديلات';
+  document.querySelector('#ov-add-photo .btn-primary').onclick=saveEditPhoto;
+  closeOv('ov-photo-detail');
+  openOv('ov-add-photo');
+};
+
+window.saveEditPhoto=async function(){
+  var ph=photos.find(function(x){return x.id===currentPhotoId;});if(!ph)return;
+  ph.date    = document.getElementById('ph-date').value;
+  ph.caption = document.getElementById('ph-caption').value.trim();
+  ph.eventId = document.getElementById('ph-event-link').value||null;
+  ph.newsId  = document.getElementById('ph-news-link').value||null;
+  ph.tags    = selectedPhotoTags.slice();
+  // Persist
+  if(configured){try{await db.collection('photos').doc(ph.id).set(ph);}catch(e){}}
+  closeOv('ov-add-photo');
+  // Reset button back to add mode
+  document.querySelector('#ov-add-photo .modal-title').textContent='إضافة صور';
+  document.querySelector('#ov-add-photo .btn-primary').textContent='حفظ الصورة';
+  document.querySelector('#ov-add-photo .btn-primary').onclick=savePhoto;
+  renderAlbum();
+  toast('تم تحديث بيانات الصورة ✓');
+  haptic();
+};
 window.deleteCurrentPhoto=async function(){
   if(!confirm('حذف هذه الصورة؟'))return;
   photos=photos.filter(function(p){return p.id!==currentPhotoId;});
@@ -1851,9 +2156,19 @@ window.searchPhotoTags=function(){
   var q=document.getElementById('ph-tag-search').value.trim();
   var res=document.getElementById('ph-tag-results');
   if(!q){res.innerHTML='';return;}
-  var hits=members.filter(function(m){
-    return (m.name&&m.name.includes(q))||(m.fullName&&m.fullName.includes(q));
-  }).slice(0,8);
+  // Priority 1: first name starts with query
+  var p1=members.filter(function(m){return m.name&&m.name.startsWith(q);});
+  var p1ids=new Set(p1.map(function(m){return m.id;}));
+  // Priority 2: first name contains query (not already in p1)
+  var p2=members.filter(function(m){return !p1ids.has(m.id)&&m.name&&m.name.includes(q);});
+  var p2ids=new Set(p2.map(function(m){return m.id;}));
+  // Priority 3: full name contains query
+  var p3=members.filter(function(m){
+    return !p1ids.has(m.id)&&!p2ids.has(m.id)&&(
+      (m.fullName&&m.fullName.includes(q))||(m._fullName&&m._fullName.includes(q))
+    );
+  });
+  var hits=p1.concat(p2).concat(p3).slice(0,10);
   res.innerHTML=hits.map(function(m){
     var already=selectedPhotoTags.indexOf(m.id)>=0;
     var fn=m.fullName||m._fullName||'';
@@ -1993,6 +2308,8 @@ if(document.readyState==='loading'){
 
 
 
+
+
 </script>
 <!-- PHOTO DETAIL -->
 <div class="overlay" id="ov-photo-detail">
@@ -2004,6 +2321,7 @@ if(document.readyState==='loading'){
     <div id="ph-detail-info"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-photo-detail')">إغلاق</button>
+      <button class="btn btn-sm" id="ph-edit-btn" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="openEditPhoto()">✏️ تعديل</button>
       <button class="btn btn-danger btn-sm" id="ph-del-btn" style="display:none" onclick="deleteCurrentPhoto()">حذف الصورة</button>
     </div>
   </div>
