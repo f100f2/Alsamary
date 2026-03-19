@@ -342,7 +342,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V21</span>
+      <span class="version-num">V22</span>
       <span class="version-date">14 مارس 2026 — 17:30</span>
     </div>
   </div>
@@ -630,6 +630,10 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 
 
 
+
+
+
+
 // ═══════════════════════════════════
 //  🔧 ضع إعدادات Firebase هنا
 // ═══════════════════════════════════
@@ -807,7 +811,10 @@ function updateUI(){
   renderStats();renderTree();renderMembers();
   if(active==='events')renderEvents();if(active==='news')renderNews();
   var rb=document.getElementById('admin-req-btn');
-  if(rb) rb.style.display=isAdmin?'block':'none';
+  if(rb){
+    rb.style.display=isAdmin?'flex':'none';
+    if(isAdmin) renderAdminRequests();
+  }
 }
 
 // ══ STATS ══
@@ -1065,18 +1072,35 @@ function drawNode(c,n){
 
   // Avatar
   const avR=16,avX=x+NW/2,avY=y+20;
-  const g=c.createRadialGradient(avX-2,avY-2,1,avX,avY,avR);
-  if(isDead){g.addColorStop(0,'#aaa');g.addColorStop(1,'#888');}
-  else if(isFem){g.addColorStop(0,'#e8a0b0');g.addColorStop(1,'#c9748c');}
-  else{g.addColorStop(0,'#d4aa72');g.addColorStop(1,'#b8935a');}
-  c.beginPath();c.arc(avX,avY,avR,0,Math.PI*2);c.fillStyle=g;c.fill();
-
-  // Initial in avatar
-  c.fillStyle='#fff';
-  const fs=Math.max(8,Math.min(16,avR*0.9));
-  c.font=`bold ${fs}px Tajawal,Arial`;
-  c.textAlign='center';c.textBaseline='middle';
-  c.fillText((m.name||'?').charAt(0),avX,avY);
+  c.save();
+  c.beginPath();c.arc(avX,avY,avR,0,Math.PI*2);c.clip();
+  if(m.photo&&TC._imgCache&&TC._imgCache[m.id]){
+    // Draw cached photo
+    try{c.drawImage(TC._imgCache[m.id],avX-avR,avY-avR,avR*2,avR*2);}catch(e){m.photo=null;}
+  } else {
+    const g=c.createRadialGradient(avX-2,avY-2,1,avX,avY,avR);
+    if(isDead){g.addColorStop(0,'#aaa');g.addColorStop(1,'#888');}
+    else if(isFem){g.addColorStop(0,'#e8a0b0');g.addColorStop(1,'#c9748c');}
+    else{g.addColorStop(0,'#d4aa72');g.addColorStop(1,'#b8935a');}
+    c.fillStyle=g;c.fill();
+    // Initial letter
+    c.fillStyle='#fff';
+    const fs=Math.max(8,Math.min(16,avR*0.9));
+    c.font=`bold ${fs}px Tajawal,Arial`;
+    c.textAlign='center';c.textBaseline='middle';
+    c.fillText((m.name||'?').charAt(0),avX,avY);
+    // Load photo async if available
+    if(m.photo){
+      if(!TC._imgCache) TC._imgCache={};
+      if(!TC._imgCache[m.id]){
+        var img=new Image();
+        img.onload=function(){TC._imgCache[m.id]=img;treeDraw();};
+        img.src=m.photo;
+        TC._imgCache[m.id]=null; // mark as loading
+      }
+    }
+  }
+  c.restore();
 
   // Name
   c.fillStyle=isDead?'#888':'#1a1612';
@@ -1675,41 +1699,61 @@ window.submitRegisterRequest=async function(){
   closeOv('ov-register');
   toast('تم إرسال طلبك بنجاح ✓ سيتم التواصل معك قريباً');
   haptic();
+  // إعادة فتح تبويب الدخول — لا يُدخل الموقع
+  setTimeout(function(){ openOv('ov-phone-login'); }, 1500);
 };
 
 // Admin: render requests in admin panel
+function reqField(lbl,val,dir){
+  if(!val)return '';
+  return '<div class="req-row"><span class="req-lbl">'+lbl+'</span><span class="req-val"'+(dir?' dir="'+dir+'"':'')+'>'+val+'</span></div>';
+}
 function renderAdminRequests(){
   var el=document.getElementById('admin-requests-list');if(!el)return;
-  var pending=registrationRequests.filter(function(r){return r.status==='pending';});
   var all=registrationRequests.slice().sort(function(a,b){return b.submittedAt.localeCompare(a.submittedAt);});
+  var pending=all.filter(function(r){return r.status==='pending';}).length;
+  var btn=document.getElementById('admin-req-btn');
+  if(btn) btn.textContent='📋 الطلبات'+(pending?' ('+pending+')':'');
   if(!all.length){el.innerHTML='<div class="empty"><div class="empty-ico">📋</div><p>لا توجد طلبات</p></div>';return;}
   el.innerHTML=all.map(function(r){
+    var id=r.id;
     var statusLabel={'pending':'⏳ بانتظار المراجعة','approved':'✅ تمت الموافقة','cancelled':'❌ ملغي'}[r.status]||r.status;
     var statusColor={'pending':'var(--gold)','approved':'var(--ok)','cancelled':'var(--err)'}[r.status]||'var(--ink3)';
+    var date=r.submittedAt?r.submittedAt.slice(0,10):'';
+    var pendingBtns=r.status==='pending'?
+      '<button class="btn btn-sm" style="background:var(--ok);color:#fff;border-color:var(--ok)" onclick="approveRequest(\''+id+'\')">✅ تم</button>'+
+      '<button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="notifyWhatsapp(\''+id+'\')">📱 واتساب</button>'+
+      '<button class="btn btn-sm btn-danger" onclick="cancelRequest(\''+id+'\')">❌ إلغاء</button>':'';
+    var delBtn='<button class="btn btn-sm" style="background:var(--err);color:#fff;border-color:var(--err)" onclick="deleteRequest(\''+id+'\')">🗑️ حذف</button>';
     return '<div class="req-card">'+
-      '<div class="req-header">'+
-        '<div>'+
-          '<div class="req-name">'+r.name+'</div>'+
-          '<div class="req-phone" dir="ltr">'+r.phone+'</div>'+
-        '</div>'+
-        '<span class="req-status" style="color:'+statusColor+'">'+statusLabel+'</span>'+
-      '</div>'+
-      '<div class="req-info">'+
-        (r.city?'📍 '+r.city+' ':'')+
-        (r.job?'• '+r.job+' ':'')+
-        (r.company?'• '+r.company:'')+
+      '<div class="req-header"><div><div class="req-name">'+r.name+'</div><div class="req-phone" dir="ltr">'+r.phone+'</div></div>'+
+      '<span class="req-status" style="color:'+statusColor+'">'+statusLabel+'</span></div>'+
+      '<div class="req-details">'+
+        reqField('الجنس',r.gender)+
+        reqField('الحالة',r.status2)+
+        reqField('الكنية',r.role)+
+        reqField('الزوج/ـة',r.spouse)+
+        reqField('البريد',r.email,'ltr')+
+        reqField('المدينة',r.city)+
+        reqField('جهة العمل',r.company)+
+        reqField('الوظيفة',r.job)+
+        reqField('تاريخ الميلاد',r.birth)+
+        reqField('LinkedIn',r.linkedin,'ltr')+
+        reqField('تاريخ الطلب',date)+
       '</div>'+
       (r.bio?'<div class="req-bio">'+r.bio+'</div>':'')+
-      (r.status==='pending'?
-        '<div class="req-actions">'+
-          '<button class="btn btn-sm" style="background:var(--ok);color:#fff;border-color:var(--ok)" onclick="approveRequest(\''+r.id+'\')">✅ تم</button>'+
-          '<button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="notifyWhatsapp(\''+r.id+'\')">📱 واتساب</button>'+
-          '<button class="btn btn-sm btn-danger" onclick="cancelRequest(\''+r.id+'\')">❌ إلغاء</button>'+
-        '</div>':'')+
+      '<div class="req-actions">'+pendingBtns+delBtn+'</div>'+
     '</div>';
   }).join('');
 }
 
+window.deleteRequest=async function(id){
+  if(!confirm('حذف هذا الطلب نهائياً؟'))return;
+  await dbDel('registrationRequests',id);
+  if(!configured) registrationRequests=registrationRequests.filter(function(r){return r.id!==id;});
+  renderAdminRequests();
+  toast('تم حذف الطلب');
+};
 window.approveRequest=async function(id){
   var r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
   r.status='approved';
@@ -2156,19 +2200,29 @@ window.searchPhotoTags=function(){
   var q=document.getElementById('ph-tag-search').value.trim();
   var res=document.getElementById('ph-tag-results');
   if(!q){res.innerHTML='';return;}
-  // Priority 1: first name starts with query
-  var p1=members.filter(function(m){return m.name&&m.name.startsWith(q);});
-  var p1ids=new Set(p1.map(function(m){return m.id;}));
-  // Priority 2: first name contains query (not already in p1)
-  var p2=members.filter(function(m){return !p1ids.has(m.id)&&m.name&&m.name.includes(q);});
-  var p2ids=new Set(p2.map(function(m){return m.id;}));
-  // Priority 3: full name contains query
-  var p3=members.filter(function(m){
-    return !p1ids.has(m.id)&&!p2ids.has(m.id)&&(
-      (m.fullName&&m.fullName.includes(q))||(m._fullName&&m._fullName.includes(q))
-    );
-  });
-  var hits=p1.concat(p2).concat(p3).slice(0,10);
+  var qNorm=q.replace(/\s+/g,' ').trim();
+  // Score each member: lower = better match
+  function score(m){
+    var fn=(m.fullName||m._fullName||m.name||'');
+    // Exact full name starts with query
+    if(fn.startsWith(qNorm)) return 0;
+    // First name starts with first word of query
+    var qFirst=qNorm.split(' ')[0];
+    if(m.name&&m.name.startsWith(qFirst)&&fn.includes(qNorm)) return 1;
+    // First name starts with query word
+    if(m.name&&m.name.startsWith(qFirst)) return 2;
+    // Full name contains full query
+    if(fn.includes(qNorm)) return 3;
+    // First name contains query
+    if(m.name&&m.name.includes(qFirst)) return 4;
+    // Full name contains first word
+    if(fn.includes(qFirst)) return 5;
+    return 99;
+  }
+  var hits=members.filter(function(m){return score(m)<99;})
+    .sort(function(a,b){return score(a)-score(b);})
+    .slice(0,10);
+  if(!hits.length){res.innerHTML='<span style="font-size:.76rem;color:var(--ink3)">لا نتائج</span>';return;}
   res.innerHTML=hits.map(function(m){
     var already=selectedPhotoTags.indexOf(m.id)>=0;
     var fn=m.fullName||m._fullName||'';
@@ -2292,6 +2346,10 @@ if(document.readyState==='loading'){
 }else{
   init();
 }
+
+
+
+
 
 
 
