@@ -2,361 +2,483 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>شجرة العائلة — طباعة A0</title>
+<title>شجرة العائلة — طباعة</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#1a120b;color:#eee;direction:rtl}
-#ctrl{padding:1.2rem 1.5rem;background:#12090a;border-bottom:2px solid #5d3a1a;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-#ctrl h1{font-size:1.2rem;color:#d4a842;margin-left:auto}
-.btn{padding:.5rem 1.2rem;border-radius:10px;border:none;font-family:Arial,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
-.bg{background:#c8762a;color:#fff;box-shadow:0 3px 12px rgba(200,118,42,.4)}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#1a120b;color:#eee;direction:rtl}
+#ctrl{padding:1rem 1.5rem;background:linear-gradient(135deg,#12090a,#1a0e06);border-bottom:2px solid #5d3a1a;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+#ctrl h1{font-size:1.15rem;color:#d4a842;margin-left:auto}
+.btn{padding:.5rem 1.2rem;border-radius:10px;border:none;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
+.bg{background:linear-gradient(135deg,#c8762a,#a85a1a);color:#fff;box-shadow:0 3px 12px rgba(200,118,42,.4)}
+.bg:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(200,118,42,.5)}
 .bo{background:transparent;border:1.5px solid #c8762a;color:#d4a842}
-#ta{background:#1a0e06;border:1.5px dashed #5d3a1a;border-radius:10px;padding:.8rem;width:100%;color:#d4a842;font-size:.8rem;resize:vertical;min-height:70px;font-family:monospace;direction:ltr}
-#st{font-size:.82rem;color:#a08060}
-#wrap{overflow:auto;background:#0d0802;min-height:calc(100vh - 120px);padding:1.5rem;display:flex;justify-content:center;align-items:flex-start}
+#ta{background:#1a0e06;border:1.5px dashed #5d3a1a;border-radius:10px;padding:.7rem;width:100%;color:#d4a842;font-size:.78rem;resize:vertical;min-height:60px;font-family:monospace;direction:ltr}
+#st{font-size:.8rem;color:#a08060}
+#wrap{overflow:auto;background:#0d0802;min-height:calc(100vh - 110px);padding:1.5rem;display:flex;justify-content:center;align-items:flex-start}
 @media print{
   #ctrl{display:none!important}
   #wrap{padding:0;background:white!important;overflow:visible}
   body{background:white!important}
   svg{width:100%!important;height:auto!important}
-  @page{size:A0 landscape;margin:0}
+  @page{size:A0 portrait;margin:0}
 }
 </style>
 </head>
 <body>
 <div id="ctrl">
   <h1>🌳 طباعة شجرة العائلة</h1>
-  <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:.4rem">
-    <label style="font-size:.78rem;color:#a08060">البيانات تُحمَّل تلقائياً · أو الصق JSON:</label>
+  <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:.4rem">
+    <label style="font-size:.75rem;color:#a08060">البيانات تُحمَّل تلقائياً · أو الصق JSON:</label>
     <textarea id="ta" placeholder='[{"id":"1","name":"عبدالله","gender":"ذكر","parentId":null},...]'></textarea>
   </div>
   <div style="display:flex;flex-direction:column;gap:.5rem">
     <button class="btn bg" onclick="go()">🌳 رسم الشجرة</button>
     <button class="btn bg" onclick="demo()">📋 بيانات تجريبية</button>
-    <button class="btn bo" onclick="window.print()">🖨️ طباعة A0 PDF</button>
+    <button class="btn bo" onclick="window.print()">🖨️ طباعة PDF</button>
   </div>
   <span id="st">في انتظار البيانات…</span>
 </div>
 <div id="wrap"><svg id="svg"></svg></div>
 
 <script>
-// ─────────────────────────────────────────────────
-//  ORGANIC FAMILY TREE  —  شجرة عائلة طبيعية
-// ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  شجرة عائلة واقعية فنية — مستوحاة من تصاميم الأشجار العربية
+//  الأسماء مكتوبة على الأغصان · تاج أوراق كثيف · جذور
+// ═══════════════════════════════════════════════════════════
 
-const W = 5000, H = 3800; // SVG coordinate space (A0 landscape ratio ~1.41)
+let _s=42;
+function srand(v){_s=v}
+function rand(){_s=(_s*16807)%2147483647;return(_s-1)/2147483646}
+function rr(a,b){return a+rand()*(b-a)}
 
-// ── Colour palette ─────────────────────────────
-const C = {
-  bark:     '#6B3F10', barkD:   '#4A2A08', barkL: '#8B5A2B',
-  branch:   '#7B4A1A', branchL: '#A06828',
-  leafM:    '#3B7A2A', leafML:  '#5BA640', leafMD: '#2A5E1C',  // male
-  leafF:    '#D45480', leafFL:  '#F07BA0', leafFD: '#A83060',  // female
-  leafDead: '#A09080', leafDL:  '#BFB0A0',
-  nodeBg:   '#8B6914', nodeL:   '#C8A030', nodeT:  '#FFF8E0',
-  title:    '#3E1F05',
-  bg0:      '#FEFAF0', bg1:     '#F5E8C8',
-  ground:   '#5D3B1A', groundL: '#8B5E30',
-  label:    '#FFF8E0',
-  shadow:   'rgba(60,30,0,0.25)',
-};
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-// ── Layout algorithm (Walker-style) ─────────────
-function buildLayout(members) {
-  const byId = {}, ch = {};
-  members.forEach(m => { byId[m.id] = m; ch[m.id] = []; });
-  const roots = [];
-  members.forEach(m => {
-    const p = m.parentId;
-    if (p && ch[p] !== undefined) ch[p].push(m.id);
-    else if (!p || !byId[p]) roots.push(m.id);
+/* ── Layout ────────────────────────────────── */
+function buildLayout(members){
+  const byId={},ch={};
+  members.forEach(m=>{byId[m.id]=m;ch[m.id]=[]});
+  const roots=[];
+  members.forEach(m=>{
+    if(m.parentId&&ch[m.parentId]!==undefined) ch[m.parentId].push(m.id);
+    else if(!m.parentId||!byId[m.parentId]) roots.push(m.id);
   });
 
-  // Subtree width
-  const NW = 130, HG = 35;
-  function sw(id) {
-    const kids = ch[id] || [];
-    if (!kids.length) return NW;
-    return Math.max(NW, kids.reduce((s,c)=>s+sw(c),0) + HG*(kids.length-1));
+  // subtree width
+  const NW=105, GAP=18;
+  function sw(id){
+    const k=ch[id];
+    if(!k.length) return NW;
+    return Math.max(NW, k.reduce((s,c)=>s+sw(c),0)+GAP*(k.length-1));
   }
 
-  const pos = {};
-  function place(id, x, y) {
-    const kids = ch[id] || [];
-    if (!kids.length) { pos[id]={x,y}; return x+NW; }
-    const ws = kids.map(sw);
-    const tot = ws.reduce((s,w)=>s+w,0) + HG*(kids.length-1);
-    pos[id] = { x: x+(tot-NW)/2, y };
-    let cx = x;
-    kids.forEach((kid,i) => { place(kid, cx, y+110+35); cx+=ws[i]+HG; });
+  const pos={}, dep={};
+  function place(id,x,y,d){
+    const k=ch[id]; dep[id]=d;
+    if(!k.length){pos[id]={x,y};return x+NW}
+    const ws=k.map(sw);
+    const tot=ws.reduce((s,w)=>s+w,0)+GAP*(k.length-1);
+    pos[id]={x:x+(tot-NW)/2, y};
+    let cx=x;
+    k.forEach((kid,i)=>{place(kid,cx,y+120,d+1);cx+=ws[i]+GAP});
     return x+tot;
   }
-  let cx = 60;
-  roots.forEach(r => { place(r,cx,60); cx += sw(r)+HG*4; });
+  let cx=60;
+  roots.forEach(r=>{place(r,cx,0,0);cx+=sw(r)+GAP*3});
 
-  return { byId, ch, roots, pos };
+  let maxD=0; Object.values(dep).forEach(d=>{if(d>maxD)maxD=d});
+  return {byId,ch,roots,pos,dep,maxD};
 }
 
-// ── SVG helpers ──────────────────────────────────
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function leafPath(cx, cy, w, h, angle) {
-  // Organic leaf shape using cubic bezier
-  const a = (angle||0)*Math.PI/180;
-  const cos = Math.cos(a), sin = Math.sin(a);
-  function rot(px,py){ return [cx+px*cos-py*sin, cy+px*sin+py*cos]; }
-  const [x0,y0]=rot(0,-h/2), [x1,y1]=rot(w*0.6,-h*0.1),
-        [x2,y2]=rot(w*0.5, h*0.4), [x3,y3]=rot(0,h/2),
-        [x4,y4]=rot(-w*0.5,h*0.4), [x5,y5]=rot(-w*0.6,-h*0.1);
-  return `M${x0},${y0} C${x1},${y1} ${x2},${y2} ${x3},${y3} C${x4},${y4} ${x5},${y5} Z`;
-}
+/* ── Main Draw ─────────────────────────────── */
+function drawTree(members){
+  const{byId,ch,roots,pos,dep,maxD}=buildLayout(members);
 
-function branchPath(x1,y1,x2,y2,thick) {
-  // Curved branch connecting parent to child
-  const mx = (x1+x2)/2, my = (y1+y2)/2 - Math.abs(x2-x1)*0.15;
-  return `<path d="M${x1},${y1} Q${mx},${my} ${x2},${y2}"
-    fill="none" stroke="${C.branch}" stroke-width="${thick}" stroke-linecap="round" opacity="0.85"/>`;
-}
+  // bounds
+  let bx=Infinity,by=Infinity,mx=0,my=0;
+  Object.values(pos).forEach(p=>{
+    bx=Math.min(bx,p.x); by=Math.min(by,p.y);
+    mx=Math.max(mx,p.x+NW); my=Math.max(my,p.y);
+  });
+  const NW=105;
 
-// ── Draw the full tree ───────────────────────────
-function drawTree(members) {
-  const { byId, ch, roots, pos } = buildLayout(members);
+  // Canvas size — portrait like the reference
+  const PAD=120;
+  const treeW=mx-bx+NW+PAD*2;
+  const treeH=(maxD+1)*120;
+  const VW=Math.max(treeW,800);
+  const VH=treeH+700; // extra space for trunk, roots, ground, title, frame
 
-  // Compute canvas bounds
-  let maxX = 0, maxY = 0;
-  Object.values(pos).forEach(p => { maxX=Math.max(maxX,p.x+130); maxY=Math.max(maxY,p.y+70); });
-  const VW = maxX+100, VH = maxY+300;
+  const centerX=VW/2;
+  const treeTopY=230; // where top of tree canopy starts
+  const groundY=VH-200;
+  const trunkTopY=treeTopY+treeH*0.1;
+  const trunkBottomY=groundY+10;
 
-  let bgSvg='', trunkSvg='', edgeSvg='', leafSvg='', nodeSvg='', titleSvg='';
+  // Shift all positions so tree is centered
+  const offX=centerX-(bx+mx)/2-NW/2;
+  const offY=treeTopY;
+  Object.keys(pos).forEach(id=>{pos[id].x+=offX; pos[id].y+=offY});
 
-  // ── Background ──────────────────────────────────
-  bgSvg = `
-  <defs>
-    <radialGradient id="bgGrad" cx="50%" cy="35%" r="75%">
-      <stop offset="0%" stop-color="${C.bg0}"/>
-      <stop offset="100%" stop-color="${C.bg1}"/>
-    </radialGradient>
-    <radialGradient id="trunkGrad" cx="40%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="${C.barkL}"/>
-      <stop offset="100%" stop-color="${C.barkD}"/>
-    </radialGradient>
-    <filter id="leafShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="${C.shadow}"/>
-    </filter>
-    <filter id="nodeShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="2" dy="3" stdDeviation="5" flood-color="${C.shadow}"/>
-    </filter>
-    <filter id="trunkShadow" x="-10%" y="-5%" width="120%" height="110%">
-      <feDropShadow dx="3" dy="5" stdDeviation="8" flood-color="rgba(0,0,0,0.3)"/>
-    </filter>
-    <!-- Decorative corner pattern -->
-    <pattern id="cornerPat" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-      <circle cx="20" cy="20" r="1.5" fill="${C.barkL}" opacity="0.15"/>
-    </pattern>
-  </defs>
-  <rect width="${VW}" height="${VH}" fill="url(#bgGrad)"/>
-  <!-- Parchment texture overlay -->
-  <rect width="${VW}" height="${VH}" fill="url(#cornerPat)"/>
-  <!-- Decorative border -->
-  <rect x="12" y="12" width="${VW-24}" height="${VH-24}"
-    fill="none" stroke="${C.barkL}" stroke-width="4" opacity="0.5" rx="8"/>
-  <rect x="20" y="20" width="${VW-40}" height="${VH-40}"
-    fill="none" stroke="${C.barkL}" stroke-width="1.5" opacity="0.35" rx="6"/>`;
+  srand(42);
 
-  // ── Ground / Grass ───────────────────────────────
-  const groundY = VH - 160;
-  bgSvg += `
+  let svg='';
+
+  // ═══ DEFS ═══
+  svg+=`<defs>
+  <!-- Sky -->
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#6CB4EE"/>
+    <stop offset="45%" stop-color="#A3D4F7"/>
+    <stop offset="75%" stop-color="#D4ECFA"/>
+    <stop offset="100%" stop-color="#E8E4D0"/>
+  </linearGradient>
+  <!-- Trunk fill -->
+  <linearGradient id="tFill" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#5A3A1A"/>
+    <stop offset="20%" stop-color="#7A5530"/>
+    <stop offset="40%" stop-color="#A07840"/>
+    <stop offset="55%" stop-color="#C09B55"/>
+    <stop offset="70%" stop-color="#A07840"/>
+    <stop offset="85%" stop-color="#7A5530"/>
+    <stop offset="100%" stop-color="#5A3A1A"/>
+  </linearGradient>
+  <!-- Branch fill -->
+  <linearGradient id="bFill" x1="0" y1="0" x2="1" y2="0.3">
+    <stop offset="0%" stop-color="#6A4A28"/>
+    <stop offset="30%" stop-color="#8B6838"/>
+    <stop offset="50%" stop-color="#B08B50"/>
+    <stop offset="70%" stop-color="#8B6838"/>
+    <stop offset="100%" stop-color="#6A4A28"/>
+  </linearGradient>
   <!-- Ground -->
-  <ellipse cx="${VW/2}" cy="${groundY+40}" rx="${VW*0.42}" ry="60"
-    fill="#4A7A20" opacity="0.25"/>
-  <ellipse cx="${VW/2}" cy="${groundY+50}" rx="${VW*0.38}" ry="45"
-    fill="#5A8A28" opacity="0.2"/>
-  <!-- Ground line -->
-  <path d="M${VW*0.05},${groundY} Q${VW*0.3},${groundY-15} ${VW/2},${groundY}
-           Q${VW*0.7},${groundY+15} ${VW*0.95},${groundY}"
-    fill="none" stroke="${C.ground}" stroke-width="3" opacity="0.4"/>`;
+  <linearGradient id="gnd" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8DB255"/>
+    <stop offset="15%" stop-color="#7BA344"/>
+    <stop offset="40%" stop-color="#5D8A2A"/>
+    <stop offset="70%" stop-color="#4A7520"/>
+    <stop offset="100%" stop-color="#3A5A18"/>
+  </linearGradient>
+  <!-- Golden frame gradient -->
+  <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#D4A840"/>
+    <stop offset="25%" stop-color="#B8892A"/>
+    <stop offset="50%" stop-color="#E8C860"/>
+    <stop offset="75%" stop-color="#B8892A"/>
+    <stop offset="100%" stop-color="#D4A840"/>
+  </linearGradient>
+  <!-- Bark texture -->
+  <pattern id="bark" width="20" height="50" patternUnits="userSpaceOnUse">
+    <line x1="3" y1="0" x2="5" y2="50" stroke="#4A3018" stroke-width="0.7" opacity="0.25"/>
+    <line x1="10" y1="5" x2="9" y2="45" stroke="#4A3018" stroke-width="0.5" opacity="0.2"/>
+    <line x1="16" y1="2" x2="17" y2="48" stroke="#4A3018" stroke-width="0.6" opacity="0.22"/>
+    <line x1="7" y1="15" x2="8" y2="35" stroke="#3A2010" stroke-width="0.4" opacity="0.15"/>
+  </pattern>
+  <!-- Shadows -->
+  <filter id="shd" x="-15%" y="-15%" width="130%" height="140%">
+    <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(30,15,0,0.3)"/>
+  </filter>
+  <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+    <feOffset dy="1"/>
+    <feFlood flood-color="rgba(0,0,0,0.2)"/>
+    <feComposite operator="in" in2="offsetBlur"/>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- Corner ornament -->
+  <g id="cornerOrnament">
+    <path d="M0,0 Q20,-5 35,10 Q25,25 40,40" fill="none" stroke="#D4A840" stroke-width="2" opacity="0.6"/>
+    <path d="M5,0 Q22,8 30,25 Q18,20 10,35" fill="none" stroke="#E8C860" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="18" cy="15" r="3" fill="#D4A840" opacity="0.4"/>
+    <path d="M0,5 Q15,0 25,12" fill="none" stroke="#B8892A" stroke-width="1" opacity="0.4"/>
+    <path d="M2,12 Q12,8 20,18 Q10,22 8,30" fill="#D4A840" opacity="0.15"/>
+  </g>
+  </defs>`;
 
-  // ── Main trunk ───────────────────────────────────
-  // Find root centers
-  const rootXs = roots.map(r => pos[r] ? pos[r].x+65 : VW/2);
-  const trunkCX = rootXs.reduce((s,x)=>s+x,0)/rootXs.length;
+  // ═══ BACKGROUND ═══
+  svg+=`<rect width="${VW}" height="${VH}" fill="url(#sky)"/>`;
 
-  trunkSvg = `
-  <!-- Main trunk -->
-  <path d="M${trunkCX-50},${groundY+50}
-           C${trunkCX-55},${groundY-30} ${trunkCX-35},${groundY-80} ${trunkCX-20},${groundY-150}
-           L${trunkCX+20},${groundY-150}
-           C${trunkCX+35},${groundY-80} ${trunkCX+55},${groundY-30} ${trunkCX+50},${groundY+50} Z"
-    fill="url(#trunkGrad)" filter="url(#trunkShadow)"/>
-  <!-- Trunk texture lines -->
-  <path d="M${trunkCX-15},${groundY+40} C${trunkCX-10},${groundY-20} ${trunkCX-5},${groundY-80} ${trunkCX},${groundY-145}"
-    fill="none" stroke="${C.barkD}" stroke-width="1.5" opacity="0.35"/>
-  <path d="M${trunkCX+10},${groundY+40} C${trunkCX+15},${groundY-20} ${trunkCX+8},${groundY-80} ${trunkCX+3},${groundY-145}"
-    fill="none" stroke="${C.barkD}" stroke-width="1" opacity="0.25"/>`;
+  // ═══ GOLDEN FRAME ═══
+  const F=18;
+  svg+=`<rect x="0" y="0" width="${VW}" height="${VH}" fill="none" stroke="url(#frame)" stroke-width="${F*2}"/>`;
+  svg+=`<rect x="${F+4}" y="${F+4}" width="${VW-F*2-8}" height="${VH-F*2-8}" fill="none" stroke="#B8892A" stroke-width="2" opacity="0.6" rx="3"/>`;
+  svg+=`<rect x="${F+8}" y="${F+8}" width="${VW-F*2-16}" height="${VH-F*2-16}" fill="none" stroke="#E8C860" stroke-width="1" opacity="0.4" rx="2"/>`;
+  // Corner ornaments
+  svg+=`<use href="#cornerOrnament" x="${F+6}" y="${F+6}"/>`;
+  svg+=`<use href="#cornerOrnament" x="${VW-F-6}" y="${F+6}" transform="scale(-1,1) translate(${-(VW-F-6)*2},0)"/>`;
+  svg+=`<use href="#cornerOrnament" x="${F+6}" y="${VH-F-6}" transform="scale(1,-1) translate(0,${-(VH-F-6)*2})"/>`;
+  svg+=`<use href="#cornerOrnament" x="${VW-F-6}" y="${VH-F-6}" transform="scale(-1,-1) translate(${-(VW-F-6)*2},${-(VH-F-6)*2})"/>`;
 
-  // ── Collect all edges & nodes ────────────────────
-  function traverseEdges(id, depth) {
-    const kids = ch[id] || [];
-    const p = pos[id];
-    if (!p) return;
-    const px = p.x + 65, py = p.y + 35;
-    kids.forEach(kid => {
-      const cp = pos[kid];
-      if (!cp) return;
-      const cx2 = cp.x+65, cy2 = cp.y;
-      // Branch thickness decreases with depth
-      const thick = Math.max(1.5, 5 - depth*0.8);
-      edgeSvg += branchPath(px, py, cx2, cy2, thick);
-      traverseEdges(kid, depth+1);
+  // ═══ GROUND ═══
+  const gWave=`M0,${groundY-25} Q${VW*0.12},${groundY-50} ${VW*0.25},${groundY-20} Q${VW*0.4},${groundY+10} ${VW*0.55},${groundY-15} Q${VW*0.7},${groundY-40} ${VW*0.85},${groundY-10} Q${VW*0.95},${groundY+5} ${VW},${groundY-20} L${VW},${VH} L0,${VH}Z`;
+  svg+=`<path d="${gWave}" fill="url(#gnd)"/>`;
+  // Grass blades
+  srand(55);
+  for(let i=0;i<80;i++){
+    const gx=rr(F+10,VW-F-10), gy=groundY+rr(-25,5);
+    const gh=rr(8,22), ga=rr(-15,15);
+    svg+=`<line x1="${gx}" y1="${gy}" x2="${gx+ga*0.3}" y2="${gy-gh}" stroke="hsl(${rr(85,120)},${rr(50,70)}%,${rr(30,50)}%)" stroke-width="${rr(1,2.2)}" stroke-linecap="round" opacity="${rr(0.3,0.6)}"/>`;
+  }
+  // Distant grass layer
+  svg+=`<path d="M0,${groundY-15} Q${VW*0.3},${groundY-35} ${VW*0.5},${groundY-10} Q${VW*0.7},${groundY-30} ${VW},${groundY-18}" fill="none" stroke="#9AC050" stroke-width="3" opacity="0.3"/>`;
+
+  // ═══ ROOTS ═══
+  srand(88);
+  const rootPairs=[
+    [-0.35, 0.7], [-0.22, 0.55], [-0.12, 0.4], [-0.04, 0.3],
+    [0.04, 0.3], [0.12, 0.4], [0.22, 0.55], [0.35, 0.7]
+  ];
+  rootPairs.forEach(([dx,dy])=>{
+    const rx=centerX+dx*VW*0.3+rr(-15,15);
+    const ry=trunkBottomY+dy*180+rr(-10,10);
+    const mx1=centerX+dx*VW*0.15+rr(-10,10);
+    const my1=trunkBottomY+dy*80;
+    const thk=rr(4,14-Math.abs(dx)*15);
+    svg+=`<path d="M${centerX+dx*20},${trunkBottomY-10} Q${mx1},${my1} ${rx},${ry}" fill="none" stroke="#6A4A28" stroke-width="${thk}" stroke-linecap="round" opacity="0.7"/>`;
+    svg+=`<path d="M${centerX+dx*20},${trunkBottomY-10} Q${mx1},${my1} ${rx},${ry}" fill="none" stroke="#8B6838" stroke-width="${thk*0.3}" stroke-linecap="round" opacity="0.2"/>`;
+    // Sub-roots
+    if(Math.abs(dx)>0.15){
+      const srx=rx+rr(-20,20)*Math.sign(dx), sry=ry+rr(15,35);
+      svg+=`<path d="M${rx},${ry} Q${(rx+srx)/2},${ry+10} ${srx},${sry}" fill="none" stroke="#5A3A1A" stroke-width="${thk*0.4}" stroke-linecap="round" opacity="0.5"/>`;
+    }
+  });
+
+  // ═══ TRUNK ═══
+  const tw1=70+members.length*1.2; // bottom width
+  const tw2=tw1*0.28; // top width
+  // Main trunk path
+  svg+=`<path d="
+    M${centerX-tw1/2},${trunkBottomY}
+    C${centerX-tw1/2+3},${trunkBottomY-100} ${centerX-tw2/2-15},${trunkTopY+80} ${centerX-tw2/2},${trunkTopY}
+    L${centerX+tw2/2},${trunkTopY}
+    C${centerX+tw2/2+15},${trunkTopY+80} ${centerX+tw1/2-3},${trunkBottomY-100} ${centerX+tw1/2},${trunkBottomY}
+    Z" fill="url(#tFill)"/>`;
+  // Bark overlay
+  svg+=`<path d="
+    M${centerX-tw1/2},${trunkBottomY}
+    C${centerX-tw1/2+3},${trunkBottomY-100} ${centerX-tw2/2-15},${trunkTopY+80} ${centerX-tw2/2},${trunkTopY}
+    L${centerX+tw2/2},${trunkTopY}
+    C${centerX+tw2/2+15},${trunkTopY+80} ${centerX+tw1/2-3},${trunkBottomY-100} ${centerX+tw1/2},${trunkBottomY}
+    Z" fill="url(#bark)" opacity="0.8"/>`;
+  // Light edge
+  svg+=`<path d="M${centerX-tw1/2+6},${trunkBottomY-20} C${centerX-tw1/2+8},${trunkBottomY-120} ${centerX-tw2/2-8},${trunkTopY+100} ${centerX-tw2/2+3},${trunkTopY+10}" fill="none" stroke="#C8A050" stroke-width="3" opacity="0.15"/>`;
+  // Dark edge
+  svg+=`<path d="M${centerX+tw1/2-5},${trunkBottomY-15} C${centerX+tw1/2-6},${trunkBottomY-110} ${centerX+tw2/2+10},${trunkTopY+90} ${centerX+tw2/2-2},${trunkTopY+8}" fill="none" stroke="#3A2010" stroke-width="4" opacity="0.12"/>`;
+
+  // ═══ BRANCHES — organic tapered curves with names ON them ═══
+  let brSvg='', nameSvg='', leafSvg='';
+
+  function drawBranch(x1,y1,x2,y2,thkS,thkE,bid){
+    srand(bid*97+31);
+    const dx=x2-x1,dy=y2-y1,dist=Math.sqrt(dx*dx+dy*dy);
+    const w=dist*0.10;
+    const cp1x=x1+dx*0.25+rr(-w,w), cp1y=y1+dy*0.15+rr(-w*0.2,w*0.2);
+    const cp2x=x1+dx*0.75+rr(-w,w), cp2y=y1+dy*0.85+rr(-w*0.2,w*0.2);
+
+    // Draw thick → thin tapered branch as path with outline
+    const segs=10;
+    for(let i=0;i<segs;i++){
+      const t0=i/segs,t1=(i+1)/segs;
+      const thk=thkS+(thkE-thkS)*((t0+t1)/2);
+      const u0=1-t0,u1=1-t1;
+      const px0=u0*u0*u0*x1+3*u0*u0*t0*cp1x+3*u0*t0*t0*cp2x+t0*t0*t0*x2;
+      const py0=u0*u0*u0*y1+3*u0*u0*t0*cp1y+3*u0*t0*t0*cp2y+t0*t0*t0*y2;
+      const px1=u1*u1*u1*x1+3*u1*u1*t1*cp1x+3*u1*t1*t1*cp2x+t1*t1*t1*x2;
+      const py1=u1*u1*u1*y1+3*u1*u1*t1*cp1y+3*u1*t1*t1*cp2y+t1*t1*t1*y2;
+      brSvg+=`<line x1="${px0}" y1="${py0}" x2="${px1}" y2="${py1}" stroke="url(#bFill)" stroke-width="${thk}" stroke-linecap="round"/>`;
+      // Bark texture on branch
+      if(thk>4){
+        brSvg+=`<line x1="${px0}" y1="${py0}" x2="${px1}" y2="${py1}" stroke="#4A3018" stroke-width="${thk}" stroke-linecap="round" opacity="0.08"/>`;
+        brSvg+=`<line x1="${px0-thk*0.2}" y1="${py0}" x2="${px1-thk*0.2}" y2="${py1}" stroke="#C8A050" stroke-width="${thk*0.15}" stroke-linecap="round" opacity="0.12"/>`;
+      }
+    }
+
+    // Return bezier evaluator for placing name on branch
+    return function(t){
+      const u=1-t;
+      return{
+        x:u*u*u*x1+3*u*u*t*cp1x+3*u*t*t*cp2x+t*t*t*x2,
+        y:u*u*u*y1+3*u*u*t*cp1y+3*u*t*t*cp2y+t*t*t*y2,
+        angle:Math.atan2(
+          3*(1-t)*(1-t)*(cp1y-y1)+6*(1-t)*t*(cp2y-cp1y)+3*t*t*(y2-cp2y),
+          3*(1-t)*(1-t)*(cp1x-x1)+6*(1-t)*t*(cp2x-cp1x)+3*t*t*(x2-cp2x)
+        )*180/Math.PI
+      };
+    };
+  }
+
+  // Draw name label ON the branch (like the reference — name written along the branch)
+  function drawNameOnBranch(evalFn, name, id, member){
+    const t=0.5;
+    const p=evalFn(t);
+    const isFem=member.gender==='أنثى';
+    const isDead=member.status==='متوفى';
+
+    // Background plate on branch
+    const fs=name.length>7?10:12;
+    const pw=Math.max(name.length*fs*0.55, 50), ph=20;
+
+    // Rotated name plate
+    let angle=p.angle;
+    // Keep text readable (not upside down)
+    if(angle>90) angle-=180;
+    if(angle<-90) angle+=180;
+
+    // Plate color
+    let plateFill='#B08B50', plateStroke='#8B6838', textFill='#FFF8E0';
+    if(isFem){ plateFill='#C07850'; plateStroke='#A06040'; textFill='#FFF5F0'; }
+    if(isDead){ plateFill='#8A7A60'; plateStroke='#6A5A40'; textFill='#F0E8D8'; }
+
+    nameSvg+=`<g transform="rotate(${angle},${p.x},${p.y})">
+      <rect x="${p.x-pw/2}" y="${p.y-ph/2}" width="${pw}" height="${ph}" rx="${ph/2}" fill="${plateFill}" stroke="${plateStroke}" stroke-width="1.5" filter="url(#shd)" opacity="0.95"/>
+      <rect x="${p.x-pw/2+2}" y="${p.y-ph/2+2}" width="${pw-4}" height="${ph-4}" rx="${ph/2-2}" fill="none" stroke="#D4B870" stroke-width="0.5" opacity="0.4"/>
+      <text x="${p.x}" y="${p.y+1}" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="${fs}" font-weight="700" fill="${textFill}" direction="rtl">${esc(name)}</text>
+    </g>`;
+  }
+
+  // ═══ LEAF CANOPY — dense realistic leaves ═══
+  function drawLeafCluster(cx,cy,count,radius,seedV,isFem,isDead){
+    srand(seedV);
+    for(let i=0;i<count;i++){
+      const a=rr(0,360), r=rr(radius*0.15, radius);
+      const lx=cx+Math.cos(a*Math.PI/180)*r;
+      const ly=cy+Math.sin(a*Math.PI/180)*r;
+      const ls=rr(8,18), la=rr(-50,50);
+
+      let hue, sat, lig;
+      if(isDead){ hue=rr(35,55); sat=rr(40,60); lig=rr(35,50); }
+      else if(isFem){ hue=rr(80,130); sat=rr(45,70); lig=rr(28,42); }
+      else{ hue=rr(85,140); sat=rr(50,75); lig=rr(25,48); }
+      const c=`hsl(${hue},${sat}%,${lig}%)`;
+      const cd=`hsl(${hue},${sat}%,${lig-10}%)`;
+
+      const ra=la*Math.PI/180, rc=Math.cos(ra), rs=Math.sin(ra);
+      function lr(px,py){return[lx+px*rc-py*rs, ly+px*rs+py*rc]}
+      const tp=lr(0,-ls*0.5), rp=lr(ls*0.38,ls*0.05), bp=lr(0,ls*0.5), lp=lr(-ls*0.38,ls*0.05);
+      // Leaf shape
+      leafSvg+=`<path d="M${tp[0]},${tp[1]} C${tp[0]+ls*0.3*rc},${tp[1]+ls*0.3*rs} ${rp[0]},${rp[1]-ls*0.1} ${rp[0]},${rp[1]} C${rp[0]+ls*0.05},${rp[1]+ls*0.15} ${bp[0]+ls*0.1*rc},${bp[1]+ls*0.1*rs} ${bp[0]},${bp[1]} C${bp[0]-ls*0.1*rc},${bp[1]-ls*0.1*rs} ${lp[0]-ls*0.05},${lp[1]+ls*0.15} ${lp[0]},${lp[1]} C${lp[0]},${lp[1]-ls*0.1} ${tp[0]-ls*0.3*rc},${tp[1]-ls*0.3*rs} ${tp[0]},${tp[1]}Z" fill="${c}" opacity="${rr(0.55,0.9)}"/>`;
+      // Vein
+      leafSvg+=`<line x1="${tp[0]}" y1="${tp[1]}" x2="${bp[0]}" y2="${bp[1]}" stroke="${cd}" stroke-width="0.5" opacity="0.3"/>`;
+    }
+  }
+
+  // ═══ DRAW ALL BRANCHES AND NODES ═══
+  let bid=0;
+
+  // Major branches from trunk to root nodes
+  roots.forEach(r=>{
+    const rp=pos[r];
+    if(!rp) return;
+    const ncx=rp.x+NW/2, ncy=rp.y+15;
+    const thk=10+ch[r].length*2.5;
+    const ev=drawBranch(centerX, trunkTopY+20, ncx, ncy, thk, thk*0.45, bid++);
+    drawNameOnBranch(ev, byId[r].name, r, byId[r]);
+    // Leaf cluster at this node
+    drawLeafCluster(ncx, ncy, 12+ch[r].length*3, 40+ch[r].length*8, bid*17, byId[r].gender==='أنثى', byId[r].status==='متوفى');
+  });
+
+  // Recursive branches
+  function drawEdges(id, d){
+    const p=pos[id]; if(!p) return;
+    const kids=ch[id]||[];
+    kids.forEach(kid=>{
+      const cp=pos[kid]; if(!cp) return;
+      const px=p.x+NW/2, py=p.y+25;
+      const cx2=cp.x+NW/2, cy2=cp.y;
+      const thk=Math.max(2.5, 8-d*1.2);
+      const ev=drawBranch(px, py, cx2, cy2, thk, thk*0.4, bid++);
+      drawNameOnBranch(ev, byId[kid].name, kid, byId[kid]);
+
+      const kidKids=ch[kid]||[];
+      // Leaf cluster
+      const isLeaf=kidKids.length===0;
+      const clusterSize=isLeaf?8:10+kidKids.length*2;
+      const clusterR=isLeaf?25:35+kidKids.length*5;
+      drawLeafCluster(cx2, cy2, clusterSize, clusterR, bid*23+parseInt(kid), byId[kid].gender==='أنثى', byId[kid].status==='متوفى');
+
+      drawEdges(kid, d+1);
     });
   }
-  // Connect trunk to roots
-  roots.forEach(r => {
-    const rp = pos[r];
-    if (!rp) return;
-    const rx2 = rp.x+65, ry2 = rp.y;
-    edgeSvg += branchPath(trunkCX, groundY-160, rx2, ry2, 7);
-  });
-  roots.forEach(r => traverseEdges(r, 0));
+  roots.forEach(r=>drawEdges(r,0));
 
-  // ── Draw nodes ───────────────────────────────────
-  let leafAngle = 0;
-  function drawNode(id, depth) {
-    const p = pos[id];
-    if (!p) return;
-    const m = byId[id];
-    const kids = ch[id] || [];
-    const hasCh = kids.length > 0;
-    const cx2 = p.x+65, cy2 = p.y+35;
-    const isFem = m.gender === 'أنثى';
-    const isDead = m.status === 'متوفى';
-    const name = esc(m.name || '?');
-    const sub = esc((m.role||m.job||'').slice(0,14));
-
-    if (hasCh) {
-      // ── Branch node: oval label on branch ──────
-      let fill, stroke, tf;
-      if (isDead)     { fill='#8A7A6A'; stroke='#6A5A4A'; tf=C.label; }
-      else if (isFem) { fill='#C06890'; stroke='#905060'; tf='#FFF0F5'; }
-      else            { fill=C.nodeBg; stroke='#7A5010'; tf=C.nodeT; }
-      // Oval badge
-      nodeSvg += `<ellipse cx="${cx2}" cy="${cy2}" rx="62" ry="28"
-        fill="${fill}" stroke="${stroke}" stroke-width="2.5"
-        filter="url(#nodeShadow)"/>`;
-      // Inner highlight
-      nodeSvg += `<ellipse cx="${cx2}" cy="${cy2-6}" rx="45" ry="16"
-        fill="white" opacity="0.08"/>`;
-      // Name
-      nodeSvg += `<text x="${cx2}" y="${sub?cy2-5:cy2}"
-        text-anchor="middle" dominant-baseline="middle"
-        font-family="Arial" font-size="${name.length>8?12:14}"
-        font-weight="800" fill="${tf}" direction="rtl">${name}</text>`;
-      if (sub) nodeSvg += `<text x="${cx2}" y="${cy2+10}"
-        text-anchor="middle" dominant-baseline="middle"
-        font-family="Arial" font-size="9" fill="${tf}" opacity="0.75"
-        direction="rtl">${sub}</text>`;
-
-    } else {
-      // ── Leaf node ─────────────────────────────
-      leafAngle = (leafAngle + 23) % 60 - 30; // varied angles
-      const angle = leafAngle + (isFem ? 10 : -10);
-      let fill, fillL, fillD, stroke;
-      if (isDead)     { fill=C.leafDead; fillL=C.leafDL; fillD=C.leafDead; stroke='#808070'; }
-      else if (isFem) { fill=C.leafF;   fillL=C.leafFL;  fillD=C.leafFD;  stroke=C.leafFD; }
-      else            { fill=C.leafM;   fillL=C.leafML;  fillD=C.leafMD;  stroke=C.leafMD; }
-
-      const lw = 56, lh = 34;
-      const d = leafPath(cx2, cy2, lw, lh, angle);
-      leafSvg += `<path d="${d}" fill="${fill}" stroke="${stroke}"
-        stroke-width="1.5" filter="url(#leafShadow)" opacity="0.92"/>`;
-      // Leaf vein
-      const va = angle*Math.PI/180;
-      const vx = cx2+Math.sin(va)*lh*0.38, vy = cy2-Math.cos(va)*lh*0.38;
-      leafSvg += `<line x1="${cx2}" y1="${cy2}" x2="${vx}" y2="${vy}"
-        stroke="${fillD}" stroke-width="1" opacity="0.5"/>`;
-      // Name on leaf
-      const fs = name.length > 6 ? 8.5 : 10;
-      leafSvg += `<text x="${cx2}" y="${cy2}"
-        text-anchor="middle" dominant-baseline="middle"
-        font-family="Arial" font-size="${fs}" font-weight="700"
-        fill="${isDead?'#555':'#FFF'}" direction="rtl"
-        transform="rotate(${angle},${cx2},${cy2})">${name}</text>`;
-    }
-    kids.forEach(kid => drawNode(kid, depth+1));
+  // Extra canopy leaves at the top for fullness
+  srand(500);
+  for(let i=0;i<20;i++){
+    const lx=centerX+rr(-treeW*0.4, treeW*0.4);
+    const ly=treeTopY+rr(-20, treeH*0.3);
+    drawLeafCluster(lx, ly, rr(5,10), rr(15,30), i*71+400, false, false);
   }
-  roots.forEach(r => drawNode(r, 0));
+  // Side canopy fullness
+  for(let i=0;i<12;i++){
+    const side=(i%2===0)?-1:1;
+    const lx=centerX+side*rr(treeW*0.2, treeW*0.45);
+    const ly=treeTopY+rr(treeH*0.1, treeH*0.6);
+    drawLeafCluster(lx, ly, rr(6,12), rr(18,35), i*53+600, false, false);
+  }
 
-  // ── Title ────────────────────────────────────────
-  titleSvg = `
-  <text x="${VW/2}" y="62"
-    text-anchor="middle" font-family="Arial" font-size="42"
-    font-weight="900" fill="${C.title}" direction="rtl"
-    letter-spacing="3">شجرة الأسرة</text>
-  <text x="${VW/2}" y="100"
-    text-anchor="middle" font-family="Arial" font-size="16"
-    fill="${C.barkL}" opacity="0.7" direction="rtl">طُبع بواسطة موقع شجرة العائلة</text>`;
+  // ═══ ROOT NAMES (main ancestor on trunk) ═══
+  // Put root ancestor names on the trunk itself
+  if(roots.length>0){
+    const rootName=byId[roots[0]]?byId[roots[0]].name:'';
+    // Big name on trunk
+    const tnY=(trunkTopY+trunkBottomY)/2;
+    svg+=`<text x="${centerX}" y="${tnY}" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="28" font-weight="900" fill="#FFF8E0" direction="rtl" opacity="0.0">${esc(rootName)}</text>`;
+  }
 
-  // ── Legend ───────────────────────────────────────
-  const lx=30, ly=VH-145;
-  const legend = `
-  <rect x="${lx}" y="${ly}" width="280" height="130" rx="12"
-    fill="rgba(255,252,240,0.92)" stroke="${C.barkL}" stroke-width="1.5"/>
-  <text x="${lx+140}" y="${ly+22}" text-anchor="middle"
-    font-family="Arial" font-size="14" font-weight="700"
-    fill="${C.title}" direction="rtl">دليل الألوان</text>
-  ${(() => {
-    const items=[
-      [C.leafM,C.leafMD,'ذكر'],
-      [C.leafF,C.leafFD,'أنثى'],
-      [C.leafDead,'#808070','متوفى'],
-      [C.nodeBg,'#7A5010','أب / فرع'],
-    ];
-    return items.map((it,i)=>{
-      const iy=ly+45+i*22;
-      if(i===3){
-        return `<ellipse cx="${lx+28}" cy="${iy}" rx="22" ry="11" fill="${it[0]}" stroke="${it[1]}" stroke-width="1.5"/>
-        <text x="${lx+60}" y="${iy+5}" font-family="Arial" font-size="12" fill="#333" direction="rtl">${it[2]}</text>`;
-      }
-      const d=leafPath(lx+28,iy,40,24,0);
-      return `<path d="${d}" fill="${it[0]}" stroke="${it[1]}" stroke-width="1.5"/>
-      <text x="${lx+60}" y="${iy+5}" font-family="Arial" font-size="12" fill="#333" direction="rtl">${it[2]}</text>`;
-    }).join('');
-  })()}`;
+  // ═══ TITLE ═══
+  const titleY=80;
+  svg+=`<text x="${centerX}" y="${titleY}" text-anchor="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="48" font-weight="900" fill="#3A2010" direction="rtl" letter-spacing="3">شجرة الأسرة</text>`;
+  svg+=`<text x="${centerX}" y="${titleY+35}" text-anchor="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="16" fill="#7A5A30" opacity="0.7" direction="rtl">طُبعت بواسطة موقع شجرة العائلة</text>`;
 
-  // ── Stats ────────────────────────────────────────
-  const males   = members.filter(m=>m.gender==='ذكر').length;
-  const females = members.filter(m=>m.gender==='أنثى').length;
-  const dead    = members.filter(m=>m.status==='متوفى').length;
-  const sx = VW-320, sy = VH-145;
-  const stats = `
-  <rect x="${sx}" y="${sy}" width="280" height="130" rx="12"
-    fill="rgba(255,252,240,0.92)" stroke="${C.barkL}" stroke-width="1.5"/>
-  <text x="${sx+140}" y="${sy+22}" text-anchor="middle"
-    font-family="Arial" font-size="14" font-weight="700"
-    fill="${C.title}" direction="rtl">إحصائيات الشجرة</text>
-  <text x="${sx+250}" y="${sy+52}" text-anchor="end" font-family="Arial" font-size="12" fill="#333" direction="rtl">إجمالي الأفراد:</text>
-  <text x="${sx+260}" y="${sy+52}" font-family="Arial" font-size="14" font-weight="700" fill="${C.barkL}">${members.length}</text>
-  <text x="${sx+250}" y="${sy+78}" text-anchor="end" font-family="Arial" font-size="12" fill="#333" direction="rtl">الذكور:</text>
-  <text x="${sx+260}" y="${sy+78}" font-family="Arial" font-size="14" font-weight="700" fill="${C.leafMD}">${males}</text>
-  <text x="${sx+250}" y="${sy+104}" text-anchor="end" font-family="Arial" font-size="12" fill="#333" direction="rtl">الإناث:</text>
-  <text x="${sx+260}" y="${sy+104}" font-family="Arial" font-size="14" font-weight="700" fill="${C.leafFD}">${females}</text>
-  <text x="${sx+250}" y="${sy+125}" text-anchor="end" font-family="Arial" font-size="12" fill="#333" direction="rtl">رحمهم الله:</text>
-  <text x="${sx+260}" y="${sy+125}" font-family="Arial" font-size="14" font-weight="700" fill="#808070">${dead}</text>`;
+  // ═══ LEGEND ═══
+  const lx=F+30, ly=VH-F-160;
+  svg+=`<rect x="${lx}" y="${ly}" width="250" height="130" rx="12" fill="rgba(255,252,240,0.9)" stroke="#B8892A" stroke-width="1.5"/>`;
+  svg+=`<text x="${lx+125}" y="${ly+22}" text-anchor="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="14" font-weight="700" fill="#3A2010" direction="rtl">دليل الألوان</text>`;
+  const lgItems=[
+    ['#B08B50','#8B6838','ذكر'],
+    ['#C07850','#A06040','أنثى'],
+    ['#8A7A60','#6A5A40','متوفى / متوفية']
+  ];
+  lgItems.forEach((it,i)=>{
+    const iy=ly+48+i*30;
+    svg+=`<rect x="${lx+12}" y="${iy-9}" width="36" height="18" rx="9" fill="${it[0]}" stroke="${it[1]}" stroke-width="1.2"/>`;
+    svg+=`<text x="${lx+58}" y="${iy+4}" font-family="'Segoe UI',Tahoma,sans-serif" font-size="12" fill="#444" direction="rtl">${it[2]}</text>`;
+  });
 
-  // ── Assemble SVG ─────────────────────────────────
-  const svg = document.getElementById('svg');
-  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-  svg.setAttribute('width', VW);
-  svg.setAttribute('height', VH);
-  svg.style.maxWidth = '100%';
-  svg.innerHTML = bgSvg + trunkSvg + edgeSvg + leafSvg + nodeSvg + titleSvg + legend + stats;
+  // ═══ STATS ═══
+  const males=members.filter(m=>m.gender==='ذكر').length;
+  const females=members.filter(m=>m.gender==='أنثى').length;
+  const dead=members.filter(m=>m.status==='متوفى').length;
+  const sx=VW-F-280, sy=VH-F-160;
+  svg+=`<rect x="${sx}" y="${sy}" width="250" height="130" rx="12" fill="rgba(255,252,240,0.9)" stroke="#B8892A" stroke-width="1.5"/>`;
+  svg+=`<text x="${sx+125}" y="${sy+22}" text-anchor="middle" font-family="'Segoe UI',Tahoma,sans-serif" font-size="14" font-weight="700" fill="#3A2010" direction="rtl">إحصائيات</text>`;
+  const stItems=[
+    ['إجمالي الأفراد',members.length,'#7A5A30'],
+    ['الذكور',males,'#5A8A30'],
+    ['الإناث',females,'#C07850'],
+    ['رحمهم الله',dead,'#8A7A60']
+  ];
+  stItems.forEach((it,i)=>{
+    const iy=sy+46+i*22;
+    svg+=`<text x="${sx+220}" y="${iy}" text-anchor="end" font-family="'Segoe UI',Tahoma,sans-serif" font-size="12" fill="#555" direction="rtl">${it[0]}:</text>`;
+    svg+=`<text x="${sx+228}" y="${iy}" font-family="'Segoe UI',Tahoma,sans-serif" font-size="13" font-weight="700" fill="${it[2]}">${it[1]}</text>`;
+  });
 
-  document.getElementById('st').textContent =
-    `✅ ${members.length} فرد · ${males} ذكر · ${females} أنثى · مساحة: ${(VW/3.78).toFixed(0)}×${(VH/3.78).toFixed(0)} مم`;
+  // ═══ ASSEMBLE ═══
+  const svgEl=document.getElementById('svg');
+  svgEl.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
+  svgEl.setAttribute('width',VW);
+  svgEl.setAttribute('height',VH);
+  svgEl.style.maxWidth='100%';
+  // Layer order: bg already in svg, then leaves behind, branches, names on top
+  svgEl.innerHTML = svg + leafSvg + brSvg + nameSvg;
+
+  document.getElementById('st').textContent=
+    `✅ ${members.length} فرد · ${males} ذكر · ${females} أنثى`;
 }
 
-// ── Data loaders ──────────────────────────────────
-function demo() {
+/* ── Demo data ─────────────────────────────── */
+function demo(){
   const d=[
     {id:'1',name:'عبدالله',role:'الجد الأكبر',gender:'ذكر',status:'متوفى',parentId:null},
     {id:'2',name:'محمد',role:'',gender:'ذكر',status:'حي',parentId:'1'},
@@ -377,14 +499,14 @@ function demo() {
   drawTree(d);
 }
 
-function go() {
-  try { drawTree(JSON.parse(document.getElementById('ta').value)); }
-  catch(e) { alert('خطأ: '+e.message); }
+function go(){
+  try{drawTree(JSON.parse(document.getElementById('ta').value))}
+  catch(e){alert('خطأ: '+e.message)}
 }
 
 window.onload=function(){
   const s=localStorage.getItem('familyTreePrintData');
-  if(s){try{const d=JSON.parse(s);document.getElementById('ta').value=s;drawTree(d);return;}catch(e){}}
+  if(s){try{const d=JSON.parse(s);document.getElementById('ta').value=s;drawTree(d);return}catch(e){}}
   demo();
 };
 </script>
