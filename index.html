@@ -219,6 +219,106 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .req-info{font-size:.78rem;color:var(--ink3);margin-bottom:.4rem}
 .req-bio{font-size:.8rem;color:var(--ink2);background:var(--sand);border-radius:8px;padding:.5rem .7rem;margin-bottom:.5rem;line-height:1.6}
 .req-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.son-row{
+  background:var(--white);border:1px solid var(--sand3);border-radius:var(--r2);
+  padding:.75rem .9rem;margin-bottom:.55rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:.5rem;
+  position:relative;
+}
+.son-row-header{
+  grid-column:1/-1;display:flex;align-items:center;
+  justify-content:space-between;margin-bottom:.3rem;
+}
+.son-row-num{font-size:.75rem;font-weight:700;color:var(--gold)}
+.son-row-del{background:none;border:none;color:var(--err);cursor:pointer;font-size:.9rem;padding:.1rem .3rem}
+.son-field label{display:block;font-size:.72rem;color:var(--ink3);margin-bottom:.2rem;font-weight:600}
+.son-field input,.son-field select{
+  width:100%;background:var(--sand);border:1.5px solid var(--sand3);
+  color:var(--ink);font-family:'Tajawal',sans-serif;font-size:.88rem;
+  padding:.44rem .75rem;border-radius:10px;outline:none;
+  transition:border-color .18s;direction:rtl;-webkit-appearance:none;
+}
+.son-field input:focus,.son-field select:focus{border-color:var(--gold)}
+/* ── AI SEARCH ── */
+.ai-suggestions{margin-bottom:1.2rem}
+.ai-sug-title{font-size:.73rem;color:var(--ink3);font-weight:600;margin-bottom:.55rem;letter-spacing:.02em}
+.ai-sug-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.ai-chip{
+  background:var(--white);border:1.5px solid var(--sand3);
+  color:var(--ink2);font-family:'Tajawal',sans-serif;font-size:.78rem;
+  padding:.32rem .85rem;border-radius:20px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;box-shadow:var(--sh0);
+}
+.ai-chip:active{transform:scale(.95);background:var(--gold);border-color:var(--gold);color:#fff}
+.ai-chat{
+  display:flex;flex-direction:column;gap:.85rem;
+  margin-bottom:1.2rem;min-height:60px;
+}
+.ai-msg{display:flex;gap:.6rem;align-items:flex-start;animation:fadeUp .22s ease}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;font-weight:700;
+}
+.ai-avatar.bot{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;font-size:.85rem}
+.ai-avatar.user{background:var(--sand3);font-size:.85rem}
+.ai-bubble{
+  max-width:82%;padding:.65rem .9rem;border-radius:16px;
+  font-size:.84rem;line-height:1.75;direction:rtl;
+}
+.ai-bubble.bot{
+  background:var(--white);border:1px solid var(--sand3);
+  color:var(--ink);border-radius:4px 16px 16px 16px;
+  box-shadow:var(--sh0);
+}
+.ai-bubble.user{
+  background:var(--gold);color:#fff;
+  border-radius:16px 4px 16px 16px;
+}
+.ai-bubble.loading{color:var(--ink3);font-style:italic}
+.ai-bubble .ai-tag{
+  display:inline-block;background:var(--gold-dim);
+  color:var(--gold);font-size:.73rem;font-weight:600;
+  padding:.12rem .45rem;border-radius:8px;margin:.1rem .2rem;
+  border:1px solid rgba(194,150,90,.2);
+}
+.ai-bubble strong{color:var(--gold);font-weight:700}
+.ai-bubble ul,.ai-bubble ol{padding-right:1.2rem;margin:.3rem 0}
+.ai-bubble li{margin-bottom:.2rem}
+.ai-input-wrap{
+  position:sticky;bottom:calc(58px + var(--sab));
+  background:var(--sand);padding:.6rem 0 .2rem;
+  border-top:1px solid var(--sand3);
+  margin:-1rem;padding:.6rem 1rem .2rem;
+}
+.ai-input-row{display:flex;gap:.5rem;align-items:center}
+.ai-input{
+  flex:1;background:var(--white);border:1.5px solid var(--sand3);
+  color:var(--ink);font-family:'Tajawal',sans-serif;font-size:.9rem;
+  padding:.58rem .95rem;border-radius:24px;outline:none;
+  transition:border-color .2s,box-shadow .2s;direction:rtl;
+  -webkit-appearance:none;
+}
+.ai-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.ai-input::placeholder{color:var(--ink4)}
+.ai-send{
+  width:42px;height:42px;border-radius:50%;background:var(--gold);
+  border:none;cursor:pointer;color:#fff;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  transition:transform .12s,background .15s;
+  box-shadow:0 3px 12px rgba(194,150,90,.35);
+}
+.ai-send:active{transform:scale(.9)}
+.ai-send:disabled{background:var(--sand3);box-shadow:none;cursor:not-allowed}
+.ai-hint{font-size:.69rem;color:var(--ink4);text-align:center;margin-top:.35rem}
+.ai-dots span{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--gold);margin:0 2px;
+  animation:bounce .9s infinite;
+}
+.ai-dots span:nth-child(2){animation-delay:.2s}
+.ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:scale(.6)}40%{transform:scale(1)}}
 /* ── ABOUT ── */
 .about-content{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);min-height:120px;font-size:.9rem;line-height:1.9;color:var(--ink);white-space:pre-wrap}
 .about-logo-wrap{display:flex;justify-content:center;margin-bottom:1.4rem}
@@ -266,6 +366,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <button class="btn btn-sm" onclick="document.getElementById('excel-in').click()" style="border-color:var(--gold);color:var(--gold)">📥 Excel</button>
         <input type="file" id="excel-in" accept=".xlsx,.xls,.csv" style="display:none" onchange="onExcelImport(event)">
       </span>
+      <button class="btn btn-sm" onclick="printFamilyTree()" style="border-color:var(--gold);color:var(--gold)" title="طباعة شجرة بحجم A0">🖨️ طباعة</button>
     </div>
     <div id="tree-wrap">
       <canvas id="tree-canvas" style="display:block;width:100%;height:100%;cursor:grab;touch-action:none"></canvas>
@@ -336,13 +437,54 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="album-grid" id="album-grid"></div>
   </div>
 
+
+  <!-- AI SEARCH -->
+  <div id="page-ai" class="page">
+    <div class="page-hero">
+      <h1>🤖 بحث ذكي</h1>
+      <p>اسأل عن أي معلومة في شجرة العائلة</p>
+    </div>
+
+    <!-- Suggested questions -->
+    <div class="ai-suggestions" id="ai-suggestions">
+      <div class="ai-sug-title">أسئلة مقترحة</div>
+      <div class="ai-sug-chips">
+        <button class="ai-chip" onclick="askSuggestion(this)">ما أكثر اسم متكرر؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">من هو الأكبر سناً؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">من هو الأصغر سناً؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">كم عدد الإناث؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">من في الرياض بدون جوال؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">من هم أبناء عبدالله؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">ما الأسماء الأقل تكراراً؟</button>
+        <button class="ai-chip" onclick="askSuggestion(this)">كم عدد المتوفين؟</button>
+      </div>
+    </div>
+
+    <!-- Chat messages -->
+    <div class="ai-chat" id="ai-chat"></div>
+
+    <!-- Input -->
+    <div class="ai-input-wrap" id="ai-input-wrap">
+      <div class="ai-input-row">
+        <input class="ai-input" id="ai-q" placeholder="اسأل عن أي شيء في شجرة العائلة…"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"
+          autocomplete="off" dir="rtl">
+        <button class="ai-send" id="ai-send-btn" onclick="sendAI()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ai-hint">البيانات تبقى محلية ولا تُرسل للخارج إلا السؤال وملخص البيانات</div>
+    </div>
+  </div>
   <!-- ABOUT -->
   <div id="page-about" class="page">
     <div class="page-hero"><h1>حول العائلة</h1><p></p></div>
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V22</span>
+      <span class="version-num">V24</span>
       <span class="version-date">14 مارس 2026 — 17:30</span>
     </div>
   </div>
@@ -354,6 +496,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
   <button class="tab-item"    onclick="goPage('album')"   id="tb-album">  <div class="tab-icon">🖼️</div><div class="tab-label">الألبوم</div></button>
   <button class="tab-item"    onclick="goPage('events')"  id="tb-events"> <div class="tab-icon">📅</div><div class="tab-label">الفعاليات</div></button>
   <button class="tab-item"    onclick="goPage('news')"    id="tb-news">   <div class="tab-icon">📰</div><div class="tab-label">الأخبار</div></button>
+  <button class="tab-item"    onclick="goPage('ai')"      id="tb-ai">     <div class="tab-icon">🤖</div><div class="tab-label">بحث ذكي</div></button>
   <button class="tab-item"    onclick="goPage('about')"   id="tb-about">  <div class="tab-icon">ℹ️</div><div class="tab-label">حول</div></button>
 </div>
 
@@ -440,6 +583,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
       <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
+      <button class="btn btn-sm" id="d-addsons" style="display:none;border-color:var(--gold);background:var(--gold);color:#fff" onclick="openAddMultiSons()">+ أبناء</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -598,6 +742,27 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     </div>
   </div>
 </div>
+
+<!-- ADD MULTIPLE SONS -->
+<div class="overlay" id="ov-multi-sons">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="msons-title">إضافة أبناء</div>
+    <p id="msons-parent-name" style="font-size:.82rem;color:var(--ink3);margin-bottom:1rem;margin-top:-.5rem"></p>
+
+    <div id="msons-rows"></div>
+
+    <button class="btn btn-ghost btn-sm" onclick="addSonRow()"
+      style="width:100%;justify-content:center;border:1.5px dashed var(--sand3);margin-bottom:.8rem">
+      + إضافة ابن آخر
+    </button>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-multi-sons')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveMultiSons()">حفظ الجميع</button>
+    </div>
+  </div>
+</div>
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-x" onclick="closeLb()">✕</button>
@@ -612,6 +777,9 @@ function haptic(){try{Haptics?.impact({style:'LIGHT'});}catch(e){}}
 </script>
 
 <script>
+
+
+
 
 
 
@@ -779,6 +947,7 @@ window.goPage=function(p){
   if(p==='tree'){renderTree();setTimeout(treeFit,100);}
   if(p==='members')renderMembers();
   if(p==='album')renderAlbum();
+  if(p==='ai')initAI();
 };
 
 // ══ ADMIN ══
@@ -1280,6 +1449,7 @@ window.showDetail=function(id){
     (isAdmin?'<div style="margin-top:.5rem"><button class="btn btn-danger btn-sm" onclick="delMember(\''+m.id+'\')">حذف الفرد</button></div>':'');
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
   document.getElementById('d-addson').style.display=(isAdmin&&m.gender!=='أنثى')?'inline-flex':'none';
+  document.getElementById('d-addsons').style.display=(isAdmin&&m.gender!=='أنثى')?'inline-flex':'none';
   openOv('ov-detail');
 };
 window.editCurrent=function(){
@@ -2340,12 +2510,357 @@ window.doPhoneLogin=function(){
 };
 
 
+
+window.printFamilyTree=function(){
+  // Export members as JSON and open the print page
+  var data=JSON.stringify(members.map(function(m){
+    return {id:m.id,name:m.name,role:m.role||'',gender:m.gender||'',
+            status:m.status||'حي',parentId:m.parentId||null,job:m.job||''};
+  }));
+  localStorage.setItem('familyTreePrintData', data);
+  window.open('tree_print.html','_blank');
+  toast('سيفتح صفحة الطباعة في نافذة جديدة');
+};
+
+// ══ ADD MULTIPLE SONS ══
+var multiSonsParentId = null;
+var multiSonsCount = 0;
+
+window.openAddMultiSons = function(){
+  multiSonsParentId = currentId;
+  multiSonsCount = 0;
+  var m = members.find(function(x){return x.id===currentId;});
+  var parentName = m ? (m.name||'') : '';
+  document.getElementById('msons-title').textContent = 'إضافة أبناء';
+  document.getElementById('msons-parent-name').textContent = 'الأب: ' + parentName;
+  document.getElementById('msons-rows').innerHTML = '';
+  closeOv('ov-detail');
+  setTimeout(function(){
+    addSonRow();  // start with one row
+    openOv('ov-multi-sons');
+    haptic();
+  }, 280);
+};
+
+window.addSonRow = function(){
+  var rows = document.getElementById('msons-rows');
+  var current = rows.querySelectorAll('.son-row').length;
+  if(current >= 10){ toast('الحد الأقصى 10 أبناء في المرة الواحدة', true); return; }
+  multiSonsCount++;
+  var n = multiSonsCount;
+  var div = document.createElement('div');
+  div.className = 'son-row';
+  div.id = 'son-row-'+n;
+  div.innerHTML =
+    '<div class="son-row-header">' +
+      '<span class="son-row-num">الابن ' + n + '</span>' +
+      (current > 0 ? '<button class="son-row-del" onclick="removeSonRow('+n+')">✕</button>' : '') +
+    '</div>' +
+    '<div class="son-field" style="grid-column:1/-1">' +
+      '<label>الاسم *</label>' +
+      '<input id="son-name-'+n+'" placeholder="اسم الابن / البنت" dir="rtl">' +
+    '</div>' +
+    '<div class="son-field">' +
+      '<label>الجنس</label>' +
+      '<select id="son-gender-'+n+'">' +
+        '<option value="">— اختر —</option>' +
+        '<option value="ذكر">ذكر ♂</option>' +
+        '<option value="أنثى">أنثى ♀</option>' +
+      '</select>' +
+    '</div>' +
+    '<div class="son-field">' +
+      '<label>رقم الجوال</label>' +
+      '<input id="son-phone-'+n+'" placeholder="05xxxxxxxx" dir="ltr" type="tel">' +
+    '</div>' +
+    '<div class="son-field" style="grid-column:1/-1">' +
+      '<label>المدينة</label>' +
+      '<input id="son-city-'+n+'" placeholder="مدينة الإقامة" dir="rtl">' +
+    '</div>';
+  rows.appendChild(div);
+  // Focus first name field
+  setTimeout(function(){ var el=document.getElementById('son-name-'+n); if(el)el.focus(); }, 100);
+};
+
+window.removeSonRow = function(n){
+  var row = document.getElementById('son-row-'+n);
+  if(row) row.remove();
+  // Renumber headers
+  var rows = document.getElementById('msons-rows').querySelectorAll('.son-row');
+  rows.forEach(function(r, i){
+    var hdr = r.querySelector('.son-row-num');
+    if(hdr) hdr.textContent = 'الابن ' + (i+1);
+  });
+};
+
+window.saveMultiSons = async function(){
+  var rows = document.getElementById('msons-rows').querySelectorAll('.son-row');
+  if(!rows.length){ toast('أضف ابناً واحداً على الأقل', true); return; }
+
+  // Collect & validate
+  var toAdd = [];
+  var hasError = false;
+  rows.forEach(function(row){
+    var id = row.id.replace('son-row-','');
+    var nameEl = document.getElementById('son-name-'+id);
+    var name = nameEl ? nameEl.value.trim() : '';
+    if(!name){
+      if(nameEl) nameEl.style.borderColor='var(--err)';
+      hasError = true;
+      return;
+    }
+    if(nameEl) nameEl.style.borderColor='';
+    var gender = (document.getElementById('son-gender-'+id)||{}).value||'';
+    var phone  = (document.getElementById('son-phone-'+id)||{}).value||'';
+    var city   = (document.getElementById('son-city-'+id)||{}).value||'';
+    toAdd.push({ name:name, gender:gender, phone:phone, city:city });
+  });
+
+  if(hasError){ toast('الرجاء تعبئة اسم جميع الأبناء', true); return; }
+
+  // Save each
+  var par = members.find(function(m){return m.id===multiSonsParentId;});
+  var parFullName = par ? (par.fullName||par.name||'') : '';
+
+  var btn = document.querySelector('#ov-multi-sons .btn-primary');
+  if(btn){ btn.disabled=true; btn.textContent='جاري الحفظ…'; }
+
+  for(var i=0; i<toAdd.length; i++){
+    var s = toAdd[i];
+    var fullName = parFullName ? s.name+' '+parFullName : s.name;
+    var data = {
+      id: 'son_'+Date.now()+'_'+i+'_'+Math.random().toString(36).slice(2),
+      name: s.name,
+      fullName: fullName,
+      _fullName: fullName,
+      gender: s.gender,
+      status: 'حي',
+      phone: s.phone,
+      city: s.city,
+      email:'', company:'', job:'', role:'', linkedin:'',
+      birth:'', spouse:'', bio:'', externalKids:[],
+      parentId: multiSonsParentId,
+      photo: null,
+    };
+    await dbSet('members', data);
+  }
+
+  if(btn){ btn.disabled=false; btn.textContent='حفظ الجميع'; }
+  closeOv('ov-multi-sons');
+  if(!configured){ renderTree(); renderMembers(); renderStats(); }
+  toast('✓ تمت إضافة '+toAdd.length+' '+(toAdd.length===1?'فرد':'أفراد'));
+  haptic();
+};
+
+// ══════════════════════════════════════════════════════════
+//  🤖 AI SEARCH ENGINE — محرك البحث الذكي
+// ══════════════════════════════════════════════════════════
+var aiHistory = [];
+var aiInited  = false;
+
+function initAI(){
+  if(aiInited) return;
+  aiInited = true;
+  if(!aiHistory.length){
+    addAIMsg('bot',
+      'مرحباً! أنا مساعدك الذكي لشجرة العائلة 🌳\n\n' +
+      'يمكنني الإجابة عن أي سؤال يخص بيانات العائلة مثل:\n' +
+      '• من أكثر الأسماء تكراراً؟\n' +
+      '• من أبناء محمد بن إبراهيم؟\n' +
+      '• كم عدد المتوفين؟\n' +
+      '• من في جدة بدون رقم جوال؟\n\n' +
+      'اكتب سؤالك وسأجيبك فوراً!'
+    );
+  }
+}
+
+function askSuggestion(btn){
+  document.getElementById('ai-q').value = btn.textContent.trim();
+  sendAI();
+}
+
+async function sendAI(){
+  var q = document.getElementById('ai-q').value.trim();
+  if(!q) return;
+  document.getElementById('ai-q').value = '';
+  var btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+
+  // Add user message
+  addAIMsg('user', q);
+  aiHistory.push({role:'user', content:q});
+
+  // Loading indicator
+  var loadId = 'load-'+Date.now();
+  addAIMsg('bot', '<div class="ai-dots"><span></span><span></span><span></span></div>', loadId);
+
+  try {
+    // Build data summary for AI context
+    var ctx = buildFamilyContext();
+
+    // System prompt
+    var systemPrompt = [
+      'أنت مساعد ذكي متخصص في تحليل بيانات شجرة العائلة.',
+      'ستحصل على بيانات العائلة كاملة في رسالة النظام وتُجيب على أسئلة المستخدم بالعربية.',
+      'اجعل إجاباتك واضحة ومحددة. استخدم الأرقام والإحصاءات عندما يناسب.',
+      'إذا سأل عن شخص بعينه، ابحث بدقة في البيانات.',
+      'للأسماء المتعددة الكلمات (مثل: محمد بن إبراهيم)، افهم أن "بن" تعني الأب.',
+      'استخدم **النص الغامق** للأسماء والأرقام المهمة.',
+      '\n\n=== بيانات العائلة ===\n' + ctx
+    ].join('\n');
+
+    var messages = [
+      {role:'user', content:'[بيانات الشجرة محملة — جاهز للإجابة]'},
+      {role:'assistant', content:'فهمت! أنا جاهز للإجابة عن أي سؤال يخص بيانات شجرة العائلة.'}
+    ].concat(aiHistory);
+
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    var data = await resp.json();
+    var answer = (data.content && data.content[0] && data.content[0].text)
+      ? data.content[0].text
+      : 'حدث خطأ في الاتصال. تأكد من إعداد Firebase أو جرب مرة أخرى.';
+
+    // Remove loading
+    var loadEl = document.getElementById(loadId);
+    if(loadEl) loadEl.remove();
+
+    // Format and add answer
+    var formatted = formatAIResponse(answer);
+    addAIMsg('bot', formatted);
+    aiHistory.push({role:'assistant', content:answer});
+
+    // Keep history to last 10 exchanges
+    if(aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
+
+  } catch(err){
+    var loadEl2 = document.getElementById(loadId);
+    if(loadEl2) loadEl2.remove();
+    addAIMsg('bot', '⚠️ تعذّر الاتصال بالمساعد الذكي. تأكد من اتصالك بالإنترنت.');
+  }
+  btn.disabled = false;
+  haptic();
+}
+
+// Build a compact data context for the AI
+function buildFamilyContext(){
+  var lines = [];
+
+  // Summary stats
+  var total = members.length;
+  var males   = members.filter(function(m){return m.gender==='ذكر';}).length;
+  var females = members.filter(function(m){return m.gender==='أنثى';}).length;
+  var dead    = members.filter(function(m){return m.status==='متوفى';}).length;
+  var noPhone = members.filter(function(m){return !m.phone;}).length;
+
+  lines.push('إجمالي الأفراد: '+total+' ('+males+' ذكر، '+females+' أنثى، '+dead+' متوفى)');
+  lines.push('بدون رقم جوال: '+noPhone);
+
+  // Cities
+  var cities = {};
+  members.forEach(function(m){ if(m.city){cities[m.city]=(cities[m.city]||0)+1;} });
+  var cityList = Object.entries(cities).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  lines.push('المدن: '+cityList.map(function(c){return c[0]+'('+c[1]+')';}).join('، '));
+
+  // Name frequency
+  var names = {};
+  members.forEach(function(m){if(m.name){names[m.name]=(names[m.name]||0)+1;}});
+  var nameList = Object.entries(names).sort(function(a,b){return b[1]-a[1];});
+  lines.push('أكثر الأسماء: '+nameList.slice(0,8).map(function(n){return n[0]+'('+n[1]+')';}).join('، '));
+  lines.push('أقل الأسماء تكراراً: '+nameList.filter(function(n){return n[1]===1;}).slice(0,10).map(function(n){return n[0];}).join('، '));
+
+  // Age extremes
+  var withBirth = members.filter(function(m){return m.birth&&m.birth.length>=4;});
+  if(withBirth.length){
+    withBirth.sort(function(a,b){return a.birth.localeCompare(b.birth);});
+    var oldest = withBirth[0];
+    var youngest = withBirth[withBirth.length-1];
+    lines.push('الأكبر سناً: '+oldest.name+' (مولود '+oldest.birth+')');
+    lines.push('الأصغر سناً: '+youngest.name+' (مولود '+youngest.birth+')');
+  }
+
+  // Members list (compact) — include full family relationships
+  lines.push('\n--- قائمة الأفراد ---');
+  members.forEach(function(m){
+    var par = m.parentId ? members.find(function(x){return x.id===m.parentId;}) : null;
+    var kids = members.filter(function(x){return x.parentId===m.id;});
+    var parts = [
+      'الاسم:'+m.name,
+      'الجنس:'+(m.gender||'غير محدد'),
+      'الحالة:'+(m.status||'حي'),
+    ];
+    if(m.birth)   parts.push('ميلاد:'+m.birth);
+    if(m.city)    parts.push('مدينة:'+m.city);
+    if(m.phone)   parts.push('جوال:'+m.phone);
+    if(m.job)     parts.push('وظيفة:'+m.job);
+    if(m.company) parts.push('شركة:'+m.company);
+    if(par)       parts.push('أبوه:'+par.name);
+    if(kids.length) parts.push('أبناؤه:'+kids.map(function(k){return k.name;}).join('،'));
+    if(m.fullName && m.fullName !== m.name) parts.push('الاسم الكامل:'+m.fullName);
+    lines.push('• '+parts.join(' | '));
+  });
+
+  // Events & news
+  if(events.length){
+    lines.push('\n--- الفعاليات ('+events.length+') ---');
+    events.slice(0,5).forEach(function(e){
+      lines.push('• '+e.title+' ('+e.date+') - '+e.place);
+    });
+  }
+  if(news.length){
+    lines.push('\n--- الأخبار ('+news.length+') ---');
+    news.slice(0,5).forEach(function(n){
+      lines.push('• ['+n.cat+'] '+n.title+' ('+n.date+')');
+    });
+  }
+
+  return lines.join('\n');
+}
+
+// Format AI response with rich HTML
+function formatAIResponse(text){
+  // Convert **bold** to <strong>
+  text = text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  // Convert • to styled list items
+  text = text.replace(/^[•·-] (.+)$/gm,'<li>$1</li>');
+  if(text.includes('<li>')) text = text.replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>');
+  // Wrap numbered lists
+  text = text.replace(/^(\d+\.) (.+)$/gm,'<li>$2</li>');
+  // Line breaks
+  text = text.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
+  if(!text.startsWith('<')) text = '<p>'+text+'</p>';
+  return text;
+}
+
+function addAIMsg(role, html2, id){
+  var chat = document.getElementById('ai-chat');
+  var div  = document.createElement('div');
+  div.className = 'ai-msg '+role;
+  if(id) div.id = id;
+  var avatar = role==='bot'
+    ? '<div class="ai-avatar bot">🤖</div>'
+    : '<div class="ai-avatar user">👤</div>';
+  div.innerHTML = avatar + '<div class="ai-bubble '+role+'">'+html2+'</div>';
+  chat.appendChild(div);
+  div.scrollIntoView({behavior:'smooth', block:'end'});
+}
 // Wait for DOM to be fully ready
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
   init();
 }
+
+
+
 
 
 
