@@ -385,7 +385,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="about-logo-area"></div>
     <div class="about-content" id="about-content">جاري التحميل…</div>
     <div class="version-badge" id="version-badge">
-      <span class="version-num">V27</span>
+      <span class="version-num">V28</span>
       <span class="version-date">26 مارس 2026</span>
     </div>
   </div>
@@ -730,7 +730,8 @@ async function init(){
     loadDemo();
     loadSettings();
     hideLoader();
-    setTimeout(treeInit, 50);
+    treeInit();
+    renderTree('',true);
     setTimeout(checkPhoneLogin, 600);
     return;
   }
@@ -760,14 +761,16 @@ async function init(){
 
     loadSettings();
     hideLoader();
-    setTimeout(treeInit,50);
+    treeInit();
+    renderTree('',true);
     setTimeout(checkPhoneLogin, 600);
   }catch(e){
     console.error('Firebase error:',e);
     loadDemo();
     loadSettings();
     hideLoader();
-    setTimeout(treeInit, 50);
+    treeInit();
+    renderTree('',true);
     toast('تعذّر الاتصال — تم التشغيل بالبيانات التجريبية',true);
   }
   try{window.Capacitor?.Plugins?.SplashScreen?.hide();}catch(e){}
@@ -793,7 +796,7 @@ function loadDemo(){
     {id:'n1',title:'تخرج نورة الحربي',cat:'تهنئة',body:'أتمّت نورة مسيرتها الدراسية بتقدير ممتاز.',date:'2025-10-01'},
     {id:'n2',title:'ترقية محمد الحربي',cat:'إعلان',body:'ترقية محمد إلى منصب المدير الإقليمي في أرامكو.',date:'2025-09-15'}
   ];
-  renderStats();renderTree('',true);renderMembers();
+  renderStats();renderMembers();
 }
 
 // ══ DB ══
@@ -1090,29 +1093,37 @@ function treeDraw(){
   c.save();c.translate(TC.ox,TC.oy);c.scale(TC.scale,TC.scale);
   const NW=TC.NW,NH=TC.NH;
 
-  // Viewport culling: only draw visible nodes (+1 node margin)
-  const margin=1;
+  // Viewport bounds in tree coordinates (with generous margin for edges)
+  const margin=2;
   const vx0=(-TC.ox)/TC.scale - margin*NW;
   const vy0=(-TC.oy)/TC.scale - margin*NH;
-  const vx1=vx0+(cw/TC.scale)+(margin+1)*NW;
-  const vy1=vy0+(ch/TC.scale)+(margin+1)*NH;
-  const visible=TC.nodes.filter(n=>n.x<vx1&&n.x+NW>vx0&&n.y<vy1&&n.y+NH>vy0);
+  const vx1=vx0+(cw/TC.scale)+(margin+2)*NW;
+  const vy1=vy0+(ch/TC.scale)+(margin+2)*NH;
 
-  // Build fast parentId→node map
+  // Build fast lookup
   const nodeById={};TC.nodes.forEach(n=>nodeById[n.id]=n);
 
-  // Edges (only for visible nodes)
-  c.strokeStyle='rgba(184,147,90,0.35)';c.lineWidth=1.5/TC.scale;
-  visible.forEach(n=>{
+  // Draw ALL edges where at least one end is in/near viewport
+  c.strokeStyle='rgba(184,147,90,0.35)';c.lineWidth=Math.max(1,1.5/Math.sqrt(TC.scale));
+  c.beginPath();
+  TC.nodes.forEach(n=>{
     if(!n.m.parentId)return;
     const par=nodeById[n.m.parentId];if(!par)return;
     const px=par.x+NW/2,py=par.y+NH;
     const cx2=n.x+NW/2,cy2=n.y;
+    // Draw if either end is visible (or the line crosses viewport)
+    const pVis=(par.x+NW>vx0&&par.x<vx1&&par.y+NH>vy0&&par.y<vy1);
+    const cVis=(n.x+NW>vx0&&n.x<vx1&&n.y+NH>vy0&&n.y<vy1);
+    // Also check if the vertical span crosses the viewport
+    const spanVis=(Math.min(py,cy2)<vy1&&Math.max(py,cy2)>vy0&&Math.min(px,cx2)<vx1&&Math.max(px,cx2)>vx0);
+    if(!pVis&&!cVis&&!spanVis)return;
     const my=(py+cy2)/2;
-    c.beginPath();c.moveTo(px,py);c.bezierCurveTo(px,my,cx2,my,cx2,cy2);c.stroke();
+    c.moveTo(px,py);c.bezierCurveTo(px,my,cx2,my,cx2,cy2);
   });
+  c.stroke();
 
-  // Nodes
+  // Draw only visible nodes
+  const visible=TC.nodes.filter(n=>n.x+NW>vx0&&n.x<vx1&&n.y+NH>vy0&&n.y<vy1);
   visible.forEach(n=>drawNode(c,n));
   c.restore();
 }
