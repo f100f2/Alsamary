@@ -20,6 +20,7 @@
   --shadow:0 2px 20px rgba(26,22,18,.07);
   --shadow2:0 8px 32px rgba(26,22,18,.12);
   --shadow3:0 20px 60px rgba(26,22,18,.15);
+  --display-font:'Playfair Display',serif;
   --sat:env(safe-area-inset-top,44px);
   --sab:env(safe-area-inset-bottom,34px);
   --sal:env(safe-area-inset-left,0px);
@@ -38,7 +39,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
 .top-bar{background:rgba(247,244,239,.92);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);border-bottom:1px solid rgba(228,221,210,.6);padding-top:var(--sat);position:sticky;top:0;z-index:100;transition:background .3s}
 .top-bar-inner{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 1.1rem}
-.top-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);display:flex;align-items:center;gap:.4rem;transition:transform .2s}
+.top-logo{font-family:var(--display-font);font-size:1.1rem;color:var(--gold);display:flex;align-items:center;gap:.4rem;transition:transform .2s}
 .top-logo:active{transform:scale(.96)}
 .top-logo svg{width:18px;height:18px;fill:var(--gold)}
 .adm-btn{background:none;border:none;font-family:'Tajawal',sans-serif;font-size:.8rem;color:var(--ink3);cursor:pointer;padding:.35rem .7rem;border-radius:10px;transition:all .2s}
@@ -59,7 +60,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .drawer-logo{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
 .drawer-logo img{width:100%;height:100%;object-fit:cover}
 .drawer-logo svg{width:22px;height:22px;fill:#fff}
-.drawer-site-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink);font-weight:400}
+.drawer-site-name{font-family:var(--display-font);font-size:1rem;color:var(--ink);font-weight:400}
 .drawer-nav{flex:1;overflow-y:auto;padding:.8rem 0}
 .drawer-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.3rem;font-family:'Tajawal',sans-serif;font-size:.9rem;color:var(--ink2);cursor:pointer;border:none;background:none;width:100%;text-align:right;transition:all .15s;border-right:3px solid transparent}
 .drawer-item:active{background:var(--sand2)}
@@ -73,13 +74,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .page.on{display:block}
 @keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .page-hero{margin-bottom:1.35rem;padding-bottom:1rem;border-bottom:1px solid var(--sand3)}
-.page-hero h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--ink);font-weight:400;margin-bottom:.25rem;animation:heroIn .35s ease .05s both}
+.page-hero h1{font-family:var(--display-font);font-size:1.5rem;color:var(--ink);font-weight:400;margin-bottom:.25rem;animation:heroIn .35s ease .05s both}
 .page-hero p{font-size:.8rem;color:var(--ink3);animation:heroIn .35s ease .1s both}
 @keyframes heroIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
 /* Consistent inner-page section headers */
 .section-header{margin-bottom:1rem;padding-bottom:.6rem}
 .section-header .sec-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:.15rem}
-.section-header .sec-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink);font-weight:400}
+.section-header .sec-title{font-family:var(--display-font);font-size:1.1rem;color:var(--ink);font-weight:400}
 #toast{position:fixed;bottom:calc(72px + var(--sab));left:1rem;right:1rem;background:var(--ink);color:var(--white);font-size:.82rem;padding:.7rem 1.1rem;border-radius:14px;z-index:8000;opacity:0;transform:translateY(8px);transition:all .25s ease;pointer-events:none;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.2)}
 #toast.show{opacity:1;transform:translateY(0)}
 #toast.err{background:var(--err)}
@@ -120,7 +121,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .m-card{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem 1.1rem;cursor:pointer;transition:all .15s ease;box-shadow:var(--shadow);display:flex;align-items:center;gap:.9rem}
 .m-card:active{transform:scale(.98);background:var(--sand)}
 .m-card.deceased{opacity:.72;border-style:dashed}
-.m-av{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--white);overflow:hidden;box-shadow:0 3px 12px rgba(184,147,90,.2)}
+.m-av{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--display-font);font-size:1.1rem;font-weight:700;color:var(--white);overflow:hidden;box-shadow:0 3px 12px rgba(184,147,90,.2)}
 .m-av img{width:100%;height:100%;object-fit:cover}
 .m-av.f{background:linear-gradient(135deg,#c9748c,#e8a0b0)}
 .m-av.dead{background:linear-gradient(135deg,#999,#bbb)}
@@ -171,7 +172,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .up-rm{position:absolute;top:2px;right:2px;width:16px;height:16px;background:rgba(192,57,43,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.55rem;cursor:pointer;color:#fff;border:none}
 /* PHOTO */
 .photo-wrap{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-bottom:1rem}
-.photo-ring{width:80px;height:80px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--white);cursor:pointer;border:3px solid var(--sand3);position:relative;box-shadow:0 4px 16px rgba(184,147,90,.25);transition:all .25s}
+.photo-ring{width:80px;height:80px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--display-font);font-size:1.7rem;font-weight:700;color:var(--white);cursor:pointer;border:3px solid var(--sand3);position:relative;box-shadow:0 4px 16px rgba(184,147,90,.25);transition:all .25s}
 .photo-ring:hover{transform:scale(1.05);box-shadow:0 6px 24px rgba(184,147,90,.3)}
 .photo-ring img{width:100%;height:100%;object-fit:cover}
 .photo-ov{position:absolute;inset:0;background:rgba(26,22,18,.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s;font-size:1.2rem}
@@ -184,7 +185,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .modal{background:var(--white);border-radius:22px 22px 0 0;padding:1.5rem 1.25rem;padding-bottom:calc(1.25rem + var(--sab));width:100%;max-width:600px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -12px 50px rgba(26,22,18,.18);animation:sheetUp .35s cubic-bezier(.34,1.2,.64,1)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:36px;height:4px;background:var(--sand3);border-radius:2px;margin:0 auto 1.1rem}
-.modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--ink);margin-bottom:1.2rem;font-weight:400}
+.modal-title{font-family:var(--display-font);font-size:1.3rem;color:var(--ink);margin-bottom:1.2rem;font-weight:400}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .field{margin-bottom:.75rem}
 .field label{display:block;font-size:.76rem;color:var(--ink3);margin-bottom:.28rem;font-weight:500}
@@ -200,12 +201,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .modal-footer{display:flex;gap:.55rem;justify-content:flex-end;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid var(--sand3)}
 /* DETAIL */
 .d-profile{display:flex;align-items:center;gap:.9rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--sand3)}
-.d-av{width:62px;height:62px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--white);overflow:hidden;box-shadow:0 4px 16px rgba(184,147,90,.25);transition:transform .25s}
+.d-av{width:62px;height:62px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--display-font);font-size:1.4rem;font-weight:700;color:var(--white);overflow:hidden;box-shadow:0 4px 16px rgba(184,147,90,.25);transition:transform .25s}
 .d-profile:hover .d-av{transform:scale(1.05)}
 .d-av img{width:100%;height:100%;object-fit:cover}
 .d-av.f{background:linear-gradient(135deg,#c9748c,#e8a0b0)}
 .d-av.dead{background:linear-gradient(135deg,#999,#bbb)}
-.d-name{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--ink);font-weight:400}
+.d-name{font-family:var(--display-font);font-size:1.25rem;color:var(--ink);font-weight:400}
 .d-role{font-size:.8rem;color:var(--gold);margin-top:.15rem}
 .d-section{margin-bottom:.9rem}
 .d-sec-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-weight:600;margin-bottom:.45rem}
@@ -284,7 +285,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .hero-gradient{position:absolute;inset:0;background:linear-gradient(0deg,rgba(26,22,18,.7) 0%,rgba(26,22,18,.2) 50%,rgba(26,22,18,.05) 100%)}
 .hero-content{position:absolute;bottom:0;left:0;right:0;padding:2rem 1.5rem calc(2rem + var(--sab));color:#fff;z-index:2}
 .hero-badge{display:inline-block;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);padding:.25rem .8rem;border-radius:20px;font-size:.7rem;font-weight:500;margin-bottom:.8rem;letter-spacing:.04em}
-.hero h1{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:400;line-height:1.3;margin-bottom:.5rem;text-shadow:0 2px 20px rgba(0,0,0,.3)}
+.hero h1{font-family:var(--display-font);font-size:2.2rem;font-weight:400;line-height:1.3;margin-bottom:.5rem;text-shadow:0 2px 20px rgba(0,0,0,.3)}
 .hero p{font-size:.9rem;opacity:.85;line-height:1.6;max-width:400px}
 .hero-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;z-index:3}
 .hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);border:none;cursor:pointer;transition:all .25s;padding:0}
@@ -296,7 +297,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
 .home-sec.visible{opacity:1;transform:translateY(0)}
 .home-sec-header{margin-bottom:1.2rem}
 .home-sec-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:.3rem}
-.home-sec-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);font-weight:400;line-height:1.4}
+.home-sec-title{font-family:var(--display-font);font-size:1.4rem;color:var(--ink);font-weight:400;line-height:1.4}
 /* Stats strip */
 .stats-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:.5rem}
 .ss-item{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem .6rem;text-align:center;box-shadow:var(--shadow);transition:transform .15s}
@@ -478,7 +479,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V31 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V32 · شجرة العائلة</div>
 </div>
 
 <!-- MODALS -->
@@ -2079,7 +2080,7 @@ window.delNw=async function(id){
 // ══════════════════════════════════════════════════
 //  SETTINGS — logo, site name, about text
 // ══════════════════════════════════════════════════
-var siteSettings={logo:null,siteName:'شجرة العائلة',aboutText:'',homeSubtitle:'',heroImages:[],primaryColor:'#b8935a',fontFamily:'Tajawal'};
+var siteSettings={logo:null,drawerLogo:null,siteName:'شجرة العائلة',aboutText:'',homeSubtitle:'',heroImages:[],primaryColor:'#b8935a',secondaryColor:'#d4aa72',bgColor:'#f7f4ef',textColor:'#1a1612',textSecondary:'#4a443c',textMuted:'#8a8078',fontFamily:'Tajawal',displayFont:'Playfair Display'};
 var pendingLogo=null;
 
 function loadSettings(){
@@ -2119,9 +2120,10 @@ function applySettings(){
   var wrap=document.getElementById('top-logo-wrap');
   var svg=document.getElementById('top-logo-svg');
   var txt=document.getElementById('top-logo-text');
-  if(txt) txt.textContent=siteSettings.siteName||'شجرة العائلة';
+  // If logo exists: show logo, hide name. No logo: show name with icon.
   if(siteSettings.logo){
     if(svg) svg.style.display='none';
+    if(txt) txt.style.display='none';
     var existImg=document.getElementById('top-logo-custom-img');
     if(!existImg){
       existImg=document.createElement('img');
@@ -2133,8 +2135,9 @@ function applySettings(){
     existImg.style.display='block';
   } else {
     if(svg) svg.style.display='';
-    var old=document.getElementById('top-logo-custom-img');
-    if(old) old.style.display='none';
+    if(txt){txt.style.display='';txt.textContent=siteSettings.siteName||'شجرة العائلة';}
+    var old2=document.getElementById('top-logo-custom-img');
+    if(old2) old2.style.display='none';
   }
   // Home page
   renderHome();
@@ -2147,10 +2150,13 @@ function applySettings(){
   if(sat) sat.value=siteSettings.aboutText||'';
   // Hero image preview
   pendingHeroImgs=null;renderHeroPreview();
-  var pc=document.getElementById('settings-primary-color');
-  if(pc) pc.value=siteSettings.primaryColor||'#b8935a';
-  var ff=document.getElementById('settings-font');
-  if(ff) ff.value=siteSettings.fontFamily||'Tajawal';
+  // Color & font prefill
+  fillColorInputs();
+  // Drawer logo preview
+  var dlp=document.getElementById('drawer-logo-img-preview');
+  var dlph=document.getElementById('drawer-logo-ph');
+  if(siteSettings.drawerLogo){if(dlp){dlp.src=siteSettings.drawerLogo;dlp.style.display='block';}if(dlph)dlph.style.display='none';}
+  else{if(dlp)dlp.style.display='none';if(dlph)dlph.style.display='block';}
   // Logo preview in settings
   var lpi=document.getElementById('logo-preview-img');
   var lpp=document.getElementById('logo-preview-placeholder');
@@ -2200,10 +2206,16 @@ window.saveSettings=function(){
   siteSettings.homeSubtitle=homeSubtitle;
   if(pendingHeroImgs!==null) siteSettings.heroImages=pendingHeroImgs;
   pendingHeroImgs=null;
-  var pc=document.getElementById('settings-primary-color');
-  if(pc) siteSettings.primaryColor=pc.value;
-  var ff=document.getElementById('settings-font');
-  if(ff) siteSettings.fontFamily=ff.value;
+  // Colors
+  var cm={'s-primary':'primaryColor','s-secondary':'secondaryColor','s-bg':'bgColor','s-text':'textColor','s-text2':'textSecondary','s-text3':'textMuted'};
+  for(var cid in cm){var cel=document.getElementById(cid);if(cel)siteSettings[cm[cid]]=cel.value;}
+  // Fonts
+  var sff=document.getElementById('s-font');if(sff)siteSettings.fontFamily=sff.value;
+  var sdf=document.getElementById('s-display-font');if(sdf)siteSettings.displayFont=sdf.value;
+  // Drawer logo
+  if(pendingDrawerLogo==='__remove__')siteSettings.drawerLogo=null;
+  else if(pendingDrawerLogo)siteSettings.drawerLogo=pendingDrawerLogo;
+  pendingDrawerLogo=null;
   pendingLogo=null;
   var json=JSON.stringify(siteSettings);
   localStorage.setItem('familySiteSettings',json);
@@ -2698,6 +2710,33 @@ window.toggleDrawer=function(){
   d.classList.toggle('open');ov.classList.toggle('open');hb.classList.toggle('open');
 };
 
+// ══ DRAWER LOGO ══
+var pendingDrawerLogo=null;
+window.onDrawerLogoSelect=function(e){
+  var f=e.target.files[0];if(!f)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();img.onload=function(){
+      var MAX=200,c=document.createElement('canvas');
+      var w=img.width,h=img.height;
+      if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      pendingDrawerLogo=c.toDataURL('image/png');
+      var dlp=document.getElementById('drawer-logo-img-preview');
+      var dlph=document.getElementById('drawer-logo-ph');
+      if(dlp){dlp.src=pendingDrawerLogo;dlp.style.display='block';}
+      if(dlph)dlph.style.display='none';
+    };img.src=ev.target.result;
+  };reader.readAsDataURL(f);
+};
+window.removeDrawerLogo=function(){
+  pendingDrawerLogo='__remove__';
+  var dlp=document.getElementById('drawer-logo-img-preview');
+  var dlph=document.getElementById('drawer-logo-ph');
+  if(dlp)dlp.style.display='none';
+  if(dlph)dlph.style.display='block';
+};
+
 // ══ HERO IMAGE MANAGEMENT ══
 var pendingHeroImgs=null;
 window.onHeroImgSelect=function(e){
@@ -2744,24 +2783,77 @@ function observeHomeSections(){
 
 // ══ APPLY THEME ══
 function applyTheme(){
-  var root=document.documentElement;
-  if(siteSettings.primaryColor){
-    root.style.setProperty('--gold',siteSettings.primaryColor);
-    // Derive lighter and darker
-    root.style.setProperty('--accent',siteSettings.primaryColor);
+  var r=document.documentElement.style;
+  var s=siteSettings;
+  // Colors
+  if(s.primaryColor) r.setProperty('--gold',s.primaryColor);
+  if(s.secondaryColor) r.setProperty('--gold2',s.secondaryColor);
+  if(s.bgColor){
+    r.setProperty('--sand',s.bgColor);
+    // Derive sand2/sand3 slightly darker
+    r.setProperty('--sand2',adjustColor(s.bgColor,-8));
+    r.setProperty('--sand3',adjustColor(s.bgColor,-18));
   }
-  if(siteSettings.fontFamily && siteSettings.fontFamily!=='Tajawal'){
-    // Load font dynamically
+  if(s.textColor) r.setProperty('--ink',s.textColor);
+  if(s.textSecondary) r.setProperty('--ink2',s.textSecondary);
+  if(s.textMuted) r.setProperty('--ink3',s.textMuted);
+  // Gold derived
+  if(s.primaryColor){
+    r.setProperty('--gold3',adjustColor(s.primaryColor,40));
+    r.setProperty('--gold-dim',s.primaryColor+'14');
+    r.setProperty('--accent',s.primaryColor);
+  }
+  // Fonts — load ALL needed fonts
+  var fontsToLoad=[];
+  var bodyFont=s.fontFamily||'Tajawal';
+  var displayFont=(s.displayFont==='same'||!s.displayFont)?bodyFont:(s.displayFont||'Playfair Display');
+  if(bodyFont!=='Tajawal') fontsToLoad.push(bodyFont);
+  if(displayFont!=='Playfair Display'&&displayFont!==bodyFont) fontsToLoad.push(displayFont);
+  if(fontsToLoad.length){
     var link=document.getElementById('dynamic-font');
     if(!link){link=document.createElement('link');link.id='dynamic-font';link.rel='stylesheet';document.head.appendChild(link);}
-    link.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(siteSettings.fontFamily)+':wght@300;400;500;700&display=swap';
-    document.body.style.fontFamily="'"+siteSettings.fontFamily+"',sans-serif";
+    link.href='https://fonts.googleapis.com/css2?'+fontsToLoad.map(function(f){return 'family='+encodeURIComponent(f)+':wght@300;400;500;700';}).join('&')+'&display=swap';
   }
+  // Apply body font to EVERYTHING
+  document.body.style.fontFamily="'"+bodyFont+"',sans-serif";
+  // Apply display font to all headings
+  var displayRule="'"+displayFont+"',serif";
+  document.querySelectorAll('.page-hero h1,.home-sec-title,.modal-title,.hero h1,.drawer-site-name,.top-logo').forEach(function(el){
+    el.style.fontFamily=displayRule;
+  });
+  r.setProperty('--display-font',displayRule);
   // Update drawer
   var dn=document.getElementById('drawer-name');
-  if(dn) dn.textContent=siteSettings.siteName||'شجرة العائلة';
+  if(dn){dn.textContent=s.siteName||'شجرة العائلة';dn.style.fontFamily=displayRule;}
   var dl=document.getElementById('drawer-logo');
-  if(dl&&siteSettings.logo) dl.innerHTML='<img src="'+siteSettings.logo+'" style="width:100%;height:100%;object-fit:cover">';
+  if(dl){
+    var dImg=s.drawerLogo||s.logo;
+    if(dImg) dl.innerHTML='<img src="'+dImg+'" style="width:100%;height:100%;object-fit:cover">';
+    else dl.innerHTML='<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg>';
+  }
+  // Theme-color meta
+  var mc=document.querySelector('meta[name=theme-color]');
+  if(mc&&s.bgColor) mc.content=s.bgColor;
+}
+// Helper: adjust hex color brightness
+function adjustColor(hex,amt){
+  hex=hex.replace('#','');
+  var r=Math.max(0,Math.min(255,parseInt(hex.substring(0,2),16)+amt));
+  var g=Math.max(0,Math.min(255,parseInt(hex.substring(2,4),16)+amt));
+  var b=Math.max(0,Math.min(255,parseInt(hex.substring(4,6),16)+amt));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+window.resetColors=function(){
+  siteSettings.primaryColor='#b8935a';siteSettings.secondaryColor='#d4aa72';
+  siteSettings.bgColor='#f7f4ef';siteSettings.textColor='#1a1612';
+  siteSettings.textSecondary='#4a443c';siteSettings.textMuted='#8a8078';
+  fillColorInputs();applyTheme();toast('تم استعادة الألوان الافتراضية');
+};
+function fillColorInputs(){
+  var m={'s-primary':'primaryColor','s-secondary':'secondaryColor','s-bg':'bgColor','s-text':'textColor','s-text2':'textSecondary','s-text3':'textMuted'};
+  for(var id in m){var el=document.getElementById(id);if(el)el.value=siteSettings[m[id]]||el.defaultValue;}
+  var ff=document.getElementById('s-font');if(ff)ff.value=siteSettings.fontFamily||'Tajawal';
+  var df=document.getElementById('s-display-font');if(df)df.value=siteSettings.displayFont||'Playfair Display';
 }
 
 // ══ HOME LANDING PAGE ══
@@ -2854,7 +2946,7 @@ function renderHome(){
   }
 
   // Version
-  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V31 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
+  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V32 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
 
   secWrap.innerHTML=html2;
   setTimeout(observeHomeSections,100);
@@ -2994,18 +3086,55 @@ if(document.readyState==='loading'){
       </div>
     </div>
     <div class="settings-section">
-      <div class="settings-sec-title">🎨 الألوان والخط</div>
-      <div class="field"><label>اللون الرئيسي</label>
-        <input type="color" id="settings-primary-color" value="#b8935a" style="width:100%;height:38px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px">
+      <div class="settings-sec-title">🎨 الألوان</div>
+      <div class="form-grid">
+        <div class="field"><label>اللون الرئيسي</label><input type="color" id="s-primary" value="#b8935a" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
+        <div class="field"><label>اللون الثانوي</label><input type="color" id="s-secondary" value="#d4aa72" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
+        <div class="field"><label>لون الخلفية</label><input type="color" id="s-bg" value="#f7f4ef" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
+        <div class="field"><label>لون النص الرئيسي</label><input type="color" id="s-text" value="#1a1612" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
+        <div class="field"><label>لون النص الفرعي</label><input type="color" id="s-text2" value="#4a443c" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
+        <div class="field"><label>لون النص الباهت</label><input type="color" id="s-text3" value="#8a8078" style="width:100%;height:36px;border:1px solid var(--sand3);border-radius:8px;cursor:pointer;padding:2px"></div>
       </div>
-      <div class="field"><label>الخط</label>
-        <select id="settings-font">
-          <option value="Tajawal">تجوال (Tajawal)</option>
-          <option value="Cairo">كايرو (Cairo)</option>
-          <option value="Almarai">المراعي (Almarai)</option>
-          <option value="Noto Kufi Arabic">نوتو كوفي (Noto Kufi)</option>
-          <option value="IBM Plex Sans Arabic">IBM بلكس عربي</option>
-        </select>
+      <button class="btn btn-sm btn-ghost" onclick="resetColors()" style="margin-top:.4rem;width:100%;justify-content:center">↩️ استعادة الألوان الافتراضية</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-sec-title">🔤 الخطوط</div>
+      <div class="form-grid">
+        <div class="field"><label>خط النصوص</label>
+          <select id="s-font">
+            <option value="Tajawal">تجوال (Tajawal)</option>
+            <option value="Cairo">كايرو (Cairo)</option>
+            <option value="Almarai">المراعي (Almarai)</option>
+            <option value="Noto Kufi Arabic">نوتو كوفي</option>
+            <option value="IBM Plex Sans Arabic">IBM بلكس عربي</option>
+            <option value="Changa">تشانجا (Changa)</option>
+            <option value="El Messiri">المسيري</option>
+            <option value="Readex Pro">ريديكس برو</option>
+          </select>
+        </div>
+        <div class="field"><label>خط العناوين</label>
+          <select id="s-display-font">
+            <option value="Playfair Display">بلايفير (Playfair)</option>
+            <option value="same">نفس خط النصوص</option>
+            <option value="Amiri">أميري (Amiri)</option>
+            <option value="Lemonada">ليموناضة (Lemonada)</option>
+            <option value="Reem Kufi">ريم كوفي</option>
+            <option value="Aref Ruqaa">عارف رقعة</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-sec-title">🖼️ شعار القائمة الجانبية</div>
+      <p style="font-size:.72rem;color:var(--ink3);margin-bottom:.5rem">يمكن أن يختلف عن شعار الموقع الرئيسي</p>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <div id="drawer-logo-preview" style="width:50px;height:50px;background:var(--sand2);border-radius:50%;border:1px solid var(--sand3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+          <span id="drawer-logo-ph" style="font-size:.6rem;color:var(--ink3)">بدون</span>
+          <img id="drawer-logo-img-preview" style="display:none;width:100%;height:100%;object-fit:cover">
+        </div>
+        <button class="btn btn-sm" onclick="document.getElementById('drawer-logo-in').click()">📁 اختر صورة</button>
+        <button class="btn btn-sm btn-danger" onclick="removeDrawerLogo()">✕</button>
+        <input type="file" id="drawer-logo-in" accept="image/*" style="display:none" onchange="onDrawerLogoSelect(event)">
       </div>
     </div>
 
