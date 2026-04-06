@@ -403,9 +403,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
         <input class="search" placeholder="ابحث بالاسم أو الاسم الكامل أو الوظيفة…" id="members-q" oninput="filterMembers()">
         <span class="search-ico">🔍</span>
       </div>
-      <span id="am-add" style="display:none;gap:.4rem;align-items:center">
+      <span id="am-add" style="display:none;gap:.4rem;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button>
-        <button class="btn btn-sm" onclick="exportMembersExcel()" style="border-color:var(--ok);color:var(--ok)" title="تصدير Excel">📤</button>
+        <button class="btn btn-sm" onclick="exportMembersExcel()" style="border-color:var(--ok);color:var(--ok)" title="تصدير Excel">📤 Excel</button>
+        <button class="btn btn-sm" onclick="exportFullBackup()" style="border-color:#3498db;color:#3498db" title="نسخة احتياطية كاملة">💾 نسخة</button>
+        <button class="btn btn-sm" onclick="document.getElementById('backup-in').click()" style="border-color:#9b59b6;color:#9b59b6" title="استيراد نسخة احتياطية">📥 استيراد</button>
+        <input type="file" id="backup-in" accept=".json" style="display:none" onchange="importFullBackup(event)">
         <button class="btn btn-sm btn-danger" onclick="deleteAllMembers()" title="حذف الكل">🗑️</button>
       </span>
     </div>
@@ -479,7 +482,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V32 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V33 · شجرة العائلة</div>
 </div>
 
 <!-- MODALS -->
@@ -562,6 +565,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       </div>
     </div>
     <div id="d-body"></div>
+    <div style="display:flex;gap:.4rem;padding:.6rem 0;border-top:1px solid var(--sand3);margin-top:.5rem">
+      <button class="btn btn-sm" onclick="showInTree(currentId)" style="flex:1;justify-content:center;border-color:var(--gold);color:var(--gold)">🌳 عرض في الشجرة</button>
+      <button class="btn btn-sm" onclick="printMember(currentId)" style="flex:1;justify-content:center;border-color:var(--ink3);color:var(--ink2)">🖨️ طباعة</button>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
       <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
@@ -2620,6 +2627,17 @@ window.addSonRow = function(){
       '</select>' +
     '</div>' +
     '<div class="son-field">' +
+      '<label>الحالة</label>' +
+      '<select id="son-status-'+n+'">' +
+        '<option value="حي">حي ✓</option>' +
+        '<option value="متوفى">متوفى 🕊</option>' +
+      '</select>' +
+    '</div>' +
+    '<div class="son-field">' +
+      '<label>الكنية</label>' +
+      '<input id="son-role-'+n+'" placeholder="أبو محمد…" dir="rtl">' +
+    '</div>' +
+    '<div class="son-field">' +
       '<label>رقم الجوال</label>' +
       '<input id="son-phone-'+n+'" placeholder="05xxxxxxxx" dir="ltr" type="tel">' +
     '</div>' +
@@ -2661,9 +2679,11 @@ window.saveMultiSons = async function(){
     }
     if(nameEl) nameEl.style.borderColor='';
     var gender = (document.getElementById('son-gender-'+id)||{}).value||'';
+    var status = (document.getElementById('son-status-'+id)||{}).value||'حي';
+    var role   = (document.getElementById('son-role-'+id)||{}).value||'';
     var phone  = (document.getElementById('son-phone-'+id)||{}).value||'';
     var city   = (document.getElementById('son-city-'+id)||{}).value||'';
-    toAdd.push({ name:name, gender:gender, phone:phone, city:city });
+    toAdd.push({ name:name, gender:gender, status:status, role:role, phone:phone, city:city });
   });
 
   if(hasError){ toast('الرجاء تعبئة اسم جميع الأبناء', true); return; }
@@ -2684,10 +2704,10 @@ window.saveMultiSons = async function(){
       fullName: fullName,
       _fullName: fullName,
       gender: s.gender,
-      status: 'حي',
+      status: s.status||'حي',
       phone: s.phone,
       city: s.city,
-      email:'', company:'', job:'', role:'', linkedin:'',
+      email:'', company:'', job:'', role:s.role||'', linkedin:'',
       birth:'', spouse:'', bio:'', externalKids:[],
       parentId: multiSonsParentId,
       photo: null,
@@ -2702,6 +2722,269 @@ window.saveMultiSons = async function(){
   haptic();
 };
 
+
+
+
+// ══ FULL BACKUP (EXPORT/IMPORT) ══
+window.exportFullBackup=function(){
+  toast('جاري إنشاء النسخة الاحتياطية…');
+  var backup={
+    version:'V33',
+    date:new Date().toISOString(),
+    siteName:siteSettings.siteName||'شجرة العائلة',
+    members:members,
+    events:events,
+    news:news,
+    photos:photos,
+    siteSettings:siteSettings
+  };
+  var json=JSON.stringify(backup);
+  var blob=new Blob([json],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='backup_'+(siteSettings.siteName||'family')+'_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✅ تم تصدير النسخة الاحتياطية بنجاح');
+};
+
+window.importFullBackup=function(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var backup=JSON.parse(ev.target.result);
+      if(!backup.members||!Array.isArray(backup.members)){
+        toast('ملف غير صالح — لا يحتوي على بيانات أعضاء',true);return;
+      }
+      var msg='استيراد نسخة احتياطية:\n\n';
+      msg+='• '+backup.members.length+' عضو\n';
+      msg+='• '+(backup.events?backup.events.length:0)+' فعالية\n';
+      msg+='• '+(backup.news?backup.news.length:0)+' خبر\n';
+      msg+='• '+(backup.photos?backup.photos.length:0)+' صورة\n';
+      if(backup.date) msg+='\nتاريخ النسخة: '+new Date(backup.date).toLocaleDateString('ar');
+      msg+='\n\n⚠️ سيتم استبدال جميع البيانات الحالية!';
+      if(!confirm(msg))return;
+      if(!confirm('تأكيد أخير — هل أنت متأكد من استبدال جميع البيانات؟'))return;
+      
+      toast('جاري الاستيراد…');
+      
+      // Import members
+      var imported=0;
+      var total=backup.members.length;
+      
+      (async function(){
+        // Clear existing
+        if(configured && db){
+          var batch;var count=0;
+          // Delete existing members
+          var existing=await db.collection('members').get();
+          batch=db.batch();count=0;
+          existing.forEach(function(doc){batch.delete(doc.ref);count++;if(count>=400){batch.commit();batch=db.batch();count=0;}});
+          if(count>0) await batch.commit();
+          
+          // Add new members
+          batch=db.batch();count=0;
+          backup.members.forEach(function(m){
+            var ref=db.collection('members').doc(m.id||('imp_'+Date.now()+'_'+Math.random().toString(36).slice(2)));
+            batch.set(ref,m);count++;
+            if(count>=400){batch.commit();batch=db.batch();count=0;}
+          });
+          if(count>0) await batch.commit();
+          
+          // Events
+          if(backup.events){
+            var ex2=await db.collection('events').get();
+            batch=db.batch();count=0;
+            ex2.forEach(function(doc){batch.delete(doc.ref);count++;if(count>=400){batch.commit();batch=db.batch();count=0;}});
+            if(count>0) await batch.commit();
+            batch=db.batch();count=0;
+            backup.events.forEach(function(ev){
+              var ref=db.collection('events').doc(ev.id||('ev_'+Date.now()+'_'+Math.random().toString(36).slice(2)));
+              batch.set(ref,ev);count++;
+              if(count>=400){batch.commit();batch=db.batch();count=0;}
+            });
+            if(count>0) await batch.commit();
+          }
+          
+          // News
+          if(backup.news){
+            var ex3=await db.collection('news').get();
+            batch=db.batch();count=0;
+            ex3.forEach(function(doc){batch.delete(doc.ref);count++;if(count>=400){batch.commit();batch=db.batch();count=0;}});
+            if(count>0) await batch.commit();
+            batch=db.batch();count=0;
+            backup.news.forEach(function(n){
+              var ref=db.collection('news').doc(n.id||('nw_'+Date.now()+'_'+Math.random().toString(36).slice(2)));
+              batch.set(ref,n);count++;
+              if(count>=400){batch.commit();batch=db.batch();count=0;}
+            });
+            if(count>0) await batch.commit();
+          }
+          
+          // Photos
+          if(backup.photos){
+            var ex4=await db.collection('photos').get();
+            batch=db.batch();count=0;
+            ex4.forEach(function(doc){batch.delete(doc.ref);count++;if(count>=400){batch.commit();batch=db.batch();count=0;}});
+            if(count>0) await batch.commit();
+            batch=db.batch();count=0;
+            backup.photos.forEach(function(p){
+              var ref=db.collection('photos').doc(p.id||('ph_'+Date.now()+'_'+Math.random().toString(36).slice(2)));
+              batch.set(ref,p);count++;
+              if(count>=400){batch.commit();batch=db.batch();count=0;}
+            });
+            if(count>0) await batch.commit();
+          }
+          
+          // Settings
+          if(backup.siteSettings){
+            siteSettings=backup.siteSettings;
+            localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
+            db.collection('siteConfig').doc('settings').set({json:JSON.stringify(siteSettings),updated:new Date().toISOString()});
+            applySettings();
+          }
+        } else {
+          // Non-configured (demo mode)
+          members=backup.members;
+          if(backup.events) events=backup.events;
+          if(backup.news) news=backup.news;
+          if(backup.photos) photos=backup.photos;
+          if(backup.siteSettings){
+            siteSettings=backup.siteSettings;
+            localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
+            applySettings();
+          }
+          renderTree('',true);renderMembers();renderStats();renderHome();
+        }
+        
+        toast('✅ تم استيراد النسخة الاحتياطية — '+backup.members.length+' عضو');
+      })().catch(function(err){
+        console.error('Import error:',err);
+        toast('حدث خطأ أثناء الاستيراد: '+err.message,true);
+      });
+      
+    }catch(err){
+      toast('خطأ في قراءة الملف: '+err.message,true);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+};
+
+// ══ SHOW IN TREE & PRINT MEMBER ══
+window.showInTree=function(id){
+  closeOv('ov-detail');
+  setTimeout(function(){
+    goPage('tree');
+    // Wait for tree to render then scroll to node
+    setTimeout(function(){
+      var node=TC.nodes.find(function(n){return n.id===id;});
+      if(!node)return;
+      var cw=TC.canvas.offsetWidth,ch=TC.canvas.offsetHeight;
+      TC.scale=1.2;
+      TC.ox=cw/2-(node.x+TC.NW/2)*TC.scale;
+      TC.oy=ch/2-(node.y+TC.NH/2)*TC.scale;
+      // Highlight
+      TC.nodes.forEach(function(n){n.hl=(n.id===id);});
+      treeDraw();
+      // Remove highlight after 3s
+      setTimeout(function(){TC.nodes.forEach(function(n){n.hl=false;});treeDraw();},3000);
+    },300);
+  },250);
+};
+
+window.printMember=function(id){
+  var m=members.find(function(x){return x.id===id;});if(!m)return;
+  var par=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
+  var kids=members.filter(function(x){return x.parentId===id;});
+  // Build chain (ancestors)
+  var chain=[];var cur=m;
+  while(cur){chain.push(cur.name);cur=cur.parentId?members.find(function(x){return x.id===cur.parentId;}):null;}
+  
+  var w=window.open('','_blank','width=600,height=800');
+  w.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>'+esc(m.name)+' — شجرة العائلة</title>'+
+    '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Tajawal,sans-serif;padding:2rem;color:#1a1612;direction:rtl}'+
+    '.header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:3px solid #b8935a}'+
+    '.avatar{width:100px;height:100px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:#fff;overflow:hidden}'+
+    '.avatar img{width:100%;height:100%;object-fit:cover}'+
+    '.name{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}'+
+    '.fullname{font-size:.9rem;color:#8a8078;margin-bottom:.2rem}'+
+    '.role{font-size:.85rem;color:#b8935a}'+
+    '.section{margin:1.2rem 0;padding:1rem;background:#f7f4ef;border-radius:10px}'+
+    '.sec-title{font-size:.85rem;font-weight:700;color:#b8935a;margin-bottom:.6rem;border-bottom:1px solid #e4ddd2;padding-bottom:.3rem}'+
+    '.row{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #efeae1;font-size:.85rem}'+
+    '.row:last-child{border-bottom:none}.lbl{color:#8a8078}.val{font-weight:500}'+
+    '.chain{text-align:center;margin:1rem 0;font-size:.85rem;color:#8a8078}'+
+    '.chain span{color:#b8935a;font-weight:600}'+
+    '.kids{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}'+
+    '.kid{background:#fff;border:1px solid #e4ddd2;border-radius:8px;padding:.25rem .6rem;font-size:.8rem}'+
+    '.footer{text-align:center;margin-top:2rem;font-size:.75rem;color:#8a8078;border-top:1px solid #e4ddd2;padding-top:1rem}'+
+    '@media print{body{padding:1.5cm}}'+
+    '</style></head><body>');
+  
+  var avatarBg=m.gender==='أنثى'?'background:linear-gradient(135deg,#c9748c,#e8a0b0)':'background:linear-gradient(135deg,#b8935a,#d4aa72)';
+  if(m.status==='متوفى') avatarBg='background:linear-gradient(135deg,#999,#bbb)';
+  
+  w.document.write('<div class="header">');
+  w.document.write('<div class="avatar" style="'+avatarBg+'">');
+  if(m.photo) w.document.write('<img src="'+m.photo+'">');
+  else w.document.write(esc((m.name||'?').charAt(0)));
+  w.document.write('</div>');
+  w.document.write('<div class="name">'+esc(m.name)+(m.status==='متوفى'?' 🕊':'')+'</div>');
+  if(m.fullName||m._fullName) w.document.write('<div class="fullname">'+esc(m.fullName||m._fullName)+'</div>');
+  if(m.role) w.document.write('<div class="role">'+esc(m.role)+'</div>');
+  w.document.write('</div>');
+  
+  // Chain
+  if(chain.length>1){
+    w.document.write('<div class="chain">سلسلة النسب: <span>'+chain.map(esc).join(' ← ')+'</span></div>');
+  }
+  
+  // Info section
+  w.document.write('<div class="section"><div class="sec-title">المعلومات الشخصية</div>');
+  var rows=[['الجنس',m.gender],['الحالة',m.status],['الكنية',m.role],['تاريخ الميلاد',m.birth],['المدينة',m.city],[m.gender==='أنثى'?'الزوج':'الزوجة',m.spouse]];
+  rows.forEach(function(r){if(r[1])w.document.write('<div class="row"><span class="lbl">'+r[0]+'</span><span class="val">'+esc(r[1])+'</span></div>');});
+  w.document.write('</div>');
+  
+  // Contact
+  if(m.phone||m.email){
+    w.document.write('<div class="section"><div class="sec-title">التواصل</div>');
+    if(m.phone)w.document.write('<div class="row"><span class="lbl">الجوال</span><span class="val" dir="ltr">'+esc(m.phone)+'</span></div>');
+    if(m.email)w.document.write('<div class="row"><span class="lbl">البريد</span><span class="val" dir="ltr">'+esc(m.email)+'</span></div>');
+    w.document.write('</div>');
+  }
+  
+  // Work
+  if(m.company||m.job){
+    w.document.write('<div class="section"><div class="sec-title">العمل</div>');
+    if(m.company)w.document.write('<div class="row"><span class="lbl">جهة العمل</span><span class="val">'+esc(m.company)+'</span></div>');
+    if(m.job)w.document.write('<div class="row"><span class="lbl">الوظيفة</span><span class="val">'+esc(m.job)+'</span></div>');
+    w.document.write('</div>');
+  }
+  
+  // Family
+  w.document.write('<div class="section"><div class="sec-title">الشجرة</div>');
+  w.document.write('<div class="row"><span class="lbl">الأب</span><span class="val">'+(par?esc(par.name):'جذر العائلة')+'</span></div>');
+  if(kids.length){
+    w.document.write('<div class="row"><span class="lbl">الأبناء ('+kids.length+')</span></div>');
+    w.document.write('<div class="kids">');
+    kids.forEach(function(k){w.document.write('<div class="kid">'+esc(k.name)+(k.gender==='أنثى'?' ♀':' ♂')+'</div>');});
+    w.document.write('</div>');
+  }
+  w.document.write('</div>');
+  
+  // Bio
+  if(m.bio){
+    w.document.write('<div class="section"><div class="sec-title">نبذة</div><p style="font-size:.85rem;line-height:1.8">'+esc(m.bio)+'</p></div>');
+  }
+  
+  w.document.write('<div class="footer">طُبع من موقع '+(siteSettings.siteName||'شجرة العائلة')+' · '+new Date().toLocaleDateString('ar')+'</div>');
+  w.document.write('</body></html>');
+  w.document.close();
+  setTimeout(function(){w.print();},500);
+};
 
 // ══ DRAWER TOGGLE ══
 window.toggleDrawer=function(){
@@ -2946,7 +3229,7 @@ function renderHome(){
   }
 
   // Version
-  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V32 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
+  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V33 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
 
   secWrap.innerHTML=html2;
   setTimeout(observeHomeSections,100);
