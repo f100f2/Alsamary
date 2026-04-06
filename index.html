@@ -400,7 +400,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div class="page-hero"><h1>الأعضاء</h1><p>جميع أفراد العائلة</p></div>
     <div class="toolbar">
       <div class="search-wrap">
-        <input class="search" placeholder="ابحث بالاسم أو الاسم الكامل أو الوظيفة…" id="members-q" oninput="filterMembers()">
+        <input class="search" placeholder="ابحث في جميع الحقول…" id="members-q" oninput="filterMembers()">
         <span class="search-ico">🔍</span>
       </div>
       <span id="am-add" style="display:none;gap:.4rem;align-items:center;flex-wrap:wrap">
@@ -482,7 +482,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V33 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V34 · شجرة العائلة</div>
 </div>
 
 <!-- MODALS -->
@@ -1362,27 +1362,23 @@ function renderMembers(q=''){
   const liSvg=`<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`;
   let list=members;
   if(q){
-    const qq=q.trim();
-    // Priority 1: first name matches
-    const nameMatches=members.filter(m=>m.name&&m.name.includes(qq));
-    const nameIds=new Set(nameMatches.map(m=>m.id));
-    // Priority 2: full name matches (but not already in nameMatches)
-    const fullNameMatches=members.filter(m=>
-      !nameIds.has(m.id)&&(
-        (m.fullName&&m.fullName.includes(qq))||
-        (m._fullName&&m._fullName.includes(qq))
-      )
-    );
-    const fnIds=new Set(fullNameMatches.map(m=>m.id));
-    // Priority 3: job/company/city (not already matched)
-    const otherMatches=members.filter(m=>
-      !nameIds.has(m.id)&&!fnIds.has(m.id)&&(
-        (m.job&&m.job.includes(qq))||
-        (m.company&&m.company.includes(qq))||
-        (m.city&&m.city.includes(qq))
-      )
-    );
-    list=[...nameMatches,...fullNameMatches,...otherMatches];
+    const qq=q.trim().toLowerCase();
+    // Search ALL fields with priority
+    function matchScore(m){
+      // Priority 1: first name
+      if(m.name&&m.name.toLowerCase().includes(qq)) return 3;
+      // Priority 2: full name
+      if((m.fullName&&m.fullName.toLowerCase().includes(qq))||(m._fullName&&m._fullName.toLowerCase().includes(qq))) return 2;
+      // Priority 3: all other fields
+      var fields=[m.role,m.job,m.company,m.city,m.phone,m.email,m.spouse,m.bio,m.birth,m.linkedin,m.gender,m.status];
+      for(var i=0;i<fields.length;i++){if(fields[i]&&String(fields[i]).toLowerCase().includes(qq))return 1;}
+      // Check external kids
+      if(m.externalKids&&m.externalKids.some(function(k){return k.toLowerCase().includes(qq);}))return 1;
+      return 0;
+    }
+    var scored=members.map(function(m){return {m:m,s:matchScore(m)};}).filter(function(x){return x.s>0;});
+    scored.sort(function(a,b){return b.s-a.s;});
+    list=scored.map(function(x){return x.m;});
   }
   // Apply active filter
   if(activeFilter==='male')    list=list.filter(m=>m.gender==='ذكر');
@@ -2644,8 +2640,24 @@ window.addSonRow = function(){
     '<div class="son-field" style="grid-column:1/-1">' +
       '<label>المدينة</label>' +
       '<input id="son-city-'+n+'" placeholder="مدينة الإقامة" dir="rtl">' +
+    '</div>' +
+    '<div class="son-field" style="grid-column:1/-1">' +
+      '<label>اسم الزوج / الزوجة</label>' +
+      '<input id="son-spouse-'+n+'" placeholder="الاسم الكامل" dir="rtl">' +
+    '</div>' +
+    '<div class="son-field" style="grid-column:1/-1;display:none" id="son-kids-wrap-'+n+'">' +
+      '<label>أبناء (للأنثى — أسماء مفصولة بفاصلة)</label>' +
+      '<input id="son-kids-'+n+'" placeholder="أحمد، سارة، محمد" dir="rtl">' +
     '</div>';
   rows.appendChild(div);
+  // Show kids field when gender is female
+  var genderSel=document.getElementById('son-gender-'+n);
+  if(genderSel){
+    genderSel.addEventListener('change',function(){
+      var wrap=document.getElementById('son-kids-wrap-'+n);
+      if(wrap) wrap.style.display=this.value==='أنثى'?'block':'none';
+    });
+  }
   // Focus first name field
   setTimeout(function(){ var el=document.getElementById('son-name-'+n); if(el)el.focus(); }, 100);
 };
@@ -2683,7 +2695,10 @@ window.saveMultiSons = async function(){
     var role   = (document.getElementById('son-role-'+id)||{}).value||'';
     var phone  = (document.getElementById('son-phone-'+id)||{}).value||'';
     var city   = (document.getElementById('son-city-'+id)||{}).value||'';
-    toAdd.push({ name:name, gender:gender, status:status, role:role, phone:phone, city:city });
+    var spouse = (document.getElementById('son-spouse-'+id)||{}).value||'';
+    var kidsStr= (document.getElementById('son-kids-'+id)||{}).value||'';
+    var extKids=kidsStr?kidsStr.split(/[,،]/).map(function(s){return s.trim();}).filter(Boolean):[];
+    toAdd.push({ name:name, gender:gender, status:status, role:role, phone:phone, city:city, spouse:spouse, externalKids:extKids });
   });
 
   if(hasError){ toast('الرجاء تعبئة اسم جميع الأبناء', true); return; }
@@ -2708,7 +2723,7 @@ window.saveMultiSons = async function(){
       phone: s.phone,
       city: s.city,
       email:'', company:'', job:'', role:s.role||'', linkedin:'',
-      birth:'', spouse:'', bio:'', externalKids:[],
+      birth:'', spouse:s.spouse||'', bio:'', externalKids:s.externalKids||[],
       parentId: multiSonsParentId,
       photo: null,
     };
@@ -3229,7 +3244,7 @@ function renderHome(){
   }
 
   // Version
-  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V33 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
+  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V34 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
 
   secWrap.innerHTML=html2;
   setTimeout(observeHomeSections,100);
