@@ -573,7 +573,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
       <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
       <button class="btn btn-sm" id="d-addsons" style="display:none;border-color:var(--gold);background:var(--gold);color:#fff" onclick="openAddMultiSons()">+ أبناء</button>
-      <button class="btn btn-sm" id="d-editkids" style="display:none;border-color:#3498db;color:#3498db" onclick="openEditChildren()">✏️ تعديل الأبناء</button>
+      <button class="btn btn-sm" id="d-editkids" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="openEditChildren()">✏️ تعديل الأبناء</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -2832,6 +2832,10 @@ window.openEditChildren=function(){
         '<label>المدينة</label>'+
         '<input class="ek-city" value="'+escAttr(k.city||'')+'" dir="rtl">'+
       '</div>'+
+      '<div class="son-field" style="grid-column:1/-1;display:'+(isFem?'block':'none')+'" data-ek-kids-wrap>'+
+        '<label>الأبناء (أسماء مفصولة بفاصلة)</label>'+
+        '<input class="ek-extKids" value="'+escAttr((k.externalKids||[]).join('، '))+'" placeholder="أحمد، سارة، محمد" dir="rtl">'+
+      '</div>'+
     '</div>';
   }).join('');
   
@@ -2845,6 +2849,8 @@ window.ekGenderChange=function(sel){
   if(!row)return;
   var label=row.querySelector('.ek-spouse-label');
   if(label) label.textContent=sel.value==='أنثى'?'اسم الزوج':'اسم الزوجة';
+  var kidsWrap=row.querySelector('[data-ek-kids-wrap]');
+  if(kidsWrap) kidsWrap.style.display=sel.value==='أنثى'?'block':'none';
 };
 
 // Helper: escape for HTML attribute value
@@ -2871,6 +2877,10 @@ window.saveEditChildren=async function(){
       company:(row.querySelector('.ek-company')||{}).value||'',
       city:(row.querySelector('.ek-city')||{}).value||'',
     };
+    // External kids (for females)
+    var extKidsVal=(row.querySelector('.ek-extKids')||{}).value||'';
+    if(extKidsVal) data.externalKids=extKidsVal.split(/[,،]/).map(function(s){return s.trim();}).filter(Boolean);
+    else data.externalKids=[];
     // Rebuild fullName
     var par=members.find(function(m){return m.id===editChildrenParentId;});
     var parFullName=par?(par.fullName||par.name||''):'';
