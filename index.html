@@ -482,7 +482,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V35 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V36 · شجرة العائلة</div>
 </div>
 
 <!-- MODALS -->
@@ -573,6 +573,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
       <button class="btn btn-ghost" onclick="closeOv('ov-detail')">إغلاق</button>
       <button class="btn btn-sm" id="d-addson" style="display:none;border-color:var(--gold);color:var(--gold)" onclick="addChildOf()">+ ابن</button>
       <button class="btn btn-sm" id="d-addsons" style="display:none;border-color:var(--gold);background:var(--gold);color:#fff" onclick="openAddMultiSons()">+ أبناء</button>
+      <button class="btn btn-sm" id="d-editkids" style="display:none;border-color:#3498db;color:#3498db" onclick="openEditChildren()">✏️ تعديل الأبناء</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -728,6 +729,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     <div id="admin-requests-list"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-admin-requests')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CHILDREN -->
+<div class="overlay" id="ov-edit-children">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ تعديل الأبناء</div>
+    <p id="editkids-parent-name" style="font-size:.82rem;color:var(--ink3);margin-bottom:1rem;margin-top:-.5rem"></p>
+    <div id="editkids-rows"></div>
+    <div id="editkids-empty" style="display:none;text-align:center;padding:1.5rem;color:var(--ink3);font-size:.85rem">لا يوجد أبناء لهذا الشخص</div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-edit-children')">إلغاء</button>
+      <button class="btn btn-primary" id="editkids-save-btn" onclick="saveEditChildren()">💾 حفظ التعديلات</button>
     </div>
   </div>
 </div>
@@ -1465,6 +1481,8 @@ window.showDetail=function(id){
   document.getElementById('d-edit').style.display=isAdmin?'inline-flex':'none';
   document.getElementById('d-addson').style.display=(isAdmin&&m.gender!=='أنثى')?'inline-flex':'none';
   document.getElementById('d-addsons').style.display=(isAdmin&&m.gender!=='أنثى')?'inline-flex':'none';
+  var editKidsBtn=document.getElementById('d-editkids');
+  if(editKidsBtn) editKidsBtn.style.display=(isAdmin&&kids.length>0)?'inline-flex':'none';
   openOv('ov-detail');
 };
 window.editCurrent=function(){
@@ -2744,6 +2762,148 @@ window.saveMultiSons = async function(){
 
 
 
+// ══ EDIT CHILDREN ══
+var editChildrenParentId=null;
+
+window.openEditChildren=function(){
+  editChildrenParentId=currentId;
+  var par=members.find(function(m){return m.id===currentId;});
+  var kids=members.filter(function(m){return m.parentId===currentId;});
+  
+  var nameEl=document.getElementById('editkids-parent-name');
+  if(nameEl) nameEl.textContent='أبناء: '+(par?par.name:'—')+' ('+kids.length+' فرد)';
+  
+  var rows=document.getElementById('editkids-rows');
+  var empty=document.getElementById('editkids-empty');
+  
+  if(!kids.length){
+    rows.innerHTML='';
+    empty.style.display='block';
+    closeOv('ov-detail');
+    openOv('ov-edit-children');
+    return;
+  }
+  empty.style.display='none';
+  
+  rows.innerHTML=kids.map(function(k,i){
+    var isFem=k.gender==='أنثى';
+    var spouseLabel=isFem?'اسم الزوج':'اسم الزوجة';
+    return '<div class="son-row" data-kid-id="'+k.id+'">'+
+      '<div class="son-row-header">'+
+        '<span class="son-row-num">'+(i+1)+'. '+esc(k.name)+'</span>'+
+        '<span style="font-size:.7rem;color:var(--ink3)">'+(k.gender==='أنثى'?'♀':'♂')+(k.status==='متوفى'?' 🕊':'')+'</span>'+
+      '</div>'+
+      '<div class="son-field" style="grid-column:1/-1">'+
+        '<label>الاسم</label>'+
+        '<input class="ek-name" value="'+escAttr(k.name||'')+'" dir="rtl">'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>الجنس</label>'+
+        '<select class="ek-gender" onchange="ekGenderChange(this)">'+
+          '<option value="">—</option>'+
+          '<option value="ذكر"'+(k.gender==='ذكر'?' selected':'')+'>ذكر ♂</option>'+
+          '<option value="أنثى"'+(k.gender==='أنثى'?' selected':'')+'>أنثى ♀</option>'+
+        '</select>'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>الحالة</label>'+
+        '<select class="ek-status">'+
+          '<option value="حي"'+(k.status!=='متوفى'?' selected':'')+'>حي ✓</option>'+
+          '<option value="متوفى"'+(k.status==='متوفى'?' selected':'')+'>متوفى 🕊</option>'+
+        '</select>'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>الكنية</label>'+
+        '<input class="ek-role" value="'+escAttr(k.role||'')+'" placeholder="أبو…" dir="rtl">'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label class="ek-spouse-label">'+spouseLabel+'</label>'+
+        '<input class="ek-spouse" value="'+escAttr(k.spouse||'')+'" dir="rtl">'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>رقم الجوال</label>'+
+        '<input class="ek-phone" value="'+escAttr(k.phone||'')+'" dir="ltr" type="tel">'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>جهة العمل</label>'+
+        '<input class="ek-company" value="'+escAttr(k.company||'')+'" dir="rtl">'+
+      '</div>'+
+      '<div class="son-field">'+
+        '<label>المدينة</label>'+
+        '<input class="ek-city" value="'+escAttr(k.city||'')+'" dir="rtl">'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  
+  closeOv('ov-detail');
+  setTimeout(function(){openOv('ov-edit-children');},250);
+};
+
+// Update spouse label when gender changes
+window.ekGenderChange=function(sel){
+  var row=sel.closest('.son-row');
+  if(!row)return;
+  var label=row.querySelector('.ek-spouse-label');
+  if(label) label.textContent=sel.value==='أنثى'?'اسم الزوج':'اسم الزوجة';
+};
+
+// Helper: escape for HTML attribute value
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+window.saveEditChildren=async function(){
+  var rows=document.querySelectorAll('#editkids-rows .son-row');
+  if(!rows.length){closeOv('ov-edit-children');return;}
+  
+  var btn=document.getElementById('editkids-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…';}
+  
+  var updates=[];
+  rows.forEach(function(row){
+    var kidId=row.getAttribute('data-kid-id');
+    if(!kidId)return;
+    var data={
+      name:(row.querySelector('.ek-name')||{}).value||'',
+      gender:(row.querySelector('.ek-gender')||{}).value||'',
+      status:(row.querySelector('.ek-status')||{}).value||'حي',
+      role:(row.querySelector('.ek-role')||{}).value||'',
+      spouse:(row.querySelector('.ek-spouse')||{}).value||'',
+      phone:(row.querySelector('.ek-phone')||{}).value||'',
+      company:(row.querySelector('.ek-company')||{}).value||'',
+      city:(row.querySelector('.ek-city')||{}).value||'',
+    };
+    // Rebuild fullName
+    var par=members.find(function(m){return m.id===editChildrenParentId;});
+    var parFullName=par?(par.fullName||par.name||''):'';
+    if(data.name&&parFullName){
+      data.fullName=data.name+' '+parFullName;
+      data._fullName=data.fullName;
+    }
+    updates.push({id:kidId,data:data});
+  });
+  
+  // Apply updates
+  for(var i=0;i<updates.length;i++){
+    var u=updates[i];
+    var existing=members.find(function(m){return m.id===u.id;});
+    if(!existing)continue;
+    // Merge only the changed fields
+    var merged=Object.assign({},existing,u.data);
+    await dbSet('members',merged);
+  }
+  
+  if(btn){btn.disabled=false;btn.textContent='💾 حفظ التعديلات';}
+  closeOv('ov-edit-children');
+  
+  if(!configured){
+    renderTree(null,false);renderMembers();renderStats();
+  }
+  
+  // Re-open detail to see updates
+  setTimeout(function(){showDetail(editChildrenParentId);},300);
+  toast('✅ تم تحديث بيانات '+updates.length+' '+(updates.length===1?'ابن':'أبناء'));
+  haptic();
+};
+
 // ══ FULL BACKUP (EXPORT/IMPORT) ══
 window.exportFullBackup=function(){
   toast('جاري إنشاء النسخة الاحتياطية…');
@@ -3248,7 +3408,7 @@ function renderHome(){
   }
 
   // Version
-  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V35 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
+  html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">V36 · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
 
   secWrap.innerHTML=html2;
   setTimeout(observeHomeSections,100);
