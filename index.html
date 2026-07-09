@@ -715,7 +715,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);di
     </div>
     <div class="field" style="grid-column:1/-1"><label>نبذة شخصية</label><textarea id="reg-bio" rows="3" placeholder="أي معلومات إضافية…" style="resize:vertical"></textarea></div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeOv('ov-register')">إلغاء</button>
+      <button class="btn btn-ghost" onclick="closeOv('ov-register');setTimeout(function(){openOv('ov-phone-login');},250)">إلغاء</button>
       <button class="btn btn-primary" onclick="submitRegisterRequest()">إرسال الطلب</button>
     </div>
   </div>
