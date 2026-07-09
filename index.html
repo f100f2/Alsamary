@@ -1668,7 +1668,12 @@ window.confirmExcelImport=async function(){
 window.openOv=function(id){haptic();document.getElementById(id).classList.add('on');};
 window.closeOv=function(id){document.getElementById(id).classList.remove('on');};
 document.querySelectorAll('.overlay').forEach(function(o){
-  o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('on');});
+  o.addEventListener('click',function(e){
+    if(e.target!==o) return;
+    // Prevent closing login/register overlays by clicking outside (security)
+    if(o.id==='ov-phone-login'||o.id==='ov-register') return;
+    o.classList.remove('on');
+  });
 });
 
 // ══ TOAST ══
