@@ -402,6 +402,24 @@ img{-webkit-user-drag:none}
 .album-tag{background:rgba(184,147,90,.92);color:#fff;font-size:.58rem;font-weight:600;padding:.12rem .4rem;border-radius:10px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .album-date{position:absolute;top:.35rem;right:.35rem;background:rgba(0,0,0,.55);color:#fff;font-size:.58rem;font-weight:600;padding:.14rem .42rem;border-radius:8px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-variant-numeric:tabular-nums}
 .album-filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+/* ── الوثائق (V51) ── */
+.doc-item .doc-pdf{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:.8rem .6rem 2.6rem;background:linear-gradient(160deg,var(--sand2),var(--sand3))}
+.doc-pdf-ico{width:50px;height:62px;border-radius:5px 16px 5px 5px;background:linear-gradient(160deg,#c0392b,#86211a);color:#fff;font-weight:800;font-size:.74rem;letter-spacing:.06em;display:flex;align-items:flex-end;justify-content:center;padding-bottom:.55rem;box-shadow:0 6px 16px rgba(0,0,0,.28)}
+.doc-pdf-name{font-size:.64rem;color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr}
+.doc-item img{object-position:top center}
+.doc-kind{position:absolute;top:.35rem;left:.35rem;background:rgba(0,0,0,.58);color:#fff;font-size:.56rem;font-weight:700;padding:.14rem .42rem;border-radius:8px;letter-spacing:.03em}
+.doc-desc{flex-basis:100%;color:#fff;font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.12rem;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.doc-private{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:600;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold3);border-radius:14px;padding:.18rem .6rem;margin-top:.45rem}
+.doc-view{width:100%;border-radius:var(--r2);overflow:hidden;margin-bottom:.9rem;background:var(--sand2);min-height:180px;max-height:62vh;display:flex;align-items:center;justify-content:center;position:relative}
+.doc-view img{max-width:100%;max-height:62vh;object-fit:contain;display:block}
+.doc-view iframe{width:100%;height:62vh;border:0;background:#fff;display:block}
+.doc-view .doc-pdf-card{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.6rem 1rem;color:var(--ink2);font-size:.8rem;text-align:center}
+.doc-loading{position:absolute;inset:auto 0 0 0;padding:.5rem;text-align:center;font-size:.74rem;color:#fff;background:rgba(0,0,0,.55)}
+.doc-actions{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.75rem}
+.doc-file-chosen{display:flex;align-items:center;gap:.6rem;margin-top:.6rem;padding:.55rem .7rem;border:1px solid var(--sand3);border-radius:var(--r2);background:var(--sand);font-size:.78rem;color:var(--ink2)}
+.doc-file-chosen img{width:46px;height:46px;object-fit:cover;border-radius:8px}
+.doc-file-chosen .doc-pdf-ico{width:34px;height:42px;font-size:.55rem;padding-bottom:.35rem;flex-shrink:0}
+.doc-file-chosen b{display:block;color:var(--ink);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;direction:ltr;text-align:right}
 
 /* ══ ADMIN REQUESTS ══ */
 .req-card{background:var(--sand2);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem;margin-bottom:.7rem;box-shadow:var(--shadow)}
@@ -790,6 +808,22 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="album-filter-bar" id="album-filter-bar"></div>
     <div class="album-grid" id="album-grid"></div>
   </div>
+
+  <!-- ═══ DOCUMENTS (أصحاب الصلاحية فقط) ═══ -->
+  <div id="page-docs" class="page">
+    <div class="page-hero"><div><h1>الوثائق</h1><p>وثائق العائلة — تظهر لأصحاب الصلاحية فقط</p></div><div class="hero-rule"></div></div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <input class="search" placeholder="ابحث بالوصف أو اسم الشخص أو التاريخ…" id="docs-q" oninput="filterDocs()" autocomplete="off">
+        <span class="search-ico"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+      </div>
+      <span id="adoc-add" class="admin-tools">
+        <button class="btn btn-primary btn-sm" onclick="openAddDoc()">+ وثيقة</button>
+      </span>
+    </div>
+    <div class="album-filter-bar" id="docs-filter-bar"></div>
+    <div class="album-grid" id="docs-grid"></div>
+  </div>
 </div>
 
 <!-- ═══ BOTTOM NAV ═══ -->
@@ -813,6 +847,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <button class="drawer-item" id="tb-tree" onclick="goPage('tree')"><svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg>الشجرة</button>
     <button class="drawer-item" id="tb-members" onclick="goPage('members')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>الأعضاء</button>
     <button class="drawer-item" id="tb-album" onclick="goPage('album')"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>الألبوم</button>
+    <button class="drawer-item" id="tb-docs" style="display:none" onclick="goPage('docs')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>الوثائق</button>
     <div class="drawer-divider"></div>
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
@@ -827,7 +862,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V50 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V51 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1185,6 +1220,58 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
   </div>
 </div>
 
+<!-- DOCUMENT DETAIL -->
+<div class="overlay" id="ov-doc-detail">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-handle"></div>
+    <div class="doc-view" id="doc-view"></div>
+    <div id="doc-detail-info"></div>
+    <div class="doc-actions">
+      <button class="btn btn-primary btn-sm" id="doc-open-btn" onclick="openCurrentDoc()" disabled>↗ فتح الوثيقة</button>
+      <button class="btn btn-sm btn-outline-gold" id="doc-dl-btn" onclick="downloadCurrentDoc()" disabled>⬇ تحميل</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-doc-detail')">إغلاق</button>
+      <button class="btn btn-sm btn-outline-gold" id="doc-edit-btn" style="display:none" onclick="openEditDoc()">✏️ تعديل</button>
+      <button class="btn btn-danger btn-sm" id="doc-del-btn" style="display:none" onclick="deleteCurrentDoc()">حذف الوثيقة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT DOCUMENT -->
+<div class="overlay" id="ov-add-doc">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="doc-form-title">إضافة وثيقة</div>
+    <div class="field">
+      <div class="upload-zone" onclick="document.getElementById('doc-file-in').click()" id="doc-upload-zone">
+        <div class="up-icon">📄</div><span id="doc-upload-label">اضغط لاختيار الوثيقة — صورة أو ملف PDF</span>
+        <div style="font-size:.7rem;margin-top:.3rem;opacity:.8">PDF حتى 10 ميغابايت</div>
+        <input type="file" id="doc-file-in" accept="image/*,application/pdf,.pdf" style="display:none" onchange="onDocFileSelect(event)">
+      </div>
+      <div id="doc-file-chosen"></div>
+    </div>
+    <div class="field"><label>تاريخ الوثيقة</label><input type="date" id="doc-date"></div>
+    <div class="field">
+      <label>وصف الوثيقة *</label>
+      <textarea id="doc-desc" rows="3" placeholder="مثال: صك ملكية أرض العائلة في …"></textarea>
+    </div>
+    <div class="field">
+      <label>تاج الأشخاص</label>
+      <div class="search-wrap" style="margin-bottom:.4rem">
+        <input class="search" id="doc-tag-search" placeholder="ابحث عن شخص للإضافة…" oninput="searchDocTags()" autocomplete="off">
+        <span class="search-ico"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+      </div>
+      <div id="doc-tag-results" style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem"></div>
+      <div id="doc-tags-selected" style="display:flex;flex-wrap:wrap;gap:.3rem;min-height:26px;padding:.35rem;background:var(--sand);border-radius:10px;border:1px solid var(--sand3)"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-add-doc')">إلغاء</button>
+      <button class="btn btn-primary" id="doc-save" onclick="saveDoc()">حفظ الوثيقة</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETTINGS (Admin) -->
 <div class="overlay" id="ov-settings">
   <div class="modal" style="max-width:520px">
@@ -1382,7 +1469,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V50';
+const APP_VERSION='V51';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1448,7 +1535,7 @@ function normMembers(list){
 }
 
 // ══ DIRTY FLAGS (render only visible page; catch up on navigation) ══
-const _dirty={home:false,tree:false,members:false,events:false,news:false,album:false,inlaws:false};
+const _dirty={home:false,tree:false,members:false,events:false,news:false,album:false,inlaws:false,docs:false};
 function markDirty(){for(let i=0;i<arguments.length;i++)_dirty[arguments[i]]=true;}
 function refreshPage(p){
   _dirty[p]=false;
@@ -1459,6 +1546,7 @@ function refreshPage(p){
   else if(p==='news')renderNews();
   else if(p==='album')renderAlbum(byId('album-q')?byId('album-q').value:'');
   else if(p==='inlaws'){if(typeof renderInlaws==='function')renderInlaws();}
+  else if(p==='docs'){if(typeof renderDocs==='function')renderDocs(byId('docs-q')?byId('docs-q').value:'');}
 }
 function dataChanged(){
   // Called after any data mutation/snapshot: refresh active page now, mark the rest dirty
@@ -1590,6 +1678,7 @@ var active='home';
 window.goPage=function(p){
   haptic();
   if(p==='inlaws'&&!isAdmin){if(typeof denied==='function')denied('⛔ صفحة الأنسباء متاحة للمدير فقط');p='home';}
+  if(p==='docs'&&!(isAdmin||isEditor)){if(typeof denied==='function')denied('⛔ صفحة الوثائق متاحة لأصحاب الصلاحية فقط');p='home';}
   const d=byId('drawer'),ov=byId('drawer-overlay'),hb=byId('hamburger-btn');
   if(d)d.classList.remove('open');if(ov)ov.classList.remove('open');if(hb)hb.classList.remove('open');
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
@@ -1630,7 +1719,7 @@ window.toggleAdmin=function(){
 };
 function updateUI(){
   const s=isAdmin,mg=canManage();
-  ['at-add','am-add','aph-add','aev-bar','anw-bar'].forEach(function(id){
+  ['at-add','am-add','aph-add','adoc-add','aev-bar','anw-bar'].forEach(function(id){
     const el=byId(id);if(el)el.classList.toggle('show',s);
   });
   ['at-member','am-member'].forEach(function(id){
@@ -1639,6 +1728,10 @@ function updateUI(){
   const sb=byId('settings-btn');if(sb)sb.style.display=s?'flex':'none';
   ['tb-perms','tb-perms-div','tb-inlaws'].forEach(function(id){const el=byId(id);if(el)el.style.display=s?'':'none';});
   if(!s&&active==='inlaws')goPage('home');
+  const canDocs=isAdmin||isEditor;
+  const td=byId('tb-docs');if(td)td.style.display=canDocs?'':'none';
+  if(!canDocs){['ov-doc-detail','ov-add-doc'].forEach(closeOv);if(active==='docs')goPage('home');}
+  else if(!s)closeOv('ov-add-doc');
   const b=byId('adm-btn');
   if(b){
     if(isAdmin){b.innerHTML='✅ المدير';b.classList.add('on');b.title='تسجيل الخروج';}
@@ -2297,7 +2390,7 @@ document.addEventListener('click',function(e){
   const link=e.target.closest&&e.target.closest('[data-goto-member]');
   if(link){
     const mid=link.getAttribute('data-goto-member');
-    closeOv('ov-detail');closeOv('ov-photo-detail');
+    closeOv('ov-detail');closeOv('ov-photo-detail');closeOv('ov-doc-detail');
     setTimeout(function(){showDetail(mid);},220);
   }
 });
@@ -4063,9 +4156,340 @@ window.saveEditChildren=async function(){
   haptic();
 };
 
+// ══ الوثائق (V51) — للمدير ومحرري الفروع فقط ══
+// البيانات في documents (الوصف والتاريخ والتاج ومعاينة صغيرة)، والملف نفسه مقسّم
+// إلى أجزاء في documentFiles لأن Firestore لا يقبل أكثر من ١ ميغابايت للمستند الواحد.
+// كلا المجموعتين محميتان بقواعد الخادم: لا يقرؤهما الزائر إطلاقاً.
+var docs=[],_docsUnsub=null,_docFileCache={},_demoDocFiles={},currentDocId=null,selectedDocTags=[],pendingDocFile=null,docKindFilter='all',_docEditingId=null;
+var DOC_CHUNK=700000,DOC_MAX_PDF=10*1024*1024,DOC_IMG_MAX=2400;
+function canSeeDocs(){return isAdmin||isEditor;}
+function startDocsListener(){
+  if(!db){markDirty('docs');if(active==='docs')refreshPage('docs');return;}
+  if(_docsUnsub)return;
+  _docsUnsub=db.collection('documents').onSnapshot(function(s){
+    docs=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    markDirty('docs');if(active==='docs')refreshPage('docs');
+  },function(e){console.warn('documents listener:',e&&e.message);});
+}
+function stopDocsListener(){
+  if(_docsUnsub){try{_docsUnsub();}catch(e){}_docsUnsub=null;}
+  if(db){docs=[];clearDocCache();currentDocId=null;}   // لا تبقى الوثائق في الذاكرة بعد الخروج
+}
+function clearDocCache(){
+  Object.keys(_docFileCache).forEach(function(k){const c=_docFileCache[k];if(c&&c.url&&c.url.indexOf('blob:')===0){try{URL.revokeObjectURL(c.url);}catch(e){}}});
+  _docFileCache={};
+}
+function docChunkId(id,ver,i){return id+'__'+ver+'__'+i;}
+async function docFileWrite(key,obj){if(db)await db.collection('documentFiles').doc(key).set(obj);else _demoDocFiles[key]=obj;}
+async function docFileRead(key){
+  if(db){const s=await db.collection('documentFiles').doc(key).get();return s.exists?s.data():null;}
+  return _demoDocFiles[key]||null;
+}
+async function docFileDelete(key){if(db)await db.collection('documentFiles').doc(key).delete();else delete _demoDocFiles[key];}
+function dataUrlToObjectUrl(u){
+  try{
+    const m=/^data:([^;,]*)(;base64)?,(.*)$/.exec(u);if(!m||!m[2])return u;
+    const bin=atob(m[3]);const arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    return URL.createObjectURL(new Blob([arr],{type:m[1]||'application/octet-stream'}));
+  }catch(e){return u;}
+}
+async function loadDocFile(d){
+  const k=d.id+'|'+d.ver;
+  if(_docFileCache[k])return _docFileCache[k];
+  const n=d.chunks||0;if(!n)throw new Error('لا يوجد ملف');
+  const keys=[];for(let i=0;i<n;i++)keys.push(docChunkId(d.id,d.ver,i));
+  const parts=await Promise.all(keys.map(docFileRead));
+  if(parts.some(function(p){return!p||typeof p.data!=='string';}))throw new Error('الملف غير مكتمل');
+  const dataUrl=parts.map(function(p){return p.data;}).join('');
+  const entry={dataUrl:dataUrl,url:dataUrlToObjectUrl(dataUrl)};
+  if(canSeeDocs())_docFileCache[k]=entry;
+  return entry;
+}
+function fmtSize(b){b=Number(b)||0;if(b>=1048576)return(b/1048576).toFixed(1)+' MB';return Math.max(1,Math.round(b/1024))+' KB';}
+function docTagMembers(d){return(d.tags||[]).map(function(t){return members.find(function(m){return m.id===t;});}).filter(Boolean);}
+function isTouchDevice(){try{return window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;}catch(e){return false;}}
+
+function renderDocs(q){
+  const grid=byId('docs-grid'),bar=byId('docs-filter-bar');if(!grid)return;
+  if(!canSeeDocs()){grid.innerHTML='';if(bar)bar.innerHTML='';return;}
+  q=(q||'').trim();const qq=q.toLowerCase();
+  const cnt={all:docs.length,image:0,pdf:0};docs.forEach(function(d){if(cnt[d.kind]!==undefined)cnt[d.kind]++;});
+  if(bar)bar.innerHTML=[['all','الكل'],['image','صور'],['pdf','PDF']].map(function(x){
+    return'<button class="chip'+(docKindFilter===x[0]?' on':'')+'" data-doc-kind="'+x[0]+'">'+x[1]+' ('+cnt[x[0]]+')</button>';
+  }).join('');
+  let list=docs.filter(function(d){return docKindFilter==='all'||d.kind===docKindFilter;});
+  if(q)list=list.filter(function(d){
+    const names=docTagMembers(d).map(function(m){return(m.fullName||m._fullName||m.name||'');}).join(' ').toLowerCase();
+    return(d.desc||'').toLowerCase().includes(qq)||(d.fileName||'').toLowerCase().includes(qq)||(d.date||'').includes(q)||names.includes(qq);
+  });
+  if(!list.length){
+    grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📄</div><p>'+(q||docKindFilter!=='all'?'لا نتائج':'لا توجد وثائق بعد')+'</p></div>';
+    return;
+  }
+  const sorted=list.slice().sort(function(a,b){return String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||''));});
+  grid.innerHTML=sorted.map(function(d){
+    const tags=docTagMembers(d).map(memberShortChain).filter(Boolean).slice(0,3);
+    const body=d.kind==='image'&&d.thumb
+      ?'<img src="'+escAttr(d.thumb)+'" loading="lazy" decoding="async" alt="">'
+      :'<div class="doc-pdf"><div class="doc-pdf-ico">PDF</div><div class="doc-pdf-name">'+esc(d.fileName||'')+'</div></div>';
+    return'<div class="album-item doc-item" data-docid="'+escAttr(d.id)+'">'+body
+      +'<div class="doc-kind">'+(d.kind==='pdf'?'PDF':'صورة')+'</div>'
+      +(d.date?'<div class="album-date">'+esc(d.date)+'</div>':'')
+      +'<div class="album-tags">'+(d.desc?'<div class="doc-desc">'+esc(d.desc)+'</div>':'')
+        +tags.map(function(n){return'<span class="album-tag">'+esc(n)+'</span>';}).join('')+'</div>'
+      +'</div>';
+  }).join('');
+}
+const _filterDocsDeb=debounce(function(){renderDocs(byId('docs-q').value);},160);
+window.filterDocs=function(){_filterDocsDeb();};
+document.addEventListener('click',function(e){
+  if(!e.target.closest)return;
+  const k=e.target.closest('[data-doc-kind]');
+  if(k){docKindFilter=k.getAttribute('data-doc-kind');renderDocs(byId('docs-q').value);return;}
+  const item=e.target.closest('.doc-item[data-docid]');
+  if(item){haptic();openDocDetail(item.getAttribute('data-docid'));return;}
+  const t=e.target.closest('[data-doc-tag]');
+  if(t)toggleDocTag(t.getAttribute('data-doc-tag'));
+});
+
+function currentDocFile(){
+  const d=docs.find(function(x){return x.id===currentDocId;});
+  return d?_docFileCache[d.id+'|'+d.ver]||null:null;
+}
+window.openDocDetail=async function(id){
+  if(!canSeeDocs()){denied('⛔ الوثائق متاحة لأصحاب الصلاحية فقط');return;}
+  const d=docs.find(function(x){return x.id===id;});if(!d)return;
+  currentDocId=id;
+  const view=byId('doc-view');
+  const placeholder=d.kind==='image'&&d.thumb?'<img src="'+escAttr(d.thumb)+'" alt="">'
+    :'<div class="doc-pdf-card"><div class="doc-pdf-ico">PDF</div><div dir="ltr">'+esc(d.fileName||'')+'</div></div>';
+  view.innerHTML=placeholder+'<div class="doc-loading">جاري تحميل الوثيقة…</div>';
+  const tagItems=docTagMembers(d);
+  let info='';
+  if(d.desc)info+='<div style="font-size:.95rem;color:var(--ink);margin-bottom:.5rem;font-weight:600;white-space:pre-wrap">'+esc(d.desc)+'</div>';
+  if(d.date)info+='<div style="font-size:.78rem;color:var(--ink3);margin-bottom:.3rem">📅 '+esc(d.date)+'</div>';
+  info+='<div style="font-size:.74rem;color:var(--ink3);margin-bottom:.3rem" dir="auto">'+(d.kind==='pdf'?'📄 ':'🖼️ ')+esc(d.fileName||'')+(d.size?' · '+fmtSize(d.size):'')+'</div>';
+  if(tagItems.length)info+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem">'+tagItems.map(function(m){
+    return'<span data-goto-member="'+escAttr(m.id)+'" style="background:var(--gold-dim);border:1px solid var(--gold3);color:var(--gold);font-size:.75rem;font-weight:600;padding:.22rem .65rem;border-radius:14px;cursor:pointer">👤 '+esc(m.name)+'</span>';
+  }).join('')+'</div>';
+  info+='<div class="doc-private">🔒 تظهر لأصحاب الصلاحية فقط</div>';
+  byId('doc-detail-info').innerHTML=info;
+  byId('doc-edit-btn').style.display=isAdmin?'inline-flex':'none';
+  byId('doc-del-btn').style.display=isAdmin?'inline-flex':'none';
+  byId('doc-open-btn').disabled=true;byId('doc-dl-btn').disabled=true;
+  openOv('ov-doc-detail');
+  try{
+    const f=await loadDocFile(d);
+    if(currentDocId!==id)return;
+    if(d.kind==='image')view.innerHTML='<img src="'+escAttr(f.url)+'" alt="">';
+    else if(!isTouchDevice())view.innerHTML='<iframe src="'+escAttr(f.url)+'" title="'+escAttr(d.fileName||'PDF')+'"></iframe>';
+    else view.innerHTML='<div class="doc-pdf-card"><div class="doc-pdf-ico">PDF</div><div dir="ltr">'+esc(d.fileName||'')+'</div><div>اضغط «فتح الوثيقة» لعرضها كاملة</div></div>';
+    byId('doc-open-btn').disabled=false;byId('doc-dl-btn').disabled=false;
+  }catch(e){
+    if(currentDocId!==id)return;
+    const l=view.querySelector('.doc-loading');
+    if(l)l.textContent=e&&e.code==='permission-denied'?'⛔ لا تملك صلاحية عرض الوثيقة':'تعذّر تحميل الوثيقة — تحقق من الاتصال';
+  }
+};
+window.openCurrentDoc=function(){
+  const f=currentDocFile();if(!f)return;
+  const w=window.open(f.url,'_blank');
+  if(!w)downloadCurrentDoc();
+};
+window.downloadCurrentDoc=function(){
+  const f=currentDocFile();if(!f)return;
+  const d=docs.find(function(x){return x.id===currentDocId;});
+  const a=document.createElement('a');
+  a.href=f.url;a.download=(d&&d.fileName)||'document';a.rel='noopener';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+
+// ── إضافة / تعديل (المدير) ──
+function renderDocChosen(){
+  const el=byId('doc-file-chosen');if(!el)return;
+  const d=_docEditingId?docs.find(function(x){return x.id===_docEditingId;}):null;
+  const f=pendingDocFile||(d?{kind:d.kind,name:d.fileName,size:d.size,thumb:d.thumb,current:true}:null);
+  if(!f){el.innerHTML='';return;}
+  const ico=f.kind==='image'&&(f.thumb||f.dataUrl)?'<img src="'+escAttr(f.thumb||f.dataUrl)+'" alt="">':'<div class="doc-pdf-ico">PDF</div>';
+  el.innerHTML='<div class="doc-file-chosen">'+ico+'<div style="min-width:0"><b>'+esc(f.name||'')+'</b>'+(f.current?'الملف الحالي':'جاهز للرفع')+(f.size?' · '+fmtSize(f.size):'')+'</div></div>';
+}
+function resetDocForm(){
+  pendingDocFile=null;selectedDocTags=[];
+  byId('doc-file-in').value='';
+  byId('doc-tag-search').value='';byId('doc-tag-results').innerHTML='';
+}
+window.openAddDoc=function(){
+  if(!isAdmin){denied('⛔ إضافة الوثائق للمدير فقط');return;}
+  _docEditingId=null;resetDocForm();
+  byId('doc-form-title').textContent='إضافة وثيقة';
+  byId('doc-upload-label').textContent='اضغط لاختيار الوثيقة — صورة أو ملف PDF';
+  byId('doc-save').textContent='حفظ الوثيقة';
+  byId('doc-date').value=new Date().toISOString().split('T')[0];
+  byId('doc-desc').value='';
+  renderDocChosen();renderSelectedDocTags();
+  openOv('ov-add-doc');
+};
+window.openEditDoc=function(){
+  if(!isAdmin){denied('⛔ تعديل الوثائق للمدير فقط');return;}
+  const d=docs.find(function(x){return x.id===currentDocId;});if(!d)return;
+  _docEditingId=d.id;resetDocForm();
+  selectedDocTags=(d.tags||[]).slice();
+  byId('doc-form-title').textContent='تعديل الوثيقة';
+  byId('doc-upload-label').textContent='استبدال الملف (اختياري) — صورة أو PDF';
+  byId('doc-save').textContent='حفظ التعديلات';
+  byId('doc-date').value=d.date||'';
+  byId('doc-desc').value=d.desc||'';
+  renderDocChosen();renderSelectedDocTags();
+  closeOv('ov-doc-detail');
+  setTimeout(function(){openOv('ov-add-doc');},200);
+};
+function scaleToJpeg(img,max,q){
+  const c=document.createElement('canvas');
+  let w=img.width,h=img.height;const sc=Math.min(1,max/Math.max(w,h));
+  w=Math.max(1,Math.round(w*sc));h=Math.max(1,Math.round(h*sc));
+  c.width=w;c.height=h;const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';if(ctx.fillRect)ctx.fillRect(0,0,w,h);
+  ctx.drawImage(img,0,0,w,h);
+  return c.toDataURL('image/jpeg',q);
+}
+window.onDocFileSelect=function(e){
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const name=String(f.name||'');
+  const isPdf=f.type==='application/pdf'||/\.pdf$/i.test(name);
+  const isImg=/^image\//.test(f.type||'');
+  if(!isPdf&&!isImg){toast('الوثيقة يجب أن تكون صورة أو ملف PDF',true);e.target.value='';return;}
+  if(isPdf&&f.size>DOC_MAX_PDF){toast('حجم ملف PDF أكبر من 10 ميغابايت — اضغطه أو قسّمه ثم أعد المحاولة',true);e.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const raw=String(ev.target.result||'');
+    if(isPdf){
+      pendingDocFile={kind:'pdf',mime:'application/pdf',name:name||'document.pdf',size:f.size,dataUrl:raw.replace(/^data:[^;,]*/,'data:application/pdf'),thumb:''};
+      renderDocChosen();
+      return;
+    }
+    const img=new Image();
+    img.onload=function(){
+      const full=scaleToJpeg(img,DOC_IMG_MAX,.85);
+      pendingDocFile={kind:'image',mime:'image/jpeg',name:(name.replace(/\.[^.]+$/,'')||'document')+'.jpg',
+        size:Math.round((full.length-full.indexOf(',')-1)*3/4),dataUrl:full,thumb:scaleToJpeg(img,360,.65)};
+      renderDocChosen();
+    };
+    img.onerror=function(){toast('تعذّرت قراءة الصورة',true);};
+    img.src=raw;
+  };
+  reader.onerror=function(){toast('تعذّرت قراءة الملف',true);};
+  reader.readAsDataURL(f);
+};
+window.searchDocTags=function(){
+  const q=byId('doc-tag-search').value.replace(/\s+/g,' ').trim();
+  const res=byId('doc-tag-results');
+  if(!q){res.innerHTML='';return;}
+  const qFirst=q.split(' ')[0];
+  function score(m){
+    const fn=(m.fullName||m._fullName||m.name||'');
+    if(fn.startsWith(q))return 0;
+    if(m.name&&m.name.startsWith(qFirst)&&fn.includes(q))return 1;
+    if(m.name&&m.name.startsWith(qFirst))return 2;
+    if(fn.includes(q))return 3;
+    if(m.name&&m.name.includes(qFirst))return 4;
+    if(fn.includes(qFirst))return 5;
+    return 99;
+  }
+  const hits=members.filter(function(m){return score(m)<99;}).sort(function(a,b){return score(a)-score(b);}).slice(0,10);
+  if(!hits.length){res.innerHTML='<span style="font-size:.76rem;color:var(--ink3)">لا نتائج</span>';return;}
+  res.innerHTML=hits.map(function(m){
+    const on=selectedDocTags.indexOf(m.id)>=0;
+    const fn=m.fullName||m._fullName||'';
+    const label=fn&&fn!==m.name?esc(m.name)+'<span style="font-size:.68rem;opacity:.75"> — '+esc(fn)+'</span>':esc(m.name);
+    return'<span data-doc-tag="'+escAttr(m.id)+'" style="display:inline-flex;align-items:center;gap:.25rem;background:'+(on?'var(--gold)':'var(--white)')+';color:'+(on?'#fff':'var(--ink)')+';border:1px solid '+(on?'var(--gold)':'var(--sand3)')+';font-size:.76rem;padding:.32rem .68rem;border-radius:14px;cursor:pointer">'+label+'</span>';
+  }).join('');
+};
+window.toggleDocTag=function(mid){
+  const i=selectedDocTags.indexOf(mid);
+  if(i>=0)selectedDocTags.splice(i,1);else selectedDocTags.push(mid);
+  renderSelectedDocTags();searchDocTags();
+};
+function renderSelectedDocTags(){
+  const wrap=byId('doc-tags-selected');if(!wrap)return;
+  if(!selectedDocTags.length){wrap.innerHTML='<span style="font-size:.72rem;color:var(--ink3)">لم يتم اختيار أشخاص بعد</span>';return;}
+  wrap.innerHTML=selectedDocTags.map(function(mid){
+    const m=members.find(function(x){return x.id===mid;});if(!m)return'';
+    const fn=m.fullName||m._fullName||'';const short=fn&&fn!==m.name?' ('+fn.split(' ').slice(1,3).join(' ')+')':'';
+    return'<span style="display:inline-flex;align-items:center;gap:.3rem;background:var(--gold);color:#fff;font-size:.74rem;font-weight:600;padding:.24rem .55rem;border-radius:14px" title="'+escAttr(fn)+'">'+esc(m.name)+esc(short)+'<span data-doc-tag="'+escAttr(mid)+'" style="cursor:pointer;opacity:.85;margin-right:.2rem">✕</span></span>';
+  }).join('');
+}
+window.saveDoc=async function(){
+  if(!isAdmin){denied('⛔ إضافة الوثائق وتعديلها للمدير فقط');return;}
+  const editing=_docEditingId?docs.find(function(x){return x.id===_docEditingId;}):null;
+  if(_docEditingId&&!editing){toast('الوثيقة لم تعد موجودة',true);closeOv('ov-add-doc');return;}
+  if(!editing&&!pendingDocFile){toast('الرجاء اختيار الوثيقة (صورة أو PDF) أولاً',true);return;}
+  const desc=byId('doc-desc').value.trim();
+  if(!desc){flagField('doc-desc');toast('اكتب وصف الوثيقة',true);return;}
+  const btn=byId('doc-save'),label=btn.textContent;btn.disabled=true;
+  const now=new Date().toISOString();
+  const id=editing?editing.id:('doc_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));
+  const meta=Object.assign({},editing||{},{id:id,date:byId('doc-date').value||'',desc:desc,tags:selectedDocTags.slice(),updatedAt:now});
+  if(!editing)meta.createdAt=now;
+  const file=pendingDocFile,written=[];
+  try{
+    if(file){
+      const ver=Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+      const data=file.dataUrl,n=Math.max(1,Math.ceil(data.length/DOC_CHUNK));
+      for(let i=0;i<n;i++){
+        btn.textContent='جاري الرفع… '+Math.round(i/n*100)+'%';
+        const key=docChunkId(id,ver,i);
+        await docFileWrite(key,{docId:id,ver:ver,i:i,n:n,data:data.slice(i*DOC_CHUNK,(i+1)*DOC_CHUNK)});
+        written.push(key);
+      }
+      Object.assign(meta,{ver:ver,chunks:n,kind:file.kind,mime:file.mime,fileName:file.name,size:file.size,thumb:file.thumb||''});
+    }
+    btn.textContent='جاري الحفظ…';
+    if(db)await db.collection('documents').doc(id).set(meta);
+    else{docs=docs.filter(function(x){return x.id!==id;});docs.push(meta);}
+    if(file&&editing&&editing.ver&&editing.ver!==meta.ver){
+      const old=[];for(let i=0;i<(editing.chunks||0);i++)old.push(docChunkId(id,editing.ver,i));
+      await Promise.all(old.map(function(k){return docFileDelete(k).catch(function(){});}));
+      delete _docFileCache[id+'|'+editing.ver];
+    }
+    if(file)_docFileCache[id+'|'+meta.ver]={dataUrl:file.dataUrl,url:dataUrlToObjectUrl(file.dataUrl)};
+    resetDocForm();_docEditingId=null;
+    closeOv('ov-add-doc');
+    renderDocs(byId('docs-q')?byId('docs-q').value:'');
+    toast(editing?'تم تحديث الوثيقة ✓':'تمت إضافة الوثيقة ✓');
+    haptic();
+  }catch(e){
+    console.error('saveDoc:',e);
+    await Promise.all(written.map(function(k){return docFileDelete(k).catch(function(){});}));
+    toast(e&&e.code==='permission-denied'?'⛔ رفض الخادم الحفظ — تأكد من نشر قواعد Firestore الجديدة':'تعذّر حفظ الوثيقة: '+((e&&e.message)||e),true);
+  }
+  btn.disabled=false;btn.textContent=label;
+};
+window.deleteCurrentDoc=async function(){
+  if(!isAdmin){denied('⛔ حذف الوثائق للمدير فقط');return;}
+  const d=docs.find(function(x){return x.id===currentDocId;});if(!d)return;
+  if(!confirm('حذف هذه الوثيقة نهائياً؟\n'+(d.desc||'')))return;
+  try{
+    if(db)await db.collection('documents').doc(d.id).delete();
+    else docs=docs.filter(function(x){return x.id!==d.id;});
+    const keys=[];for(let i=0;i<(d.chunks||0);i++)keys.push(docChunkId(d.id,d.ver,i));
+    await Promise.all(keys.map(function(k){return docFileDelete(k).catch(function(){});}));
+    delete _docFileCache[d.id+'|'+d.ver];
+    currentDocId=null;
+    closeOv('ov-doc-detail');
+    renderDocs(byId('docs-q')?byId('docs-q').value:'');
+    toast('تم حذف الوثيقة');
+  }catch(e){toast(e&&e.code==='permission-denied'?'⛔ لا تملك صلاحية الحذف':'تعذّر الحذف: '+((e&&e.message)||e),true);}
+};
+
 // ══ FULL BACKUP (EXPORT/IMPORT) ══
-window.exportFullBackup=function(){
+window.exportFullBackup=async function(){
   toast('جاري إنشاء النسخة الاحتياطية…');
+  let docFiles=[];
+  try{
+    if(configured&&db){if(isAdmin){const fs=await db.collection('documentFiles').get();docFiles=fs.docs.map(function(d){return Object.assign({id:d.id},d.data());});}}
+    else docFiles=Object.keys(_demoDocFiles).map(function(k){return Object.assign({id:k},_demoDocFiles[k]);});
+  }catch(e){console.warn('backup documents:',e&&e.message);}
   const backup={
     version:APP_VERSION,
     date:new Date().toISOString(),
@@ -4074,6 +4498,8 @@ window.exportFullBackup=function(){
     events:events,
     news:news,
     photos:photos,
+    documents:docs,
+    documentFiles:docFiles,
     siteSettings:siteSettings
   };
   const json=JSON.stringify(backup);
@@ -4101,6 +4527,7 @@ window.importFullBackup=function(e){
       msg+='• '+(backup.events?backup.events.length:0)+' فعالية\n';
       msg+='• '+(backup.news?backup.news.length:0)+' خبر\n';
       msg+='• '+(backup.photos?backup.photos.length:0)+' صورة\n';
+      if(backup.documents)msg+='• '+backup.documents.length+' وثيقة\n';
       if(backup.date)msg+='\nتاريخ النسخة: '+new Date(backup.date).toLocaleDateString('ar');
       msg+='\n\n⚠️ سيتم استبدال جميع البيانات الحالية!';
       if(!confirm(msg))return;
@@ -4119,6 +4546,10 @@ window.importFullBackup=function(e){
           if(backup.events)await replaceCollection('events',backup.events,'ev');
           if(backup.news)await replaceCollection('news',backup.news,'nw');
           if(backup.photos)await replaceCollection('photos',backup.photos,'ph');
+          if(Array.isArray(backup.documents)){
+            await replaceCollection('documentFiles',backup.documentFiles||[],'df');
+            await replaceCollection('documents',backup.documents,'doc');
+          }
           if(backup.siteSettings){
             siteSettings=backup.siteSettings;
             localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
@@ -4130,6 +4561,10 @@ window.importFullBackup=function(e){
           if(backup.events)events=backup.events;
           if(backup.news)news=backup.news;
           if(backup.photos)photos=backup.photos;
+          if(Array.isArray(backup.documents)){
+            docs=backup.documents.slice();clearDocCache();_demoDocFiles={};
+            (backup.documentFiles||[]).forEach(function(x){if(x&&x.id){const c=Object.assign({},x);delete c.id;_demoDocFiles[x.id]=c;}});
+          }
           if(backup.siteSettings){
             siteSettings=backup.siteSettings;
             localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
@@ -5014,6 +5449,7 @@ function setRole(role,root){
   if(!role){myProfile=null;myDemoAccount=null;}
   _branchCache={};
   if(isAdmin)startAdminListeners();
+  if(isAdmin||isEditor)startDocsListener();else stopDocsListener();
   updateUI();
   if(_announce){
     _announce=false;
@@ -5038,6 +5474,7 @@ function startAdminListeners(){
   },function(e){console.warn('requests listener:',e&&e.message);});
 }
 function stopRoleListeners(){
+  if(typeof stopDocsListener==='function')stopDocsListener();
   [_usersUnsub,_selfUnsub,_reqUnsub].forEach(function(f){try{if(f)f();}catch(e){}});
   _usersUnsub=_selfUnsub=_reqUnsub=null;
   userProfiles=[];
