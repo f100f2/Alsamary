@@ -531,9 +531,23 @@ img{-webkit-user-drag:none}
 @media(max-width:420px){.il-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* ══ PHONE SESSION (drawer) ══ */
-.drawer-user{display:flex;align-items:center;gap:.6rem;margin:0 .6rem .4rem;padding:.7rem .8rem;border:1px solid var(--sand3);border-radius:14px;background:var(--sand2)}
+.drawer-user{display:flex;flex-direction:column;align-items:stretch;gap:.5rem;margin:0 .6rem .4rem;padding:.7rem .8rem;border:1px solid var(--sand3);border-radius:14px;background:var(--sand2)}
 .drawer-user .du-txt{flex:1;min-width:0;font-size:.74rem;color:var(--ink3);line-height:1.5}
 .drawer-user .du-txt b{display:block;font-size:.88rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ══ PHONE-BASED LOGIN ══ */
+.du-row{display:flex;align-items:center;gap:.6rem}
+.du-role{display:inline-block;margin-top:.2rem;font-size:.66rem;font-weight:700;color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd);border-radius:20px;padding:.05rem .5rem}
+.du-role:empty{display:none}
+.du-pass{width:100%}
+.login-who{background:var(--sand2);border:1px solid var(--sand3);border-radius:14px;padding:.8rem .9rem;margin-bottom:.9rem;text-align:center;line-height:1.7}
+.login-who b{display:block;font-size:.95rem;color:var(--ink)}
+.login-who .lw-phone{font-size:.82rem;color:var(--ink3);font-variant-numeric:tabular-nums}
+.login-who .lw-note{font-size:.8rem;color:var(--ink3);margin-bottom:.6rem}
+.perm-role{font-size:.66rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;margin-inline-start:.35rem;vertical-align:middle}
+.perm-role.admin{color:#fff;background:linear-gradient(135deg,var(--gold),var(--gold2))}
+.perm-role.editor{color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd)}
+.perm-role.legacy{color:var(--ink3);background:var(--sand2);border:1px solid var(--sand3)}
 
 /* ══ SETTINGS ══ */
 .settings-section{background:var(--sand2);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem 1.05rem;margin-bottom:.8rem}
@@ -705,7 +719,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ فرد</button>
       </span>
       <span id="am-add" class="admin-tools">
-        <button class="btn btn-sm btn-outline-gold" onclick="openPermissions()" title="صلاحيات الفروع">🛡️ الصلاحيات</button>
+        <button class="btn btn-sm btn-outline-gold" onclick="openPermissions()" title="المدراء ومحررو الفروع">🛡️ الصلاحيات</button>
         <button class="btn btn-sm" onclick="exportMembersExcel()" style="border-color:rgba(46,125,82,.4);color:var(--ok)" title="تصدير Excel">📤 Excel</button>
         <button class="btn btn-sm" onclick="exportFullBackup()" style="border-color:rgba(52,152,219,.4);color:#2b7cb3" title="نسخة احتياطية كاملة">💾 نسخة</button>
         <button class="btn btn-sm" onclick="document.getElementById('backup-in').click()" style="border-color:rgba(155,89,182,.4);color:#8e44ad" title="استيراد نسخة احتياطية">📥 استيراد</button>
@@ -804,13 +818,16 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
     <button class="drawer-item" id="tb-inlaws" style="display:none" onclick="goPage('inlaws')"><svg viewBox="0 0 24 24"><path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 000 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0020 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>الأنسباء</button>
-    <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>صلاحيات الفروع</button>
+    <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>الصلاحيات والحسابات</button>
   </nav>
   <div class="drawer-user" id="drawer-user" style="display:none">
-    <div class="du-txt">مسجّل الدخول باسم<b id="drawer-user-name"></b></div>
-    <button class="btn btn-sm btn-danger" onclick="phoneLogout()">تسجيل الخروج</button>
+    <div class="du-row">
+      <div class="du-txt">مسجّل الدخول باسم<b id="drawer-user-name"></b><span class="du-role" id="drawer-user-role"></span></div>
+      <button class="btn btn-sm btn-danger" onclick="phoneLogout()">تسجيل الخروج</button>
+    </div>
+    <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V48 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V50 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -903,7 +920,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <button class="btn btn-sm" id="d-addsons" style="display:none;border-color:var(--gold);background:var(--gold);color:#fff" onclick="openAddMultiSons()">+ أبناء</button>
       <button class="btn btn-sm btn-outline-gold" id="d-editkids" style="display:none" onclick="openEditChildren()">✏️ تعديل الأبناء</button>
       <button class="btn btn-sm btn-outline-gold" id="d-orderkids" style="display:none" onclick="openOrderKids()">↕ ترتيب الأبناء</button>
-      <button class="btn btn-sm btn-outline-gold" id="d-grant" style="display:none" onclick="grantFromDetail()">🛡️ صلاحية الفرع</button>
+      <button class="btn btn-sm btn-outline-gold" id="d-grant" style="display:none" onclick="grantFromDetail()">🛡️ منح صلاحية</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
   </div>
@@ -969,18 +986,33 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
   </div>
 </div>
 
-<!-- LOGIN (ADMIN + BRANCH EDITORS) -->
+<!-- LOGIN: phone identity + password (admin / branch editor) -->
 <div class="overlay" id="ov-admin">
   <div class="modal" style="max-width:380px">
     <div class="modal-handle"></div>
     <div class="modal-title" style="text-align:center">تسجيل الدخول</div>
-    <p style="font-size:.8rem;color:var(--ink3);margin-bottom:1rem;text-align:center;line-height:1.7">للمدير والمحررين المفوّضين بإدارة فروع العائلة</p>
     <div id="login-setup-note" class="login-note" style="display:none"></div>
-    <div class="field"><label>البريد الإلكتروني</label><input id="adm-email" type="email" inputmode="email" autocomplete="username" placeholder="name@example.com" dir="ltr" onkeydown="if(event.key==='Enter')byId('adm-pass').focus()"></div>
-    <div class="field"><label>كلمة المرور</label><input id="adm-pass" type="password" autocomplete="current-password" placeholder="••••••••" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div id="login-who" class="login-who"></div>
+    <div class="field" id="adm-email-wrap" style="display:none"><label>البريد الإلكتروني</label><input id="adm-email" type="email" inputmode="email" autocomplete="username" placeholder="name@example.com" dir="ltr" onkeydown="if(event.key==='Enter')byId('adm-pass').focus()"></div>
+    <div class="field" id="adm-pass-wrap"><label>كلمة المرور</label><input id="adm-pass" type="password" autocomplete="current-password" placeholder="••••••••" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="modal-footer" style="justify-content:center">
       <button class="btn btn-ghost" onclick="closeOv('ov-admin')">إلغاء</button>
       <button class="btn btn-primary" id="login-btn" onclick="doLogin()">دخول</button>
+    </div>
+    <div style="text-align:center;margin-top:.6rem"><button class="btn btn-ghost btn-sm" id="login-mode-toggle" onclick="toggleEmailLogin()" style="font-size:.74rem">الدخول بالبريد الإلكتروني</button></div>
+  </div>
+</div>
+
+<!-- CHANGE OWN PASSWORD -->
+<div class="overlay" id="ov-chpass">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="text-align:center">🔑 تغيير كلمة المرور</div>
+    <div class="field"><label>كلمة المرور الجديدة (6 أحرف على الأقل)</label><input id="chp-new" type="password" autocomplete="new-password" dir="ltr"></div>
+    <div class="field"><label>تأكيد كلمة المرور</label><input id="chp-new2" type="password" autocomplete="new-password" dir="ltr" onkeydown="if(event.key==='Enter')saveChangePass()"></div>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn btn-ghost" onclick="closeOv('ov-chpass')">إلغاء</button>
+      <button class="btn btn-primary" id="chp-save" onclick="saveChangePass()">حفظ</button>
     </div>
   </div>
 </div>
@@ -1267,26 +1299,33 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
   </div>
 </div>
 
-<!-- BRANCH PERMISSIONS (Admin) -->
+<!-- PERMISSIONS (Admin): accounts tied to a member's phone -->
 <div class="overlay" id="ov-permissions">
   <div class="modal" style="max-width:600px">
     <div class="modal-handle"></div>
-    <div class="modal-title">🛡️ صلاحيات الفروع</div>
-    <p class="perm-hint">امنح مستخدماً صلاحية الإضافة والتعديل والحذف داخل فرع واحد فقط: الفرد المختار وجميع ذريته حتى آخر جيل. لا يملك المحرر أي صلاحية خارج فرعه، ولا يستطيع الاستيراد أو التصدير أو النسخ الاحتياطي.</p>
+    <div class="modal-title">🛡️ الصلاحيات</div>
+    <p class="perm-hint">الصلاحية مرتبطة <b>برقم جوال</b> الشخص المسجّل في الشجرة: يدخل برقمه كالمعتاد، ثم يضغط 🔐 ويكتب كلمة المرور فقط. <b>المدير</b> له كل الصلاحيات. <b>محرر الفرع</b> يضيف ويعدّل ويحذف داخل فرعه فقط (رأس الفرع وجميع ذريته)، ولا يستطيع الاستيراد أو التصدير أو النسخ الاحتياطي.</p>
     <div class="perm-status" id="perm-index-status"></div>
     <div class="settings-section" id="perm-form">
-      <div class="settings-sec-title" id="perm-form-title">+ محرر فرع جديد</div>
-      <div class="form-grid">
-        <div class="field"><label>الاسم *</label><input id="perm-name" placeholder="اسم المحرر"></div>
-        <div class="field"><label>البريد الإلكتروني *</label><input id="perm-email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="off"></div>
+      <div class="settings-sec-title" id="perm-form-title">+ صلاحية جديدة</div>
+      <div class="field" id="perm-member-wrap">
+        <label>الشخص * (يجب أن يكون له رقم جوال في الشجرة)</label>
+        <input id="perm-member-q" placeholder="ابحث بالاسم أو الجوال…" oninput="filterPermMember()" autocomplete="off" style="margin-bottom:.4rem">
+        <select id="perm-member" onchange="onPermMemberChange()"></select>
       </div>
-      <div class="field" id="perm-pass-wrap"><label>كلمة المرور المؤقتة * (6 أحرف على الأقل)</label><input id="perm-pass" type="text" dir="ltr" placeholder="••••••" autocomplete="new-password"></div>
-      <div class="field">
+      <div class="field"><label>نوع الصلاحية *</label>
+        <select id="perm-role" onchange="onPermRoleChange()">
+          <option value="editor">محرر فرع</option>
+          <option value="admin">مدير</option>
+        </select>
+      </div>
+      <div class="field" id="perm-branch-wrap">
         <label>رأس الفرع *</label>
         <input id="perm-branch-q" placeholder="ابحث عن الفرد…" oninput="filterPermBranch()" autocomplete="off" style="margin-bottom:.4rem">
         <select id="perm-branch" onchange="updatePermPreview()"></select>
         <div class="perm-preview" id="perm-preview"></div>
       </div>
+      <div class="field" id="perm-pass-wrap"><label>كلمة المرور المؤقتة * (6 أحرف على الأقل)</label><input id="perm-pass" type="text" dir="ltr" placeholder="••••••" autocomplete="new-password"></div>
       <div style="display:flex;gap:.4rem;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" id="perm-submit" onclick="savePermission()">إنشاء الصلاحية</button>
         <button class="btn btn-ghost btn-sm" id="perm-cancel" style="display:none" onclick="resetPermForm()">إلغاء التعديل</button>
@@ -1343,7 +1382,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V48';
+const APP_VERSION='V50';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1462,7 +1501,7 @@ async function init(){
     news   =ns.docs.map(d=>({id:d.id,...d.data()}));
     photos =ps.docs.map(d=>({id:d.id,...d.data()}));
 
-    fsdb.collection('members').onSnapshot(s=>{members=normMembers(s.docs.map(d=>({id:d.id,...d.data()})));dataChanged();});
+    fsdb.collection('members').onSnapshot(s=>{members=normMembers(s.docs.map(d=>({id:d.id,...d.data()})));dataChanged();if(typeof scheduleIndexSync==='function')scheduleIndexSync();});
     fsdb.collection('events').onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));markDirty('events','home');if(active==='events'||active==='home')refreshPage(active);});
     fsdb.collection('news').onSnapshot(s=>{news=s.docs.map(d=>({id:d.id,...d.data()}));markDirty('news','home');if(active==='news'||active==='home')refreshPage(active);});
     fsdb.collection('photos').onSnapshot(s=>{photos=s.docs.map(d=>({id:d.id,...d.data()}));markDirty('album');if(active==='album')refreshPage('album');});
@@ -3668,12 +3707,17 @@ function updateMeButton(){
     du.style.display=loggedInMemberId?'flex':'none';
     const dn=byId('drawer-user-name');
     if(dn)dn.textContent=me?(me.name||'')+(me.phone?' · '+me.phone:''):'';
+    const dr=byId('drawer-user-role');
+    if(dr)dr.textContent=isAdmin?'مدير':(isEditor?'محرر فرع':'');
+    const cp=byId('drawer-chpass');
+    if(cp)cp.style.display=(isAdmin||isEditor)&&(db?!!authUser:!!myDemoAccount)?'':'none';
   }
 }
 window.phoneLogout=function(){
   if(!loggedInMemberId)return;
   if(!confirm('تسجيل الخروج من رقم الجوال؟'))return;
   try{localStorage.removeItem('familyPhoneLogin');}catch(e){}
+  if(isAdmin||isEditor)signOutRoles(true);
   loggedInMemberId=null;
   TC._pendingFocus=null;
   if(TC.nodes)TC.nodes.forEach(function(n){n.hl=false;});
@@ -3707,8 +3751,10 @@ function showWelcomeMsg(memberId){
 window.doPhoneLogin=function(){
   const phone=byId('login-phone').value.trim();
   if(!phone){byId('login-phone').style.borderColor='var(--err)';return;}
-  const m=members.find(function(x){return(x.phone||'').replace(/\s/g,'')===phone.replace(/\s/g,'');});
+  const m=memberByPhone(phone);
   if(!m){toast('رقم الجوال غير موجود',true);return;}
+  // تغيير الشخص يُنهي صلاحيات الشخص السابق
+  if(loggedInMemberId&&loggedInMemberId!==m.id&&(isAdmin||isEditor))signOutRoles(true);
   loggedInMemberId=m.id;
   localStorage.setItem('familyPhoneLogin',m.id);
   closeOv('ov-phone-login');
@@ -4065,19 +4111,9 @@ window.importFullBackup=function(e){
       (async function(){
         if(configured&&db){
           async function replaceCollection(col,items,prefix){
-            let batch=db.batch(),count=0;
             const existing=await db.collection(col).get();
-            for(const doc of existing.docs){
-              batch.delete(doc.ref);count++;
-              if(count>=400){await batch.commit();batch=db.batch();count=0;}
-            }
-            if(count>0){await batch.commit();batch=db.batch();count=0;}
-            for(const item of items){
-              const ref=db.collection(col).doc(item.id||uid(prefix));
-              batch.set(ref,item);count++;
-              if(count>=400){await batch.commit();batch=db.batch();count=0;}
-            }
-            if(count>0)await batch.commit();
+            await commitOpsInChunks(existing.docs.map(function(doc){return{t:'del',ref:doc.ref};}));
+            await commitOpsInChunks(items.map(function(item){return{t:'set',ref:db.collection(col).doc(item.id||uid(prefix)),data:item};}));
           }
           await replaceCollection('members',withAncestors(normMembers(backup.members.map(function(m){return Object.assign({},m,{id:m.id||uid('imp')});}))),'imp');
           if(backup.events)await replaceCollection('events',backup.events,'ev');
@@ -4751,11 +4787,33 @@ window.heroSlide=function(i){
 //  الفرع = الفرد المختار + جميع ذريته حتى آخر جيل
 // ════════════════════════════════════════════════════════════════════
 var fbAuth=null,authUser=null,userProfiles=[],demoUsers=[];
-var _usersUnsub=null,_selfUnsub=null,_reqUnsub=null,_announce=false,permEditingUid=null;
+var _usersUnsub=null,_selfUnsub=null,_reqUnsub=null,_announce=false,permEditingUid=null,myProfile=null,myDemoAccount=null,_emailLogin=false;
 
 function normEmail(e){return String(e||'').trim().toLowerCase();}
 function adminEmailsConfigured(){return ADMIN_EMAILS.some(function(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)&&!/@example\.com$/i.test(e);});}
 function isAdminEmail(e){e=normEmail(e);return !!e&&ADMIN_EMAILS.some(function(x){return normEmail(x)===e;});}
+
+// ══ رقم الجوال ══
+// توحيد الأرقام: 05xxxxxxxx ، +9665xxxxxxxx ، 009665… ، 5xxxxxxxx ، والأرقام العربية ٠٥…
+function phoneKey(p){
+  let d=String(p==null?'':p)
+    .replace(/[٠-٩]/g,function(c){return String(c.charCodeAt(0)-1632);})
+    .replace(/[۰-۹]/g,function(c){return String(c.charCodeAt(0)-1776);})
+    .replace(/\D/g,'');
+  if(d.indexOf('00966')===0)d='0'+d.slice(5);
+  else if(d.indexOf('966')===0&&d.length===12)d='0'+d.slice(3);
+  else if(d.length===9&&d.charAt(0)==='5')d='0'+d;
+  return d;
+}
+// حساب الدخول في Firebase مبني على الرقم (لا يُرسل إليه بريد ولا يظهر للمستخدم)
+function phoneLoginEmail(key){
+  return'p'+key+'.'+Math.random().toString(36).slice(2,8)+'@'+String(firebaseConfig.projectId||'family').toLowerCase()+'.tree.app';
+}
+function memberByPhone(p){
+  const k=phoneKey(p);if(!k)return null;
+  return members.find(function(m){return phoneKey(m.phone)===k;})||null;
+}
+function currentPhoneMember(){return loggedInMemberId?members.find(function(m){return m.id===loggedInMemberId;})||null:null;}
 
 // ══ TREE INDEXES ══
 function memberMap(list){const m={};(list||members).forEach(function(x){m[x.id]=x;});return m;}
@@ -4807,27 +4865,33 @@ function requireAdmin(){if(isAdmin)return true;denied('⛔ هذا الإجراء
 function permErr(msg){const e=new Error(msg||'permission-denied');e.code='permission-denied';e.userMsg=msg||null;return e;}
 function writeErrMsg(e){
   if(e&&e.userMsg)return'⛔ '+e.userMsg;
-  if(e&&(e.code==='permission-denied'||/permission/i.test(e.message||'')))return'⛔ رفض الخادم العملية — لا تملك صلاحية على هذا الجزء من الشجرة';
+  if(e&&(e.code==='permission-denied'||/permission/i.test(e.message||''))){
+    if(isEditor&&branchIndexDrift().length)return'⛔ لم يُحفظ: فهرس الفروع على الخادم غير مكتمل. يكفي أن يفتح المدير الموقع مرة واحدة ليتحدّث تلقائياً، ثم أعد المحاولة';
+    return'⛔ رفض الخادم العملية — لا تملك صلاحية على هذا الجزء من الشجرة';
+  }
   return'حدث خطأ أثناء الحفظ: '+((e&&e.message)||e);
 }
 
 // ══ COMMIT — كل كتابة على الأعضاء تمر من هنا ══
 // تحسب فهرس الفروع (ancestors) للأفراد المتأثرين وذريتهم، وتتحقق من الصلاحية، ثم تكتب.
-async function commitMemberChanges(upserts,deleteIds){
+async function commitMemberChanges(upserts,deleteIds,opts){
   upserts=(upserts||[]).filter(Boolean);
   const del=new Set(deleteIds||[]);
   const map={};
   members.forEach(function(m){if(!del.has(m.id))map[m.id]=m;});
   const upIds=new Set();
+  const indexOnly=!!(opts&&opts.indexOnly);
+  const seeds=[];
   upserts.forEach(function(u){
     if(!u.id)u.id=uid('m');
-    upIds.add(u.id);
+    seeds.push(u.id);
+    if(!indexOnly)upIds.add(u.id);
     map[u.id]=Object.assign({},map[u.id]||{},u);
   });
   // المتأثرون: من تغيّر + ذريتهم + أبناء المحذوفين وذريتهم
   const kids=childrenIndex(Object.values(map));
   const affected=new Set(),st=[];
-  upIds.forEach(function(id){st.push(id);});
+  seeds.forEach(function(id){st.push(id);});
   members.forEach(function(m){if(m.parentId&&del.has(m.parentId)&&map[m.id])st.push(m.id);});
   while(st.length){const id=st.pop();if(affected.has(id))continue;affected.add(id);(kids[id]||[]).forEach(function(c){st.push(c);});}
   const writes=[];
@@ -4866,20 +4930,45 @@ async function commitMemberChanges(upserts,deleteIds){
     return{writes:writes.length,deletes:del.size};
   }
   const col=db.collection('members');
+  // من تغيّرت بياناته يُكتب كاملاً، ومن تغيّر فهرسه فقط يُرسل الفهرس وحده
+  const ops=writes.map(function(w){
+    return upIds.has(w.id)?{t:'set',ref:col.doc(w.id),data:w}:{t:'merge',ref:col.doc(w.id),data:{ancestors:w.ancestors}};
+  }).concat(Array.from(del).map(function(id){return{t:'del',ref:col.doc(id)};}));
   if(isAdmin){
-    // المدير: دفعات ذرّية سريعة
-    const ops=writes.map(function(w){return{t:'set',w:w};}).concat(Array.from(del).map(function(id){return{t:'del',id:id};}));
-    for(let i=0;i<ops.length;i+=450){
-      const b=db.batch();
-      ops.slice(i,i+450).forEach(function(o){if(o.t==='set')b.set(col.doc(o.w.id),o.w);else b.delete(col.doc(o.id));});
-      await b.commit();
-    }
+    // المدير: دفعات بحجم آمن
+    await commitOpsInChunks(ops);
   }else{
     // المحرر: كتابة متسلسلة (الأب ثم الابن) — كل خطوة صالحة وفق قواعد الخادم
-    for(const w of writes)await col.doc(w.id).set(w);
-    for(const id of del)await col.doc(id).delete();
+    for(const o of ops){
+      if(o.t==='del')await o.ref.delete();
+      else if(o.t==='merge')await o.ref.set(o.data,{merge:true});
+      else await o.ref.set(o.data);
+    }
   }
   return{writes:writes.length,deletes:del.size};
+}
+
+// ══ دفعات الكتابة: Firestore يرفض أي دفعة يتجاوز حجمها ١٠ ميغابايت ══
+// (صور الأعضاء محفوظة داخل بياناتهم، فـ٤٥٠ فرداً قد تصل إلى ٢٠ ميغابايت)
+var BATCH_MAX_BYTES=6*1024*1024,BATCH_MAX_OPS=450;
+function approxBytes(x){
+  if(!x)return 64;
+  try{let n=0;const j=JSON.stringify(x);for(let i=0;i<j.length;i++){const c=j.charCodeAt(i);n+=c<128?1:(c<2048?2:3);}return n+64;}
+  catch(e){return 1024*1024;}
+}
+async function commitOpsInChunks(ops){
+  // ops: {t:'set'|'merge'|'del', ref, data}
+  let b=db.batch(),n=0,bytes=0,commits=0;
+  for(const o of ops){
+    const sz=o.t==='del'?64:approxBytes(o.data);
+    if(n>0&&(n>=BATCH_MAX_OPS||bytes+sz>BATCH_MAX_BYTES)){await b.commit();commits++;b=db.batch();n=0;bytes=0;}
+    if(o.t==='del')b.delete(o.ref);
+    else if(o.t==='merge')b.set(o.ref,o.data,{merge:true});
+    else b.set(o.ref,o.data);
+    n++;bytes+=sz;
+  }
+  if(n){await b.commit();commits++;}
+  return commits;
 }
 
 // ══ BRANCH INDEX SYNC (Admin) ══
@@ -4887,14 +4976,23 @@ function branchIndexDrift(){
   const map=memberMap();
   return members.filter(function(m){return !sameArr(ancestorsFrom(m.id,map),m.ancestors);});
 }
+var _syncing=false,_syncTimer=null;
+// أفراد أُضيفوا من جهاز يعمل بنسخة قديمة من الموقع يُفهرسون تلقائياً عند وجود المدير
+function scheduleIndexSync(){
+  if(!isAdmin||!db)return;
+  clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(function(){if(isAdmin&&!_syncing&&branchIndexDrift().length)syncBranchIndex(true);},2500);
+}
 window.syncBranchIndex=async function(silent){
-  if(!isAdmin)return 0;
+  if(!isAdmin||_syncing)return 0;
   const drift=branchIndexDrift();
   if(!drift.length){if(!silent)toast('فهرس الفروع محدّث ✓');renderPermIndexStatus();return 0;}
+  _syncing=true;
   try{
-    await commitMemberChanges(drift.map(function(m){return{id:m.id};}),[]);
-    toast('✓ تم تحديث فهرس الفروع ('+drift.length+' فرد)');
+    await commitMemberChanges(drift.map(function(m){return{id:m.id};}),[],{indexOnly:true});
+    if(!silent)toast('✓ تم تحديث فهرس الفروع ('+drift.length+' فرد)');
   }catch(e){toast(writeErrMsg(e),true);}
+  _syncing=false;
   renderPermIndexStatus();
   return drift.length;
 };
@@ -4913,12 +5011,13 @@ function setRole(role,root){
   isEditor=role==='editor';
   editorRootId=isEditor?root:null;
   if(!isEditor)editorProfile=null;
+  if(!role){myProfile=null;myDemoAccount=null;}
   _branchCache={};
   if(isAdmin)startAdminListeners();
   updateUI();
   if(_announce){
     _announce=false;
-    if(isAdmin)toast('أهلاً! تم الدخول كمدير ✓');
+    if(isAdmin)toast('أهلاً'+(myProfile&&myProfile.name?' '+myProfile.name:'')+'! تم الدخول كمدير ✓');
     else if(isEditor){
       toast('مرحباً'+(editorProfile&&editorProfile.name?' '+editorProfile.name:'')+' ✓');
     }
@@ -4954,39 +5053,56 @@ async function onAuthUser(u){
   authUser=u||null;
   stopRoleListeners();
   if(!u){setRole(null);return;}
-  if(isAdminEmail(u.email)){setRole('admin');return;}
+  if(isAdminEmail(u.email)){myProfile={uid:u.uid,legacy:true};setRole('admin');return;}
   try{
     const ref=db.collection('users').doc(u.uid);
     const snap=await ref.get();
-    if(!applyEditorProfile(snap)){
+    if(!applyProfile(snap)){
       _announce=false;
       toast('هذا الحساب غير مفوّض أو موقوف — تواصل مع مدير الموقع',true);
       await fbAuth.signOut();
       return;
     }
-    // متابعة حيّة: تغيير الفرع أو الإيقاف يُطبّق فوراً
+    // متابعة حيّة: تغيير الصلاحية أو الفرع أو الإيقاف يُطبّق فوراً
     _selfUnsub=ref.onSnapshot(function(s){
-      if(!applyEditorProfile(s)){toast('تم إيقاف صلاحيتك من قبل المدير',true);fbAuth.signOut();}
+      if(!applyProfile(s)){toast('تم إيقاف صلاحيتك من قبل المدير',true);fbAuth.signOut();}
     },function(){});
   }catch(e){
     toast('تعذّر التحقق من الصلاحية',true);
     try{await fbAuth.signOut();}catch(_){}
   }
 }
-function applyEditorProfile(snap){
+// الصلاحية من ملف الحساب: مدير أو محرر فرع (فعّال)
+function applyProfile(snap){
   const p=snap&&snap.exists?snap.data():null;
-  if(!p||p.role!=='editor'||p.active!==true||!p.branchRootId)return false;
-  editorProfile=Object.assign({uid:snap.id},p);
-  if(!isEditor||editorRootId!==p.branchRootId)setRole('editor',p.branchRootId);
-  return true;
+  if(!p||p.active!==true)return false;
+  const prof=Object.assign({uid:snap.id},p);
+  if(p.role==='admin'){
+    myProfile=prof;
+    if(!isAdmin)setRole('admin');else updateUI();
+    return true;
+  }
+  if(p.role==='editor'&&p.branchRootId){
+    myProfile=prof;editorProfile=prof;
+    if(!isEditor||editorRootId!==p.branchRootId)setRole('editor',p.branchRootId);
+    return true;
+  }
+  return false;
+}
+var applyEditorProfile=applyProfile;
+async function signOutRoles(silent){
+  if(fbAuth&&authUser){try{await fbAuth.signOut();}catch(e){}}
+  else setRole(null);
+  if(!silent)toast('تم تسجيل الخروج');
 }
 function authErrMsg(e){
   const c=(e&&e.code)||'';
-  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return'البريد أو كلمة المرور غير صحيحة';
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return _emailLogin?'البريد أو كلمة المرور غير صحيحة':'كلمة المرور غير صحيحة';
   if(/too-many-requests/.test(c))return'محاولات كثيرة — حاول بعد قليل';
   if(/network-request-failed/.test(c))return'تعذّر الاتصال — تحقق من الإنترنت';
   if(/invalid-email/.test(c))return'البريد الإلكتروني غير صالح';
-  if(/email-already-in-use/.test(c))return'هذا البريد مسجّل مسبقاً في Firebase — احذفه من Firebase Console › Authentication ثم أعد المحاولة';
+  if(/email-already-in-use/.test(c))return'الحساب موجود مسبقاً — أعد المحاولة';
+  if(/requires-recent-login/.test(c))return'لأسباب أمنية: سجّل الخروج ثم ادخل من جديد، وبعدها غيّر كلمة المرور';
   if(/weak-password/.test(c))return'كلمة المرور ضعيفة — 6 أحرف على الأقل';
   if(/operation-not-allowed/.test(c))return'فعّل الدخول بالبريد وكلمة المرور في Firebase Console › Authentication';
   if(/permission/.test(c))return writeErrMsg(e);
@@ -4998,34 +5114,66 @@ function flagField(id){
   setTimeout(function(){el.style.borderColor='';},1300);
 }
 
+function renderLoginWho(){
+  const el=byId('login-who');if(!el)return;
+  const me=currentPhoneMember();
+  const passW=byId('adm-pass-wrap'),btn=byId('login-btn'),em=byId('adm-email-wrap'),tg=byId('login-mode-toggle');
+  em.style.display=_emailLogin?'':'none';
+  tg.textContent=_emailLogin?'الدخول برقم الجوال':'الدخول بالبريد الإلكتروني';
+  if(_emailLogin){
+    el.style.display='none';passW.style.display='';btn.style.display='';
+    return;
+  }
+  el.style.display='';
+  if(me){
+    el.innerHTML='<div class="lw-note">الدخول برقم الجوال</div><b>'+esc(printFullName(me))+'</b><span class="lw-phone" dir="ltr">'+esc(me.phone||'')+'</span>';
+    passW.style.display='';btn.style.display='';
+  }else{
+    el.innerHTML='<div class="lw-note">سجّل دخولك برقم جوالك أولاً، ثم أدخل كلمة المرور</div><button class="btn btn-primary btn-sm" onclick="closeOv(\'ov-admin\');setTimeout(function(){openOv(\'ov-phone-login\');},200)">الدخول برقم الجوال</button>';
+    passW.style.display='none';btn.style.display='none';
+  }
+}
+window.toggleEmailLogin=function(){
+  _emailLogin=!_emailLogin;
+  if(!_emailLogin)byId('adm-email').value='';
+  renderLoginWho();
+  setTimeout(function(){const e=byId(_emailLogin?'adm-email':'adm-pass');if(e)e.focus();},50);
+};
 function openLogin(){
   const note=byId('login-setup-note');
   if(note){
     let msg='';
     if(db&&!fbAuth)msg='⚠️ تعذّر تحميل خدمة تسجيل الدخول (Firebase Auth) — تحقق من الاتصال.';
-    else if(db&&!adminEmailsConfigured())msg='⚙️ لم يتم إعداد بريد المدير بعد: أضف بريدك في ADMIN_EMAILS داخل الملف وفي قواعد Firestore.';
     note.textContent=msg;note.style.display=msg?'block':'none';
   }
+  _emailLogin=false;byId('adm-email').value='';byId('adm-pass').value='';
+  renderLoginWho();
   openOv('ov-admin');
-  setTimeout(function(){const e=byId(db?'adm-email':'adm-pass');if(e)e.focus();},250);
+  setTimeout(function(){const e=byId('adm-pass');if(e&&currentPhoneMember())e.focus();},250);
 }
-async function logout(){
-  if(fbAuth&&authUser){try{await fbAuth.signOut();}catch(e){}}
-  else setRole(null);
-  toast('تم تسجيل الخروج');
-}
+async function logout(){await signOutRoles(false);}
 window.doLogin=async function(){
   const email=normEmail(byId('adm-email').value);
   const pass=byId('adm-pass').value;
   if(!pass){flagField('adm-pass');return;}
+  const me=currentPhoneMember();
   if(db){
     if(!fbAuth){toast('خدمة الدخول غير متاحة',true);return;}
-    if(!email){flagField('adm-email');return;}
     const btn=byId('login-btn');if(btn)btn.disabled=true;
     try{
+      let loginEmail=email;
+      if(!loginEmail){
+        // الدخول بالجوال: نجد حساب هذا الرقم
+        if(!me){toast('سجّل دخولك برقم الجوال أولاً',true);if(btn)btn.disabled=false;return;}
+        const key=phoneKey(me.phone);
+        const snap=key?await db.collection('logins').doc(key).get():null;
+        if(!snap||!snap.exists||!snap.data().email){toast('لا توجد صلاحيات لهذا الرقم — تواصل مع مدير الموقع',true);if(btn)btn.disabled=false;return;}
+        loginEmail=snap.data().email;
+        _emailLogin=false;
+      }else _emailLogin=true;
       _announce=true;
-      await fbAuth.signInWithEmailAndPassword(email,pass);
-      closeOv('ov-admin');byId('adm-pass').value='';
+      await fbAuth.signInWithEmailAndPassword(loginEmail,pass);
+      closeOv('ov-admin');byId('adm-pass').value='';byId('adm-email').value='';
     }catch(e){
       _announce=false;flagField('adm-pass');toast(authErrMsg(e),true);
     }
@@ -5033,12 +5181,16 @@ window.doLogin=async function(){
     return;
   }
   // ── وضع تجريبي (بدون Firebase) ──
-  const du=email?demoUsers.find(function(u){return normEmail(u.email)===email;}):null;
-  if(du){
-    if(du.password!==pass){flagField('adm-pass');toast('البريد أو كلمة المرور غير صحيحة',true);return;}
+  const key=me?phoneKey(me.phone):'';
+  const du=key?demoUsers.find(function(u){return phoneKey(u.phone)===key;}):null;
+  if(du&&pass!==ADMIN_PASSWORD){
+    if(du.password!==pass){flagField('adm-pass');toast('كلمة المرور غير صحيحة',true);return;}
     if(du.active!==true){toast('هذا الحساب موقوف',true);return;}
     closeOv('ov-admin');byId('adm-pass').value='';
-    editorProfile=du;_announce=true;setRole('editor',du.branchRootId);
+    myDemoAccount=du;myProfile=du;_announce=true;
+    if(du.role==='admin')setRole('admin');
+    else{editorProfile=du;setRole('editor',du.branchRootId);}
+    updateMeButton();
     return;
   }
   if(pass===ADMIN_PASSWORD){
@@ -5047,17 +5199,50 @@ window.doLogin=async function(){
     return;
   }
   flagField('adm-pass');
-  toast('بيانات الدخول غير صحيحة',true);
+  toast(me?'كلمة المرور غير صحيحة':'سجّل دخولك برقم الجوال أولاً',true);
+};
+
+// ══ تغيير كلمة المرور الشخصية ══
+window.openChangePass=function(){
+  if(!(isAdmin||isEditor))return;
+  byId('chp-new').value='';byId('chp-new2').value='';
+  const d=byId('drawer');if(d&&d.classList.contains('open'))toggleDrawer();
+  openOv('ov-chpass');
+};
+window.saveChangePass=async function(){
+  const a=byId('chp-new').value,b=byId('chp-new2').value;
+  if(String(a).length<6){flagField('chp-new');toast('كلمة المرور 6 أحرف على الأقل',true);return;}
+  if(a!==b){flagField('chp-new2');toast('كلمتا المرور غير متطابقتين',true);return;}
+  const btn=byId('chp-save');if(btn)btn.disabled=true;
+  try{
+    if(db){
+      if(!fbAuth||!fbAuth.currentUser)throw new Error('سجّل الدخول أولاً');
+      await fbAuth.currentUser.updatePassword(a);
+    }else{
+      if(!myDemoAccount)throw new Error('حساب المدير التجريبي لا يمكن تغيير كلمة مروره');
+      myDemoAccount.password=a;
+    }
+    closeOv('ov-chpass');toast('✓ تم تغيير كلمة المرور');
+  }catch(e){toast(authErrMsg(e),true);}
+  if(btn)btn.disabled=false;
 };
 
 // ══ PERMISSIONS MANAGER (Admin) ══
 function permMemberLabel(m){const fn=m.fullName||m._fullName||'';return m.name+(fn&&fn!==m.name?' — '+fn:'');}
-function listEditors(){return db?userProfiles.filter(function(u){return u.role==='editor';}):demoUsers;}
-window.openPermissions=function(prefillRootId){
+function listEditors(){return listAccounts().filter(function(u){return u.role==='editor';});}
+function listAccounts(){return db?userProfiles.filter(function(u){return u.role==='editor'||u.role==='admin';}):demoUsers;}
+function isSelfAccount(u){
+  if(db)return!!(authUser&&authUser.uid===u);
+  return!!(myDemoAccount&&myDemoAccount.uid===u);
+}
+function permMemberOptionLabel(m){return permMemberLabel(m)+(m.phone?' · '+m.phone:'');}
+window.openPermissions=function(prefillMemberId){
   if(!requireAdmin())return;
   resetPermForm();
-  if(prefillRootId&&members.some(function(m){return m.id===prefillRootId;})){
-    byId('perm-branch').value=prefillRootId;updatePermPreview();
+  if(prefillMemberId&&members.some(function(m){return m.id===prefillMemberId;})){
+    const pm=members.find(function(m){return m.id===prefillMemberId;});
+    byId('perm-member-q').value=pm.name||'';filterPermMember();
+    byId('perm-member').value=prefillMemberId;onPermMemberChange();
   }
   renderPermIndexStatus();
   renderPermList();
@@ -5068,6 +5253,39 @@ window.grantFromDetail=function(){
   const id=currentId;
   closeOv('ov-detail');
   setTimeout(function(){openPermissions(id);},220);
+};
+// اختيار الشخص: من لهم رقم جوال فقط
+window.filterPermMember=function(){
+  const q=(byId('perm-member-q').value||'').trim();
+  const sel=byId('perm-member'),keep=sel.value;
+  let list=members.filter(function(m){return phoneKey(m.phone);});
+  if(q){
+    const qd=phoneKey(q),qn=q.replace(/\s+/g,' ');
+    list=list.filter(function(m){
+      if(qd&&qd.length>=3&&phoneKey(m.phone).indexOf(qd)>=0)return true;
+      return(m.name||'').indexOf(qn)>=0||(m.fullName||'').indexOf(qn)===0||(m._fullName||'').indexOf(qn)===0;
+    });
+  }
+  list=list.slice(0,300);
+  let html='<option value="">— اختر الشخص —</option>'+list.map(function(m){return'<option value="'+escAttr(m.id)+'">'+esc(permMemberOptionLabel(m))+'</option>';}).join('');
+  if(keep&&!list.some(function(m){return m.id===keep;})){
+    const km=members.find(function(m){return m.id===keep;});
+    if(km)html+='<option value="'+escAttr(keep)+'">'+esc(permMemberOptionLabel(km))+'</option>';
+  }
+  sel.innerHTML=html;sel.value=keep||'';
+  if(q&&!keep&&list.length===1){sel.value=list[0].id;onPermMemberChange();}
+};
+window.onPermMemberChange=function(){
+  // رأس الفرع الافتراضي = الشخص نفسه (يمكن تغييره)
+  const id=byId('perm-member').value;
+  if(id&&!byId('perm-branch').value){
+    const m=members.find(function(x){return x.id===id;});
+    byId('perm-branch-q').value=m?m.name||'':'';filterPermBranch();
+    byId('perm-branch').value=id;updatePermPreview();
+  }
+};
+window.onPermRoleChange=function(){
+  byId('perm-branch-wrap').style.display=byId('perm-role').value==='editor'?'':'none';
 };
 window.filterPermBranch=function(){
   const q=(byId('perm-branch-q').value||'').trim();
@@ -5108,46 +5326,53 @@ window.updatePermPreview=function(){
 };
 window.resetPermForm=function(){
   permEditingUid=null;
-  ['perm-name','perm-email','perm-pass','perm-branch-q'].forEach(function(id){byId(id).value='';});
-  byId('perm-email').readOnly=false;
+  ['perm-member-q','perm-pass','perm-branch-q'].forEach(function(id){byId(id).value='';});
+  byId('perm-member').disabled=false;
+  byId('perm-role').value='editor';
   byId('perm-pass-wrap').style.display='';
-  byId('perm-form-title').textContent='+ محرر فرع جديد';
+  byId('perm-form-title').textContent='+ صلاحية جديدة';
   byId('perm-submit').textContent='إنشاء الصلاحية';
   byId('perm-cancel').style.display='none';
-  byId('perm-branch').innerHTML='';
-  filterPermBranch();
-  byId('perm-branch').value='';
+  byId('perm-member').innerHTML='';filterPermMember();byId('perm-member').value='';
+  byId('perm-branch').innerHTML='';filterPermBranch();byId('perm-branch').value='';
+  onPermRoleChange();
   updatePermPreview();
 };
 function renderPermList(){
   const el=byId('perm-list');if(!el)return;
-  const eds=listEditors().slice().sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''),'ar');});
-  if(!eds.length){el.innerHTML='<div class="empty" style="padding:1.5rem 1rem"><div class="empty-ico">🛡️</div><p>لا يوجد محررون بعد</p></div>';return;}
-  el.innerHTML='<div class="settings-sec-title" style="margin:.5rem 0 .6rem">المحررون ('+eds.length+')</div>'+eds.map(function(u){
-    const root=members.find(function(m){return m.id===u.branchRootId;});
+  const accs=listAccounts().slice().sort(function(a,b){
+    if(a.role!==b.role)return a.role==='admin'?-1:1;
+    return String(a.name||'').localeCompare(String(b.name||''),'ar');
+  });
+  if(!accs.length){el.innerHTML='<div class="empty" style="padding:1.5rem 1rem"><div class="empty-ico">🛡️</div><p>لا توجد صلاحيات بعد</p></div>';return;}
+  el.innerHTML='<div class="settings-sec-title" style="margin:.5rem 0 .6rem">الحسابات ('+accs.length+')</div>'+accs.map(function(u){
+    const root=u.role==='editor'?members.find(function(m){return m.id===u.branchRootId;}):null;
     const n=root?descendantSet(root.id).size:0;
-    const on=u.active===true,ua=escAttr(u.uid);
+    const on=u.active===true,ua=escAttr(u.uid),self=isSelfAccount(u.uid);
+    const legacy=!u.phone;
+    const roleLbl=u.role==='admin'?'مدير':'محرر فرع';
     return'<div class="perm-card'+(on?'':' off')+'">'+
-      '<div class="perm-head"><div><div class="perm-name">'+esc(u.name||'—')+'</div><div class="perm-mail" dir="ltr">'+esc(u.email||'')+'</div></div>'+
+      '<div class="perm-head"><div><div class="perm-name">'+esc(u.name||'—')+'<span class="perm-role '+u.role+'">'+roleLbl+'</span>'+(legacy?'<span class="perm-role legacy">حساب بريد قديم</span>':'')+(self?'<span class="perm-role legacy">أنت</span>':'')+'</div>'+
+        '<div class="perm-mail" dir="ltr">'+esc(u.phone||u.email||'')+'</div></div>'+
       '<span class="perm-state '+(on?'on':'off')+'">'+(on?'● فعّال':'○ موقوف')+'</span></div>'+
-      '<div class="perm-branch">الفرع: '+(root?'<b>'+esc(permMemberLabel(root))+'</b> · '+n+' فرد':'<span style="color:var(--err)">⚠️ رأس الفرع محذوف — اختر فرعاً جديداً</span>')+'</div>'+
+      (u.role==='editor'?'<div class="perm-branch">الفرع: '+(root?'<b>'+esc(permMemberLabel(root))+'</b> · '+n+' فرد':'<span style="color:var(--err)">⚠️ رأس الفرع محذوف — اختر فرعاً جديداً</span>')+'</div>':'<div class="perm-branch">كل الصلاحيات</div>')+
       '<div class="perm-actions">'+
-        '<button class="btn btn-sm btn-outline-gold" data-perm-act="edit" data-uid="'+ua+'">✏️ تغيير الفرع</button>'+
-        '<button class="btn btn-sm" data-perm-act="toggle" data-uid="'+ua+'">'+(on?'⏸ إيقاف':'▶ تفعيل')+'</button>'+
-        (db?'<button class="btn btn-sm" data-perm-act="reset" data-uid="'+ua+'">🔑 رابط كلمة مرور</button>':'')+
-        '<button class="btn btn-sm btn-danger" data-perm-act="remove" data-uid="'+ua+'">🗑️ حذف</button>'+
+        '<button class="btn btn-sm btn-outline-gold" data-perm-act="edit" data-uid="'+ua+'"'+(self?' disabled':'')+'>✏️ تعديل الصلاحية</button>'+
+        '<button class="btn btn-sm" data-perm-act="toggle" data-uid="'+ua+'"'+(self?' disabled':'')+'>'+(on?'⏸ إيقاف':'▶ تفعيل')+'</button>'+
+        (self?'':'<button class="btn btn-sm" data-perm-act="reset" data-uid="'+ua+'">🔑 كلمة مرور جديدة</button>')+
+        (self?'':'<button class="btn btn-sm btn-danger" data-perm-act="remove" data-uid="'+ua+'">🗑️ حذف</button>')+
       '</div></div>';
   }).join('');
 }
 document.addEventListener('click',function(e){
-  const b=e.target.closest&&e.target.closest('[data-perm-act]');if(!b)return;
+  const b=e.target.closest&&e.target.closest('[data-perm-act]');if(!b||b.disabled)return;
   const u=b.getAttribute('data-uid'),a=b.getAttribute('data-perm-act');
   if(a==='edit')editPermission(u);
   else if(a==='toggle')togglePermission(u);
   else if(a==='reset')resetEditorPassword(u);
   else if(a==='remove')removePermission(u);
 });
-function findEditor(u){return listEditors().find(function(x){return x.uid===u;});}
+function findEditor(u){return listAccounts().find(function(x){return x.uid===u;});}
 async function createAuthAccount(email,pass){
   // تطبيق Firebase ثانوي حتى لا يُسجَّل خروج المدير عند إنشاء الحساب
   const app2=(firebase.apps||[]).find(function(a){return a.name==='userAdmin';})||firebase.initializeApp(firebaseConfig,'userAdmin');
@@ -5163,82 +5388,119 @@ async function updateUserProfile(u,patch){
   if(db)await db.collection('users').doc(u).set(patch,{merge:true});
   else{const x=demoUsers.find(function(d){return d.uid===u;});if(x)Object.assign(x,patch);}
 }
+// إنشاء حساب دخول لرقم جوال: حساب Firebase + ملف الصلاحية + ربط الرقم بالحساب
+async function issuePhoneAccount(key,pass,profile){
+  const email=phoneLoginEmail(key);
+  const newUid=await createAuthAccount(email,pass);
+  await db.collection('users').doc(newUid).set(Object.assign({},profile,{loginEmail:email,phone:key}));
+  await db.collection('logins').doc(key).set({email:email,uid:newUid,updatedAt:new Date().toISOString()});
+  return newUid;
+}
 window.savePermission=async function(){
   if(!requireAdmin())return;
-  const name=byId('perm-name').value.trim();
-  const email=normEmail(byId('perm-email').value);
-  const pass=byId('perm-pass').value;
+  const role=byId('perm-role').value==='admin'?'admin':'editor';
   const root=byId('perm-branch').value;
-  if(!root){flagField('perm-branch');toast('اختر رأس الفرع',true);return;}
-  if(!members.some(function(m){return m.id===root;})){toast('الفرد المختار غير موجود',true);return;}
+  if(role==='editor'){
+    if(!root){flagField('perm-branch');toast('اختر رأس الفرع',true);return;}
+    if(!members.some(function(m){return m.id===root;})){toast('رأس الفرع غير موجود',true);return;}
+  }
   const btn=byId('perm-submit');
   if(permEditingUid){
+    if(isSelfAccount(permEditingUid)){toast('لا يمكنك تعديل صلاحيتك بنفسك',true);return;}
     try{
-      await updateUserProfile(permEditingUid,{branchRootId:root,name:name||undefined});
+      await updateUserProfile(permEditingUid,{role:role,branchRootId:role==='editor'?root:null});
       toast('✓ تم تحديث الصلاحية');
       resetPermForm();renderPermList();
     }catch(e){toast(authErrMsg(e),true);}
     return;
   }
-  if(!name){flagField('perm-name');toast('أدخل اسم المحرر',true);return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){flagField('perm-email');toast('البريد الإلكتروني غير صالح',true);return;}
-  if(isAdminEmail(email)){toast('هذا بريد المدير — اختر بريداً آخر',true);return;}
+  const mid=byId('perm-member').value;
+  const m=members.find(function(x){return x.id===mid;});
+  if(!m){flagField('perm-member');toast('اختر الشخص',true);return;}
+  const key=phoneKey(m.phone);
+  if(!key){toast('لا يوجد رقم جوال لهذا الشخص — أضفه من بيانات الفرد أولاً',true);return;}
+  const pass=byId('perm-pass').value;
   if(String(pass).length<6){flagField('perm-pass');toast('كلمة المرور 6 أحرف على الأقل',true);return;}
-  if(listEditors().some(function(u){return normEmail(u.email)===email;})){toast('يوجد محرر بهذا البريد — عدّل صلاحيته من القائمة',true);return;}
+  if(listAccounts().some(function(u){return phoneKey(u.phone)===key;})){toast('لهذا الرقم صلاحية مسبقاً — عدّلها من القائمة',true);return;}
   btn.disabled=true;btn.textContent='جاري الإنشاء…';
   try{
-    const profile={role:'editor',name:name,email:email,branchRootId:root,active:true,createdAt:new Date().toISOString()};
-    if(db){
-      const newUid=await createAuthAccount(email,pass);
-      await db.collection('users').doc(newUid).set(profile);
-    }else{
-      demoUsers.push(Object.assign({uid:uid('u'),password:pass},profile));
-    }
-    toast('✓ تم منح '+name+' صلاحية الفرع');
+    const profile={role:role,name:m.name||'',memberId:m.id,branchRootId:role==='editor'?root:null,active:true,createdAt:new Date().toISOString()};
+    if(db)await issuePhoneAccount(key,pass,profile);
+    else demoUsers.push(Object.assign({uid:uid('u'),password:pass,phone:key},profile));
+    toast('✓ تم منح '+(m.name||'')+' صلاحية '+(role==='admin'?'المدير':'الفرع')+' — يدخل برقم '+(m.phone||key)+' وكلمة المرور');
     resetPermForm();renderPermList();
   }catch(e){toast(authErrMsg(e),true);}
-  btn.disabled=false;btn.textContent=permEditingUid?'حفظ التغيير':'إنشاء الصلاحية';
+  btn.disabled=false;btn.textContent='إنشاء الصلاحية';
 };
 window.editPermission=function(u){
   if(!requireAdmin())return;
   const x=findEditor(u);if(!x)return;
+  if(isSelfAccount(u)){toast('لا يمكنك تعديل صلاحيتك بنفسك',true);return;}
   resetPermForm();
   permEditingUid=u;
-  byId('perm-name').value=x.name||'';
-  byId('perm-email').value=x.email||'';
-  byId('perm-email').readOnly=true;
+  const m=x.memberId?members.find(function(mm){return mm.id===x.memberId;}):memberByPhone(x.phone);
+  byId('perm-member').innerHTML='<option value="'+escAttr(m?m.id:'')+'">'+esc(m?permMemberOptionLabel(m):(x.name||'')+' · '+(x.phone||x.email||''))+'</option>';
+  byId('perm-member').disabled=true;
+  byId('perm-member-q').value='';
+  byId('perm-role').value=x.role==='admin'?'admin':'editor';onPermRoleChange();
   byId('perm-pass-wrap').style.display='none';
-  byId('perm-form-title').textContent='تعديل صلاحية: '+(x.name||x.email);
+  byId('perm-form-title').textContent='تعديل صلاحية: '+(x.name||x.phone||x.email);
   byId('perm-submit').textContent='حفظ التغيير';
   byId('perm-cancel').style.display='';
   filterPermBranch();
-  if(members.some(function(m){return m.id===x.branchRootId;}))byId('perm-branch').value=x.branchRootId;
+  if(members.some(function(mm){return mm.id===x.branchRootId;}))byId('perm-branch').value=x.branchRootId;
   updatePermPreview();
   try{byId('perm-form').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
 };
 window.togglePermission=async function(u){
   if(!requireAdmin())return;
   const x=findEditor(u);if(!x)return;
+  if(isSelfAccount(u)){toast('لا يمكنك إيقاف حسابك بنفسك',true);return;}
   try{
     await updateUserProfile(u,{active:x.active!==true});
     toast(x.active===true?'تم إيقاف الصلاحية':'تم تفعيل الصلاحية ✓');
     renderPermList();
   }catch(e){toast(authErrMsg(e),true);}
 };
+// كلمة مرور جديدة: حساب دخول جديد لنفس الرقم ونفس الصلاحية، ويتوقف الحساب القديم
 window.resetEditorPassword=async function(u){
   if(!requireAdmin())return;
-  const x=findEditor(u);if(!x||!fbAuth)return;
-  try{await fbAuth.sendPasswordResetEmail(x.email);toast('✓ أُرسل رابط تعيين كلمة المرور إلى '+x.email);}
-  catch(e){toast(authErrMsg(e),true);}
+  const x=findEditor(u);if(!x)return;
+  if(isSelfAccount(u)){toast('لتغيير كلمة مرورك استخدم «تغيير كلمة المرور» من القائمة',true);return;}
+  if(!x.phone){
+    if(fbAuth&&x.email){try{await fbAuth.sendPasswordResetEmail(x.email);toast('✓ أُرسل رابط تعيين كلمة المرور إلى '+x.email);}catch(e){toast(authErrMsg(e),true);}}
+    return;
+  }
+  const pass=window.prompt('كلمة المرور الجديدة لـ '+(x.name||x.phone)+' (6 أحرف على الأقل):','');
+  if(pass===null)return;
+  if(String(pass).length<6){toast('كلمة المرور 6 أحرف على الأقل',true);return;}
+  try{
+    if(db){
+      const profile={role:x.role,name:x.name||'',memberId:x.memberId||null,branchRootId:x.branchRootId||null,active:x.active===true,createdAt:x.createdAt||new Date().toISOString()};
+      await issuePhoneAccount(phoneKey(x.phone),pass,profile);
+      await db.collection('users').doc(u).delete();
+    }else{
+      x.password=pass;
+    }
+    toast('✓ تم تعيين كلمة مرور جديدة لـ '+(x.name||x.phone));
+    renderPermList();
+  }catch(e){toast(authErrMsg(e),true);}
 };
 window.removePermission=async function(u){
   if(!requireAdmin())return;
   const x=findEditor(u);if(!x)return;
-  if(!confirm('سحب جميع صلاحيات '+(x.name||x.email)+'؟\nلن يتمكن من التعديل على أي فرد.'))return;
+  if(isSelfAccount(u)){toast('لا يمكنك حذف حسابك بنفسك',true);return;}
+  if(!confirm('سحب جميع صلاحيات '+(x.name||x.phone||x.email)+'؟\nسيبقى قادراً على تصفح الموقع برقم جواله فقط.'))return;
   try{
-    if(db)await db.collection('users').doc(u).delete();
-    else demoUsers=demoUsers.filter(function(d){return d.uid!==u;});
-    toast(db?'تم حذف الصلاحية — لإزالة الحساب نهائياً احذفه من Firebase Console › Authentication':'تم حذف الصلاحية');
+    if(db){
+      await db.collection('users').doc(u).delete();
+      const key=phoneKey(x.phone);
+      if(key){
+        const ls=await db.collection('logins').doc(key).get();
+        if(ls.exists&&ls.data().uid===u)await db.collection('logins').doc(key).delete();
+      }
+    }else demoUsers=demoUsers.filter(function(d){return d.uid!==u;});
+    toast('تم حذف الصلاحية');
     if(permEditingUid===u)resetPermForm();
     renderPermList();
   }catch(e){toast(authErrMsg(e),true);}
