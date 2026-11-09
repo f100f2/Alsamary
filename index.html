@@ -496,6 +496,44 @@ img{-webkit-user-drag:none}
 .ns-cnt{text-align:left;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
 .ns-sub{font-size:.72rem;color:var(--ink3);font-weight:700;margin:1rem .1rem .45rem}
 
+/* ══ ORDER CHILDREN ══ */
+.ok-list{display:flex;flex-direction:column;gap:.4rem}
+.ok-row{display:flex;align-items:center;gap:.65rem;background:var(--sand2);border:1px solid var(--sand3);border-radius:13px;padding:.5rem .6rem;transition:transform .18s var(--spring),border-color .2s}
+.ok-row.moved{border-color:var(--gold);box-shadow:var(--glow-soft)}
+.ok-num{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-variant-numeric:tabular-nums}
+.ok-name{flex:1;min-width:0;font-weight:700;font-size:.9rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ok-name small{display:block;font-size:.68rem;font-weight:500;color:var(--ink3)}
+.ok-row.f .ok-num{background:linear-gradient(135deg,#c9748c,#e8a0b0)}
+.ok-row.d .ok-num{background:linear-gradient(135deg,#9a9a9a,#bcbcbc)}
+.ok-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--sand3);background:var(--white);color:var(--ink2);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ok-btn:disabled{opacity:.3;cursor:default}
+.ok-btn:not(:disabled):active{transform:scale(.9);color:var(--gold)}
+
+/* ══ IN-LAWS ══ */
+.il-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;margin-bottom:1rem}
+.il-tiles .stat{min-width:0;cursor:default}
+.il-fam{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);margin-bottom:.65rem;box-shadow:var(--shadow);overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 160px}
+.il-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.75rem 1rem;border-bottom:1px solid var(--sand3);background:var(--sand2)}
+.il-fname{font-weight:800;font-size:.98rem;color:var(--ink)}
+.il-fam.unknown .il-fname{color:var(--ink3)}
+.il-count{font-size:.72rem;font-weight:700;color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd);border-radius:20px;padding:.18rem .6rem;white-space:nowrap}
+.il-row{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;border-bottom:1px solid var(--sand3);font-size:.85rem}
+.il-row:last-child{border-bottom:none}
+.il-name{flex:1;min-width:0;font-weight:700;color:var(--ink)}
+.il-name small{display:block;font-size:.72rem;color:var(--ink3);font-weight:500;margin-top:.1rem}
+.il-name small .d-link{font-weight:600}
+.il-type{font-size:.68rem;font-weight:700;border-radius:20px;padding:.18rem .55rem;white-space:nowrap;flex-shrink:0}
+.il-type.wife{color:#c9748c;background:rgba(201,116,140,.12);border:1px solid rgba(201,116,140,.35)}
+.il-type.husb{color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd)}
+.il-type.unk{color:var(--ink3);background:var(--sand2);border:1px solid var(--sand3)}
+.il-hint{font-size:.74rem;color:var(--ink3);padding:.55rem 1rem 0;line-height:1.7}
+@media(max-width:420px){.il-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ══ PHONE SESSION (drawer) ══ */
+.drawer-user{display:flex;align-items:center;gap:.6rem;margin:0 .6rem .4rem;padding:.7rem .8rem;border:1px solid var(--sand3);border-radius:14px;background:var(--sand2)}
+.drawer-user .du-txt{flex:1;min-width:0;font-size:.74rem;color:var(--ink3);line-height:1.5}
+.drawer-user .du-txt b{display:block;font-size:.88rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* ══ SETTINGS ══ */
 .settings-section{background:var(--sand2);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem 1.05rem;margin-bottom:.8rem}
 .settings-sec-title{font-size:.74rem;letter-spacing:.05em;color:var(--gold);font-weight:700;margin-bottom:.8rem}
@@ -703,6 +741,25 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="news-list" id="news-list"></div>
   </div>
 
+  <!-- ═══ IN-LAWS (admin) ═══ -->
+  <div id="page-inlaws" class="page">
+    <div class="page-hero"><div><h1>الأنسباء</h1><p>أزواج وزوجات أفراد العائلة وعوائلهم</p></div><div class="hero-rule"></div></div>
+    <div class="il-tiles" id="il-tiles"></div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <input class="search" placeholder="ابحث باسم النسيب أو العائلة أو فرد العائلة…" id="inlaw-q" oninput="filterInlaws()" autocomplete="off">
+        <span class="search-ico"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>
+      </div>
+    </div>
+    <div class="filter-chips" id="il-chips">
+      <button class="chip on" data-il-f="all">الكل</button>
+      <button class="chip" data-il-f="wife">زوجات</button>
+      <button class="chip" data-il-f="husb">أزواج</button>
+      <button class="chip" data-il-f="unknown">بدون اسم عائلة</button>
+    </div>
+    <div id="inlaws-list"></div>
+  </div>
+
   <!-- ═══ ALBUM ═══ -->
   <div id="page-album" class="page">
     <div class="page-hero"><div><h1>ألبوم الصور</h1><p>ذكريات العائلة</p></div><div class="hero-rule"></div></div>
@@ -745,9 +802,14 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
+    <button class="drawer-item" id="tb-inlaws" style="display:none" onclick="goPage('inlaws')"><svg viewBox="0 0 24 24"><path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 000 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0020 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>الأنسباء</button>
     <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>صلاحيات الفروع</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V46 · شجرة العائلة</div>
+  <div class="drawer-user" id="drawer-user" style="display:none">
+    <div class="du-txt">مسجّل الدخول باسم<b id="drawer-user-name"></b></div>
+    <button class="btn btn-sm btn-danger" onclick="phoneLogout()">تسجيل الخروج</button>
+  </div>
+  <div class="drawer-footer" id="drawer-footer">V47 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -839,6 +901,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <button class="btn btn-sm btn-outline-gold" id="d-addson" style="display:none" onclick="addChildOf()">+ ابن</button>
       <button class="btn btn-sm" id="d-addsons" style="display:none;border-color:var(--gold);background:var(--gold);color:#fff" onclick="openAddMultiSons()">+ أبناء</button>
       <button class="btn btn-sm btn-outline-gold" id="d-editkids" style="display:none" onclick="openEditChildren()">✏️ تعديل الأبناء</button>
+      <button class="btn btn-sm btn-outline-gold" id="d-orderkids" style="display:none" onclick="openOrderKids()">↕ ترتيب الأبناء</button>
       <button class="btn btn-sm btn-outline-gold" id="d-grant" style="display:none" onclick="grantFromDetail()">🛡️ صلاحية الفرع</button>
       <button class="btn btn-primary" id="d-edit" style="display:none" onclick="editCurrent()">تعديل</button>
     </div>
@@ -1235,6 +1298,21 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
   </div>
 </div>
 
+<!-- ORDER CHILDREN -->
+<div class="overlay" id="ov-order-kids">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">↕ ترتيب الأبناء</div>
+    <p id="ok-parent" style="font-size:.82rem;color:var(--ink3);margin:-.5rem 0 .4rem"></p>
+    <p style="font-size:.74rem;color:var(--ink3);margin-bottom:.9rem;line-height:1.7">رقم ١ هو الأكبر ويظهر على يمين الشجرة، ثم الأصغر فالأصغر. استخدم الأسهم لتغيير الترتيب.</p>
+    <div id="ok-list" class="ok-list"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-order-kids')">إلغاء</button>
+      <button class="btn btn-primary" id="ok-save" onclick="saveOrderKids()">حفظ الترتيب</button>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-x" onclick="closeLb()" aria-label="إغلاق">✕</button>
@@ -1264,7 +1342,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V46';
+const APP_VERSION='V47';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1280,6 +1358,16 @@ function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"
 function byId(id){return document.getElementById(id);}
 function debounce(fn,ms){let t;return function(){const a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a);},ms);};}
 function uid(prefix){return prefix+'_'+Date.now()+'_'+Math.random().toString(36).slice(2);}
+
+// ══ ترتيب الأبناء: الأكبر (١) أولاً، ثم من لم يُرتَّب بترتيبه السابق ══
+function kidSeq(arr){
+  return arr.map(function(k,i){return{k:k,i:i};}).sort(function(a,b){
+    const oa=Number(a.k.order)||0,ob=Number(b.k.order)||0;
+    if(oa&&ob&&oa!==ob)return oa-ob;
+    if(!!oa!==!!ob)return oa?-1:1;
+    return a.i-b.i;
+  }).map(function(x){return x.k;});
+}
 
 // ══ تنظيف بيانات الأعضاء ══
 // سجل واحد غير منتظم (اسم محفوظ كرقم، أبناء محفوظون كنص، تاريخ بصيغة Firebase…)
@@ -1312,6 +1400,7 @@ function normMember(m){
   else if(typeof ek==='string')m.externalKids=ek.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean);
   else if(ek!==undefined)m.externalKids=[];
   if(m.ancestors!==undefined&&!Array.isArray(m.ancestors))m.ancestors=[];
+  if('order' in m){const o=Number(m.order);if(isFinite(o)&&o>=1)m.order=Math.floor(o);else delete m.order;}
   return m;
 }
 function normMembers(list){
@@ -1319,7 +1408,7 @@ function normMembers(list){
 }
 
 // ══ DIRTY FLAGS (render only visible page; catch up on navigation) ══
-const _dirty={home:false,tree:false,members:false,events:false,news:false,album:false};
+const _dirty={home:false,tree:false,members:false,events:false,news:false,album:false,inlaws:false};
 function markDirty(){for(let i=0;i<arguments.length;i++)_dirty[arguments[i]]=true;}
 function refreshPage(p){
   _dirty[p]=false;
@@ -1329,6 +1418,7 @@ function refreshPage(p){
   else if(p==='events')renderEvents();
   else if(p==='news')renderNews();
   else if(p==='album')renderAlbum(byId('album-q')?byId('album-q').value:'');
+  else if(p==='inlaws'){if(typeof renderInlaws==='function')renderInlaws();}
 }
 function dataChanged(){
   // Called after any data mutation/snapshot: refresh active page now, mark the rest dirty
@@ -1459,6 +1549,7 @@ function buildFullName(memberId,localMembers){
 var active='home';
 window.goPage=function(p){
   haptic();
+  if(p==='inlaws'&&!isAdmin){if(typeof denied==='function')denied('⛔ صفحة الأنسباء متاحة للمدير فقط');p='home';}
   const d=byId('drawer'),ov=byId('drawer-overlay'),hb=byId('hamburger-btn');
   if(d)d.classList.remove('open');if(ov)ov.classList.remove('open');if(hb)hb.classList.remove('open');
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
@@ -1506,7 +1597,8 @@ function updateUI(){
     const el=byId(id);if(el)el.classList.toggle('show',mg);
   });
   const sb=byId('settings-btn');if(sb)sb.style.display=s?'flex':'none';
-  ['tb-perms','tb-perms-div'].forEach(function(id){const el=byId(id);if(el)el.style.display=s?'':'none';});
+  ['tb-perms','tb-perms-div','tb-inlaws'].forEach(function(id){const el=byId(id);if(el)el.style.display=s?'':'none';});
+  if(!s&&active==='inlaws')goPage('home');
   const b=byId('adm-btn');
   if(b){
     if(isAdmin){b.innerHTML='✅ المدير';b.classList.add('on');b.title='تسجيل الخروج';}
@@ -1726,6 +1818,10 @@ function treeLayout(list){
       const p=wById[m.parentId],c=wById[m.id];
       p.ch.push(c);c.par=p;
     }
+  });
+  // الأكبر على اليمين: التخطيط يضع أول ابن يساراً، لذا نعكس ترتيب «الأكبر أولاً»
+  Object.values(wById).forEach(function(n){
+    if(n.ch.length>1)n.ch=kidSeq(n.ch.map(function(c){return c.m;})).map(function(m){return wById[m.id];}).reverse();
   });
   Object.values(wById).forEach(n=>n.ancestor=n);
 
@@ -2063,7 +2159,7 @@ window.showDetail=function(id){
   const li=byId('d-li');
   if(m.linkedin){li.href=m.linkedin;li.style.display='inline-flex';}else li.style.display='none';
   const par=m.parentId?members.find(x=>x.id===m.parentId):null;
-  const kids=members.filter(x=>x.parentId===id);
+  const kids=kidSeq(members.filter(x=>x.parentId===id));
   function dRow(lbl,val,dir){
     if(!val)return'';
     return'<div class="d-row"><span class="d-lbl">'+lbl+'</span><span class="d-val"'+(dir?' dir="'+dir+'"':'')+'>'+val+'</span></div>';
@@ -2113,6 +2209,8 @@ window.showDetail=function(id){
   if(editKidsBtn)editKidsBtn.style.display=(canEditMember(id)&&kids.length>0)?'inline-flex':'none';
   const grantBtn=byId('d-grant');
   if(grantBtn)grantBtn.style.display=isAdmin?'inline-flex':'none';
+  const ordBtn=byId('d-orderkids');
+  if(ordBtn)ordBtn.style.display=(canAddUnder(id)&&kids.length>1)?'inline-flex':'none';
   openOv('ov-detail');
 };
 // التنقل بين الأقارب داخل بطاقة التفاصيل
@@ -3521,9 +3619,30 @@ window.focusOnMe=function(){
   focusTreeOn(selfFocusIds(loggedInMemberId));
 };
 function updateMeButton(){
+  const me=loggedInMemberId?members.find(function(m){return m.id===loggedInMemberId;}):null;
   const b=byId('tree-me');
-  if(b)b.style.display=(loggedInMemberId&&members.some(function(m){return m.id===loggedInMemberId;}))?'flex':'none';
+  if(b)b.style.display=me?'flex':'none';
+  // القائمة الجانبية: اسم المستخدم وزر الخروج
+  const du=byId('drawer-user');
+  if(du){
+    du.style.display=loggedInMemberId?'flex':'none';
+    const dn=byId('drawer-user-name');
+    if(dn)dn.textContent=me?(me.name||'')+(me.phone?' · '+me.phone:''):'';
+  }
 }
+window.phoneLogout=function(){
+  if(!loggedInMemberId)return;
+  if(!confirm('تسجيل الخروج من رقم الجوال؟'))return;
+  try{localStorage.removeItem('familyPhoneLogin');}catch(e){}
+  loggedInMemberId=null;
+  TC._pendingFocus=null;
+  if(TC.nodes)TC.nodes.forEach(function(n){n.hl=false;});
+  updateMeButton();
+  const d=byId('drawer');if(d&&d.classList.contains('open'))toggleDrawer();
+  if(active==='tree')treeFit();
+  toast('تم تسجيل الخروج');
+  setTimeout(function(){const lp=byId('login-phone');if(lp)lp.value='';openOv('ov-phone-login');},500);
+};
 
 function checkPhoneLogin(){
   const stored=localStorage.getItem('familyPhoneLogin');
@@ -3723,7 +3842,7 @@ window.openEditChildren=function(){
   if(!canEditMember(currentId)){denied();return;}
   editChildrenParentId=currentId;
   const par=members.find(function(m){return m.id===currentId;});
-  const kids=members.filter(function(m){return m.parentId===currentId;});
+  const kids=kidSeq(members.filter(function(m){return m.parentId===currentId;}));
 
   const nameEl=byId('editkids-parent-name');
   if(nameEl)nameEl.textContent='أبناء: '+(par?par.name:'—')+' ('+kids.length+' فرد)';
@@ -4079,10 +4198,68 @@ function printLogoHtml(){
   if(src)return'<img class="brand-logo" src="'+escAttr(src)+'" alt="">';
   return'<span class="brand-mark"><svg viewBox="0 0 24 24"><path fill="#fff" d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg></span>';
 }
+// ══ ترتيب الأبناء (المدير + محرر الفرع) ══
+var _okParent=null,_okList=[],_okMoved=null;
+window.openOrderKids=function(pid){
+  pid=pid||currentId;
+  if(!canAddUnder(pid)){denied();return;}
+  const p=members.find(function(m){return m.id===pid;});
+  const kids=kidSeq(members.filter(function(m){return m.parentId===pid;}));
+  if(kids.length<2){toast('يحتاج الترتيب إلى ابنين على الأقل',true);return;}
+  _okParent=pid;_okList=kids.map(function(k){return k.id;});_okMoved=null;
+  byId('ok-parent').textContent='أبناء: '+(p?printFullName(p):'')+' ('+kids.length+')';
+  renderOrderKids();
+  closeOv('ov-detail');
+  setTimeout(function(){openOv('ov-order-kids');},220);
+};
+function renderOrderKids(){
+  const n=_okList.length;
+  byId('ok-list').innerHTML=_okList.map(function(id,i){
+    const k=members.find(function(m){return m.id===id;})||{name:'—'};
+    const cls=k.status==='متوفى'?' d':(k.gender==='أنثى'?' f':'');
+    const sub=k.role||k.job||'';
+    return'<div class="ok-row'+cls+(id===_okMoved?' moved':'')+'" data-ok-id="'+escAttr(id)+'">'+
+      '<span class="ok-num">'+(i+1)+'</span>'+
+      '<span class="ok-name">'+esc(k.name||'—')+(sub?'<small>'+esc(sub)+'</small>':'')+'</span>'+
+      '<button class="ok-btn" data-ok-move="-1" data-ok-i="'+i+'" aria-label="أكبر"'+(i===0?' disabled':'')+'>▲</button>'+
+      '<button class="ok-btn" data-ok-move="1" data-ok-i="'+i+'" aria-label="أصغر"'+(i===n-1?' disabled':'')+'>▼</button>'+
+    '</div>';
+  }).join('');
+}
+window.moveOrderKid=function(i,dir){
+  const j=i+dir;
+  if(j<0||j>=_okList.length)return;
+  const t=_okList[i];_okList[i]=_okList[j];_okList[j]=t;_okMoved=t;
+  renderOrderKids();haptic();
+};
+document.addEventListener('click',function(e){
+  const b=e.target.closest&&e.target.closest('[data-ok-move]');
+  if(!b||b.disabled)return;
+  moveOrderKid(Number(b.getAttribute('data-ok-i')),Number(b.getAttribute('data-ok-move')));
+});
+window.saveOrderKids=async function(){
+  if(!_okParent||!canAddUnder(_okParent)){denied();return;}
+  const btn=byId('ok-save');
+  const ups=_okList.filter(function(id){
+    const k=members.find(function(m){return m.id===id;});
+    return k&&k.parentId===_okParent;
+  }).map(function(id,i){return{id:id,order:i+1};});
+  const changed=ups.filter(function(u){const k=members.find(function(m){return m.id===u.id;});return Number(k.order)!==u.order;});
+  if(!changed.length){closeOv('ov-order-kids');toast('الترتيب محفوظ مسبقاً ✓');return;}
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…';}
+  try{await commitMemberChanges(changed,[]);}
+  catch(e){if(btn){btn.disabled=false;btn.textContent='حفظ الترتيب';}toast(writeErrMsg(e),true);return;}
+  if(btn){btn.disabled=false;btn.textContent='حفظ الترتيب';}
+  closeOv('ov-order-kids');
+  toast('✓ تم حفظ ترتيب الأبناء');haptic();
+  const pid=_okParent;
+  setTimeout(function(){showDetail(pid);},260);
+};
+
 window.printMember=function(id){
   const m=members.find(function(x){return x.id===id;});if(!m)return;
   const par=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
-  const kids=members.filter(function(x){return x.parentId===id;});
+  const kids=kidSeq(members.filter(function(x){return x.parentId===id;}));
   const PT=buildPrintTree(id);
   const w=window.open('','_blank','width=1100,height=800');
   if(!w){toast('السماح بالنوافذ المنبثقة مطلوب للطباعة',true);return;}
@@ -4430,6 +4607,95 @@ document.addEventListener('click',function(e){
   const el=byId('name-stat-res');if(el)el.innerHTML=nameStatResultHtml(n,computeNameStats());
 });
 
+// ══ الأنسباء — من حقل «اسم الزوج / الزوجة» ══
+// اسم العائلة = آخر كلمة في الاسم، ويُعتبر صحيحاً في الحالات التالية فقط:
+//   «آل X» ← آل X  |  «بن X» ← بن X  |  «با X» ← باX  |  آخر كلمة تبدأ بـ «ال» ← تلك الكلمة
+function inlawFamily(name){
+  const w=String(name||'').replace(/[ً-ٰٟـ]/g,'').replace(/[«»"'()]/g,' ').trim().split(/\s+/).filter(Boolean);
+  if(!w.length)return'';
+  const last=w[w.length-1],prev=w.length>1?w[w.length-2]:'';
+  if(w.length>1){
+    if(prev==='آل'||prev==='ال'||prev==='أل')return'آل '+last;
+    if(prev==='بن')return'بن '+last;
+    if(prev==='با')return'با'+last;
+  }
+  if(/^ال/.test(last)&&last.length>2)return last;
+  return'';
+}
+function inlawEntries(){
+  const out=[];
+  members.forEach(function(m){
+    const raw=String(m.spouse||'').trim();if(!raw)return;
+    raw.split(/[،,؛;\n]+/).map(function(x){return x.trim();}).filter(Boolean).forEach(function(sp){
+      out.push({name:sp,family:inlawFamily(sp),type:m.gender==='أنثى'?'husb':(m.gender==='ذكر'?'wife':'unk'),member:m});
+    });
+  });
+  return out;
+}
+var _ilFilter='all';
+function renderInlaws(){
+  const list=byId('inlaws-list');if(!list)return;
+  if(!isAdmin){list.innerHTML='';return;}
+  const all=inlawEntries();
+  // تجميع العوائل مع توحيد الكتابة (أ/ا، ة/ه…)
+  const fams={};
+  all.forEach(function(e){
+    if(!e.family)return;
+    const k=normName(e.family);
+    const g=fams[k]||(fams[k]={spell:{}});
+    g.spell[e.family]=(g.spell[e.family]||0)+1;
+  });
+  Object.keys(fams).forEach(function(k){const g=fams[k];g.name=Object.keys(g.spell).sort(function(a,b){return g.spell[b]-g.spell[a];})[0];});
+  const wives=all.filter(function(e){return e.type==='wife';}).length,husb=all.filter(function(e){return e.type==='husb';}).length;
+  byId('il-tiles').innerHTML=
+    '<div class="stat"><div class="stat-n">'+all.length+'</div><div class="stat-l">الأنسباء</div></div>'+
+    '<div class="stat"><div class="stat-n">'+Object.keys(fams).length+'</div><div class="stat-l">العوائل</div></div>'+
+    '<div class="stat"><div class="stat-n">'+wives+'</div><div class="stat-l">زوجات</div></div>'+
+    '<div class="stat"><div class="stat-n">'+husb+'</div><div class="stat-l">أزواج</div></div>';
+  document.querySelectorAll('#il-chips .chip').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-il-f')===_ilFilter);});
+  const q=normName(byId('inlaw-q')?byId('inlaw-q').value:'');
+  let rows=all.filter(function(e){
+    if(_ilFilter==='wife'&&e.type!=='wife')return false;
+    if(_ilFilter==='husb'&&e.type!=='husb')return false;
+    if(_ilFilter==='unknown'&&e.family)return false;
+    if(q){
+      const hay=normName(e.name)+'|'+normName(e.family)+'|'+normName(e.member.name)+'|'+normName(printFullName(e.member));
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+  if(!all.length){list.innerHTML='<div class="empty"><div class="empty-ico">💍</div><p>لا يوجد أنسباء بعد — أضف «اسم الزوج / الزوجة» في بيانات الأفراد</p></div>';return;}
+  if(!rows.length){list.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><p>لا نتائج</p></div>';return;}
+  const groups={};
+  rows.forEach(function(e){const k=e.family?normName(e.family):'';(groups[k]=groups[k]||[]).push(e);});
+  const keys=Object.keys(groups).sort(function(a,b){
+    if(!a)return 1;if(!b)return -1;
+    return groups[b].length-groups[a].length||fams[a].name.localeCompare(fams[b].name,'ar');
+  });
+  const typeLbl={wife:'زوجة',husb:'زوج',unk:'غير محدد'};
+  list.innerHTML=keys.map(function(k){
+    const g=groups[k];
+    g.sort(function(a,b){return String(a.name).localeCompare(String(b.name),'ar');});
+    return'<div class="il-fam'+(k?'':' unknown')+'">'+
+      '<div class="il-head"><span class="il-fname">'+(k?esc(fams[k].name):'بدون اسم عائلة معتبر')+'</span><span class="il-count">'+g.length+'</span></div>'+
+      (k?'':'<div class="il-hint">آخر كلمة في الاسم لا تبدأ بـ «ال» ولا تسبقها «آل» أو «بن» أو «با». صحّح حقل «اسم الزوج / الزوجة» من بيانات الفرد.</div>')+
+      g.map(function(e){
+        const rel=e.type==='wife'?'زوجة':(e.type==='husb'?'زوج':'نسيب لـ');
+        return'<div class="il-row"><span class="il-name">'+esc(e.name)+
+          '<small>'+rel+' <span class="d-link" data-goto-member="'+escAttr(e.member.id)+'">'+esc(printFullName(e.member))+'</span></small></span>'+
+          '<span class="il-type '+e.type+'">'+typeLbl[e.type]+'</span></div>';
+      }).join('')+
+    '</div>';
+  }).join('');
+}
+const _filterInlawsDeb=debounce(function(){renderInlaws();},160);
+window.filterInlaws=function(){_filterInlawsDeb();};
+document.addEventListener('click',function(e){
+  const c=e.target.closest&&e.target.closest('[data-il-f]');
+  if(!c)return;
+  _ilFilter=c.getAttribute('data-il-f');renderInlaws();
+});
+
 window.heroSlide=function(i){
   window._heroSlide=i;
   document.querySelectorAll('.hero-bg').forEach(function(el,idx){el.style.opacity=(idx===i)?1:0;});
@@ -4552,8 +4818,10 @@ async function commitMemberChanges(upserts,deleteIds){
 
   // ── وضع تجريبي (بدون Firebase) ──
   if(!db){
-    const wIds=new Set(writes.map(function(w){return w.id;}));
-    members=members.filter(function(m){return !del.has(m.id)&&!wIds.has(m.id);}).concat(writes);
+    const wMap={};writes.forEach(function(w){wMap[w.id]=w;});
+    const placed={};
+    members=members.filter(function(m){return !del.has(m.id);}).map(function(m){if(wMap[m.id]){placed[m.id]=1;return wMap[m.id];}return m;})
+      .concat(writes.filter(function(w){return !placed[w.id];}));
     dataChanged();
     return{writes:writes.length,deletes:del.size};
   }
