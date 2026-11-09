@@ -265,7 +265,8 @@ img{-webkit-user-drag:none}
 .chip.on{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#fff;box-shadow:var(--shadow),var(--glow)}
 .chip:active{transform:scale(.94)}
 .members-list{display:flex;flex-direction:column;gap:.55rem}
-.m-card{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:.85rem 1rem;cursor:pointer;transition:transform .18s var(--spring),background .15s,border-color .2s,box-shadow .25s;box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem;content-visibility:auto;contain-intrinsic-size:auto 96px}
+.members-more{width:100%;margin-top:.3rem;color:var(--gold);border-color:var(--glass-brd)}
+.m-card{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:.85rem 1rem;cursor:pointer;transition:transform .18s var(--spring),background .15s,border-color .2s,box-shadow .25s;box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem}
 .members-list .m-card:nth-child(-n+6){animation:cardIn .4s var(--spring) both}
 .members-list .m-card:nth-child(1){animation-delay:.02s}.members-list .m-card:nth-child(2){animation-delay:.05s}.members-list .m-card:nth-child(3){animation-delay:.08s}.members-list .m-card:nth-child(4){animation-delay:.11s}.members-list .m-card:nth-child(5){animation-delay:.14s}.members-list .m-card:nth-child(6){animation-delay:.17s}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -512,7 +513,7 @@ img{-webkit-user-drag:none}
 /* ══ IN-LAWS ══ */
 .il-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;margin-bottom:1rem}
 .il-tiles .stat{min-width:0;cursor:default}
-.il-fam{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);margin-bottom:.65rem;box-shadow:var(--shadow);overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 160px}
+.il-fam{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);margin-bottom:.65rem;box-shadow:var(--shadow);overflow:hidden}
 .il-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.75rem 1rem;border-bottom:1px solid var(--sand3);background:var(--sand2)}
 .il-fname{font-weight:800;font-size:.98rem;color:var(--ink)}
 .il-fam.unknown .il-fname{color:var(--ink3)}
@@ -809,7 +810,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="du-txt">مسجّل الدخول باسم<b id="drawer-user-name"></b></div>
     <button class="btn btn-sm btn-danger" onclick="phoneLogout()">تسجيل الخروج</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V47 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V48 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1342,7 +1343,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V47';
+const APP_VERSION='V48';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -2094,7 +2095,45 @@ window.filterTree=function(){_filterTreeDeb();};
 // ══ MEMBERS ══
 const LI_SVG='<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
 
+// ══ صفحة الأعضاء: عرض تدريجي ══
+// تُعرض ٤٠ بطاقة أولاً ثم المزيد أثناء التمرير — بدل بناء كل البطاقات والصور دفعة واحدة
+var MEM_PAGE=40,_memCard=null,_memList=[],_memShown=0,_memKey=null,_memObs=null;
 function renderMembers(q){
+  try{_renderMembersInner(q);}
+  catch(e){
+    console.error('renderMembers',e);
+    const g=byId('members-grid');
+    if(g)g.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div><p>تعذّر عرض الأعضاء</p><p style="font-size:.72rem;margin-top:.4rem" dir="ltr">'+esc((e&&e.message)||e)+'</p></div>';
+  }
+}
+function _memStart(list,q){
+  const g=byId('members-grid');
+  const key=String(q||'')+'|'+activeFilter;
+  // نفس البحث والفلتر (تحديث حيّ من الخادم): نحافظ على عدد البطاقات المعروضة ومكان التمرير
+  const keep=(key===_memKey)?_memShown:0;
+  _memKey=key;_memList=list;_memShown=0;
+  g.innerHTML='';
+  appendMemberCards(Math.max(MEM_PAGE,keep));
+}
+function appendMemberCards(n){
+  const g=byId('members-grid');if(!g||!_memCard)return;
+  const old=byId('members-more');if(old)old.remove();
+  const next=_memList.slice(_memShown,_memShown+(n||MEM_PAGE));
+  if(next.length)g.insertAdjacentHTML('beforeend',next.map(_memCard).join(''));
+  _memShown+=next.length;
+  const left=_memList.length-_memShown;
+  if(left>0){
+    g.insertAdjacentHTML('beforeend','<button class="btn members-more" id="members-more" onclick="appendMemberCards()">عرض المزيد ('+left+')</button>');
+    if(typeof IntersectionObserver!=='undefined'){
+      if(!_memObs)_memObs=new IntersectionObserver(function(es){
+        es.forEach(function(e){if(e.isIntersecting&&active==='members')appendMemberCards();});
+      },{root:byId('app'),rootMargin:'700px 0px'});
+      _memObs.disconnect();
+      _memObs.observe(byId('members-more'));
+    }
+  }else if(_memObs)_memObs.disconnect();
+}
+function _renderMembersInner(q){
   q=q||'';
   const g=byId('members-grid');if(!g)return;
   let list=members;
@@ -2122,10 +2161,10 @@ function renderMembers(q){
   else if(activeFilter==='deceased')list=list.filter(m=>m.status==='متوفى');
   else if(activeFilter==='branch'){const bs=myBranchSet();list=list.filter(m=>bs.has(m.id));}
   const _bs=isEditor?myBranchSet():null;
-  if(!list.length){g.innerHTML='<div class="empty"><div class="empty-ico">👥</div><p>لا نتائج</p></div>';return;}
+  if(!list.length){_memList=[];_memShown=0;_memKey=null;if(_memObs)_memObs.disconnect();g.innerHTML='<div class="empty"><div class="empty-ico">👥</div><p>لا نتائج</p></div>';return;}
   const isFem=m=>m.gender==='أنثى';
   const isDead=m=>m.status==='متوفى';
-  g.innerHTML=list.map(m=>`
+  _memCard=m=>`
     <div class="m-card${isDead(m)?' deceased':''}" data-mid="${escAttr(m.id)}">
       <div class="m-av${isFem(m)?' f':''}${isDead(m)?' dead':''}">${m.photo?`<img src="${escAttr(m.photo)}" loading="lazy" decoding="async" alt="">`:esc((m.name||'?').charAt(0))}</div>
       <div class="m-info">
@@ -2136,7 +2175,8 @@ function renderMembers(q){
         ${m.linkedin?`<a href="${escAttr(m.linkedin)}" target="_blank" rel="noopener" class="li-btn" onclick="event.stopPropagation()">${LI_SVG} LinkedIn</a>`:''}
       </div>
       <div class="m-chevron"><svg viewBox="0 0 24 24"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
-    </div>`).join('');
+    </div>`;
+  _memStart(list,q);
 }
 const _filterMembersDeb=debounce(function(){renderMembers(byId('members-q').value);},160);
 window.filterMembers=function(){_filterMembersDeb();};
@@ -4626,7 +4666,7 @@ function inlawEntries(){
   const out=[];
   members.forEach(function(m){
     const raw=String(m.spouse||'').trim();if(!raw)return;
-    raw.split(/[،,؛;\n]+/).map(function(x){return x.trim();}).filter(Boolean).forEach(function(sp){
+    raw.split(/[،,؛;\n.\-–—\/\\|]+/).map(function(x){return x.trim();}).filter(Boolean).forEach(function(sp){
       out.push({name:sp,family:inlawFamily(sp),type:m.gender==='أنثى'?'husb':(m.gender==='ذكر'?'wife':'unk'),member:m});
     });
   });
