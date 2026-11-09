@@ -750,7 +750,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
     <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>صلاحيات الفروع</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V43 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V44 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1126,6 +1126,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         </div>
       </div>
       <div class="field"><label>اسم الموقع / العائلة</label><input id="settings-site-name" placeholder="شجرة العائلة"></div>
+      <div class="field"><label>اسم العائلة (يُضاف لآخر الاسم الكامل في الطباعة)</label><input id="settings-family-name" placeholder="السماري"></div>
     </div>
 
     <div class="settings-section">
@@ -1266,7 +1267,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V43';
+const APP_VERSION='V44';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1478,7 +1479,7 @@ window.goPage=function(p){
       renderTree(byId('tree-q')?byId('tree-q').value:'',true);
       setTimeout(function(){
         const q=byId('tree-q')?byId('tree-q').value.trim():'';
-        if(!q&&!TC._pendingFocus&&!TC._selfFocused&&loggedInMemberId&&members.some(function(m){return m.id===loggedInMemberId;})){
+        if(!q&&!TC._pendingFocus&&loggedInMemberId&&members.some(function(m){return m.id===loggedInMemberId;})){
           TC._pendingFocus=selfFocusIds(loggedInMemberId);
         }
         if(TC._pendingFocus&&!q){
@@ -2824,7 +2825,7 @@ window.openAdminRequests=function(){
 // ══════════════════════════════════════════════════
 //  SETTINGS — الشعار، اسم الموقع، النبذة، الألوان، الخطوط
 // ══════════════════════════════════════════════════
-var siteSettings={logo:null,drawerLogo:null,siteName:'شجرة العائلة',aboutText:'',homeSubtitle:'',heroImages:[],primaryColor:'#b8935a',secondaryColor:'#d4aa72',bgColor:'#f7f4ef',textColor:'#1a1612',textSecondary:'#4a443c',textMuted:'#8a8078',fontFamily:'Tajawal',displayFont:'Playfair Display'};
+var siteSettings={logo:null,drawerLogo:null,siteName:'شجرة العائلة',familyName:'السماري',aboutText:'',homeSubtitle:'',heroImages:[],primaryColor:'#b8935a',secondaryColor:'#d4aa72',bgColor:'#f7f4ef',textColor:'#1a1612',textSecondary:'#4a443c',textMuted:'#8a8078',fontFamily:'Tajawal',displayFont:'Playfair Display'};
 var pendingLogo=null;
 
 function loadSettings(){
@@ -2901,6 +2902,8 @@ function applySettingsRest(){
   // تعبئة نافذة الإعدادات
   const sn=byId('settings-site-name');
   if(sn)sn.value=siteSettings.siteName||'';
+  const sfn=byId('settings-family-name');
+  if(sfn)sfn.value=siteSettings.familyName||'';
   const shs=byId('settings-home-subtitle');
   if(shs)shs.value=siteSettings.homeSubtitle||'';
   const sat=byId('settings-about-text');
@@ -2991,6 +2994,8 @@ window.saveSettings=function(){
   else if(pendingLogoDark)siteSettings.logoDark=pendingLogoDark;
   pendingLogoDark=null;
   siteSettings.siteName=name;
+  const sfnIn=byId('settings-family-name');
+  if(sfnIn)siteSettings.familyName=sfnIn.value.trim();
   siteSettings.aboutText=about;
   siteSettings.homeSubtitle=homeSubtitle;
   if(pendingHeroImgs!==null)siteSettings.heroImages=pendingHeroImgs;
@@ -3959,18 +3964,9 @@ window.importFullBackup=function(e){
 window.showInTree=function(id){
   closeOv('ov-detail');
   setTimeout(function(){
+    const tq=byId('tree-q');if(tq)tq.value='';
+    TC._pendingFocus=[id];
     goPage('tree');
-    setTimeout(function(){
-      const node=TC.nodes.find(function(n){return n.id===id;});
-      if(!node||!TC.canvas)return;
-      const cw=TC.canvas.offsetWidth,ch=TC.canvas.offsetHeight;
-      TC.scale=1.2;
-      TC.ox=cw/2-(node.x+TC.NW/2)*TC.scale;
-      TC.oy=ch/2-(node.y+TC.NH/2)*TC.scale;
-      TC.nodes.forEach(function(n){n.hl=(n.id===id);});
-      treeDraw();
-      setTimeout(function(){TC.nodes.forEach(function(n){n.hl=false;});treeDraw();},3000);
-    },320);
   },250);
 };
 
@@ -3978,26 +3974,49 @@ window.showInTree=function(id){
 // ٣ أجيال أو أكثر أسفله ← جيلان أعلاه + حتى ٤ أجيال أسفله
 // جيلان أو أقل أسفله  ← ٣ أجيال أعلاه + كل ما أسفله
 // الحد الأقصى ٧ أجيال (مع العضو نفسه). الأعلى = خط الآباء المباشر فقط
+// الأعلى: جدّ واحد في القمة (جيلان أو ٣ أجيال فوق العضو)
+// ثم كل ذرية هذا الجد — الأعمام وأبناؤهم والإخوة وأبناؤهم — حتى عمق نافذة الأجيال
 function printTreeScope(id){
   const map=memberMap(),me=map[id];if(!me)return null;
   const kids=childrenIndex();
-  const levels=[],seen=new Set([id]);let frontier=[id];
-  while(frontier.length){
-    const next=[];
-    frontier.forEach(function(x){(kids[x]||[]).forEach(function(c){if(!seen.has(c)){seen.add(c);next.push(c);}});});
-    if(!next.length)break;
-    levels.push(next);frontier=next;
+  // عدد أجيال ذرية العضو نفسه يحدد النافذة
+  let totalBelow=0;{
+    const seen=new Set([id]);let frontier=[id];
+    while(frontier.length){
+      const next=[];
+      frontier.forEach(function(x){(kids[x]||[]).forEach(function(c){if(!seen.has(c)){seen.add(c);next.push(c);}});});
+      if(!next.length)break;
+      totalBelow++;frontier=next;
+    }
   }
-  const totalBelow=levels.length;
   const above=totalBelow>=3?2:3;
   const below=Math.min(totalBelow,7-1-above);
   const anc=ancestorsFrom(id,map).slice(-above);
-  const ids=new Set(anc.concat([id]));
-  levels.slice(0,below).forEach(function(l){l.forEach(function(x){ids.add(x);});});
+  const top=anc.length?anc[0]:id;
+  const maxDepth=anc.length+below;
+  const ids=new Set([top]);
+  let frontier=[top];
+  for(let d=0;d<maxDepth&&frontier.length;d++){
+    const next=[];
+    frontier.forEach(function(x){(kids[x]||[]).forEach(function(c){if(!ids.has(c)){ids.add(c);next.push(c);}});});
+    frontier=next;
+  }
   const list=members.filter(function(m){return ids.has(m.id);}).map(function(m){
-    const c=Object.assign({},m);if(!ids.has(c.parentId))c.parentId=null;return c;
+    const c=Object.assign({},m);if(c.id===top||!ids.has(c.parentId))c.parentId=null;return c;
   });
-  return{list:list,above:anc.length,below:below,totalBelow:totalBelow,gens:anc.length+1+below};
+  return{list:list,top:top,above:anc.length,below:below,totalBelow:totalBelow,gens:maxDepth+1};
+}
+function printFullName(m){
+  if(!m)return'';
+  const map=memberMap(),seen={};seen[m.id]=1;
+  const chain=[];
+  let cur=m.parentId?map[m.parentId]:null;
+  while(cur&&!seen[cur.id]){seen[cur.id]=1;const n=String(cur.name||'').trim();if(n)chain.push(n);cur=cur.parentId?map[cur.parentId]:null;}
+  let out=String(m.name||'').trim();
+  chain.forEach(function(n,i){out+=(i===0&&m.gender==='أنثى'?' بنت ':' بن ')+n;});
+  const fam=String(siteSettings.familyName||'').trim();
+  if(fam&&!normName(out).endsWith(normName(fam)))out+=' '+fam;
+  return out;
 }
 var _ptCtx=null;
 function ptFit(str,font,maxW){
@@ -4013,26 +4032,18 @@ function buildPrintTree(id){
   treeLayout(sc.list);
   const nodes=TC.nodes.slice();
   TC.nodes=saved;
-  const NW=TC.NW,NH=TC.NH,LBL=64,pad=10;
+  const NW=TC.NW,NH=TC.NH,LBL=0,pad=10;
   let minX=Infinity,maxX=-Infinity,maxY=0;
   nodes.forEach(function(n){minX=Math.min(minX,n.x);maxX=Math.max(maxX,n.x+NW);maxY=Math.max(maxY,n.y+NH);});
   const W=Math.ceil(maxX-minX+pad*2+LBL),H=Math.ceil(maxY+pad*2);
   const X=function(n){return n.x-minX+pad;},Y=function(n){return n.y+pad;};
   const byIdN={};nodes.forEach(function(n){byIdN[n.id]=n;});
-  const rowLabels={'-3':'والد الجد','-2':'الجد','-1':'الأب','0':'','1':'الأبناء','2':'الأحفاد','3':'أبناء الأحفاد','4':'الجيل الرابع'};
   let svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" font-family="Tajawal, Arial, sans-serif">';
   // خطوط الربط
   nodes.forEach(function(n){
     const p=n.m.parentId&&byIdN[n.m.parentId];if(!p)return;
     const px=X(p)+NW/2,py=Y(p)+NH,cx=X(n)+NW/2,cy=Y(n),my=(py+cy)/2;
     svg+='<path d="M'+px+' '+py+' C'+px+' '+my+' '+cx+' '+my+' '+cx+' '+cy+'" fill="none" stroke="#d9c39e" stroke-width="1.5"/>';
-  });
-  // عناوين الصفوف (الجد، الأب، الأبناء…)
-  const rows={};nodes.forEach(function(n){rows[n.y]=1;});
-  Object.keys(rows).forEach(function(y){
-    const rel=Math.round(Number(y)/(NH+TC.VGAP))-sc.above;
-    const t=rowLabels[String(rel)];if(!t)return;
-    svg+='<text x="'+(W-4)+'" y="'+(Number(y)+pad+NH/2+4)+'" text-anchor="end" font-size="10" font-weight="700" fill="#8a8078">'+esc(t)+'</text>';
   });
   // الصناديق
   nodes.forEach(function(n,i){
@@ -4055,14 +4066,10 @@ function buildPrintTree(id){
     if(sub)svg+='<text x="'+ax+'" y="'+(y+NH-9)+'" text-anchor="middle" font-size="8" fill="'+(dead?'#9a9a9a':'#a07a3f')+'">'+esc(ptFit(sub,'500 8px Tajawal,Arial',NW-6))+'</text>';
   });
   svg+='</svg>';
-  const parts=[];
-  if(sc.above)parts.push(sc.above===1?'جيل واحد أعلاه':(sc.above===2?'جيلان أعلاه':sc.above+' أجيال أعلاه'));
-  if(sc.below)parts.push(sc.below===1?'جيل واحد أسفله':(sc.below===2?'جيلان أسفله':sc.below+' أجيال أسفله'));
-  const cap=sc.gens+' أجيال'+(parts.length?' — '+parts.join(' و'):'')+(sc.totalBelow>sc.below?' (تُعرض أقرب '+sc.below+' أجيال من ذريته)':'');
   return{
-    html:'<div class="ptree"><h3>شجرة '+esc(sc.list.find(function(x){return x.id===id;}).name||'')+'</h3><div class="cap">'+esc(cap)+'</div>'+svg+
+    html:'<div class="ptree"><h3>شجرة '+esc(printFullName(members.find(function(x){return x.id===id;})||{name:''}))+'</h3>'+svg+
       '<div class="lg"><span><i style="background:#fff;border-color:#e4ddd2"></i>رجل</span><span><i style="background:#fdeef2;border-color:#e9b1c1"></i>امرأة</span><span><i style="background:#f0eeeb;border-color:#c8c8c8"></i>متوفى</span><span><i style="background:#fff4df;border-color:#b8935a;border-width:2px"></i>صاحب الشجرة</span></div></div>',
-    landscape:W>H*1.45,
+    landscape:true,
     scope:sc
   };
 }
@@ -4071,93 +4078,72 @@ window.printMember=function(id){
   const m=members.find(function(x){return x.id===id;});if(!m)return;
   const par=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
   const kids=members.filter(function(x){return x.parentId===id;});
-  const chain=[];let cur=m;const seen={};
-  while(cur&&!seen[cur.id]){seen[cur.id]=1;chain.push(cur.name);cur=cur.parentId?members.find(function(x){return x.id===cur.parentId;}):null;}
-
   const PT=buildPrintTree(id);
-  const w=window.open('','_blank','width=900,height=800');
+  const w=window.open('','_blank','width=1100,height=800');
   if(!w){toast('السماح بالنوافذ المنبثقة مطلوب للطباعة',true);return;}
-  w.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(m.name)+' — شجرة العائلة</title>'+
+  const out=[];
+  out.push('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(m.name)+' — '+esc(siteSettings.siteName||'شجرة العائلة')+'</title>'+
     '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">'+
-    '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Tajawal,sans-serif;padding:2rem;color:#1a1612;direction:rtl}'+
-    '.header{text-align:center;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:3px solid #b8935a}'+
-    '.avatar{width:64px;height:64px;border-radius:50%;margin:0 auto .5rem;display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:700;color:#fff;overflow:hidden}'+
+    '<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    'body{font-family:Tajawal,sans-serif;padding:1.5rem;color:#1a1612;direction:rtl}'+
+    '@page{size:A4 landscape;margin:1.2cm}@media print{body{padding:0}}'+
+    '.header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:3px solid #b8935a}'+
+    '.avatar{width:72px;height:72px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:700;color:#fff;overflow:hidden}'+
     '.avatar img{width:100%;height:100%;object-fit:cover}'+
-    '.name{font-size:1.35rem;font-weight:700;margin-bottom:.2rem}'+
-    '.fullname{font-size:.9rem;color:#8a8078;margin-bottom:.2rem}'+
-    '.role{font-size:.85rem;color:#b8935a}'+
-    '.section{margin:1.2rem 0;padding:1rem;background:#f7f4ef;border-radius:10px}'+
-    '.sec-title{font-size:.85rem;font-weight:700;color:#b8935a;margin-bottom:.6rem;border-bottom:1px solid #e4ddd2;padding-bottom:.3rem}'+
-    '.row{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #efeae1;font-size:.85rem}'+
-    '.row:last-child{border-bottom:none}.lbl{color:#8a8078}.val{font-weight:500}'+
-    '.chain{text-align:center;margin:1rem 0;font-size:.85rem;color:#8a8078}'+
-    '.chain span{color:#b8935a;font-weight:600}'+
-    '.kids{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}'+
-    '.kid{background:#fff;border:1px solid #e4ddd2;border-radius:8px;padding:.25rem .6rem;font-size:.8rem}'+
-    '.footer{text-align:center;margin-top:2rem;font-size:.75rem;color:#8a8078;border-top:1px solid #e4ddd2;padding-top:1rem}'+
-    '.ptree{margin:1rem 0 1.4rem;break-inside:avoid;page-break-inside:avoid}'+
-    '.ptree h3{font-size:1rem;color:#b8935a;margin-bottom:.2rem}.ptree .cap{font-size:.78rem;color:#8a8078;margin-bottom:.6rem}'+
-    '.ptree svg{display:block;width:100%;height:auto;max-height:'+(PT&&PT.landscape?'11.5cm':'18.5cm')+'}'+
-    '.ptree .lg{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;font-size:.72rem;color:#8a8078;margin-top:.5rem}'+
+    '.name{font-size:1.5rem;font-weight:800}'+
+    '.fullname{font-size:1rem;color:#4a443c;margin-top:.15rem;font-weight:500}'+
+    '.role{font-size:.85rem;color:#b8935a;margin-top:.15rem}'+
+    '.grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem 1.2rem;align-items:start}'+
+    '.section{padding:.9rem 1rem;background:#f7f4ef;border-radius:10px;break-inside:avoid}'+
+    '.section.wide{grid-column:1/-1}'+
+    '.sec-title{font-size:.85rem;font-weight:700;color:#b8935a;margin-bottom:.5rem;border-bottom:1px solid #e4ddd2;padding-bottom:.3rem}'+
+    '.row{display:flex;justify-content:space-between;gap:1rem;padding:.28rem 0;border-bottom:1px solid #efeae1;font-size:.85rem}'+
+    '.row:last-child{border-bottom:none}.lbl{color:#8a8078}.val{font-weight:500;text-align:left}'+
+    '.kids{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}'+
+    '.kid{background:#fff;border:1px solid #e4ddd2;border-radius:8px;padding:.2rem .55rem;font-size:.8rem}'+
+    '.kid.f{background:#fdeef2;border-color:#e9b1c1}.kid.d{background:#f0eeeb;border-color:#c8c8c8;color:#7d7d7d}'+
+    '.footer{text-align:center;margin-top:1.2rem;font-size:.72rem;color:#8a8078;border-top:1px solid #e4ddd2;padding-top:.7rem}'+
+    '.ptree{break-before:page;page-break-before:always;padding-top:.2rem}'+
+    '.ptree h3{font-size:1.05rem;color:#b8935a;margin-bottom:.5rem;text-align:center}'+
+    '.ptree svg{display:block;width:100%;height:auto;max-height:16cm;margin:0 auto}'+
+    '.ptree .lg{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;font-size:.72rem;color:#8a8078;margin-top:.5rem}'+
     '.ptree .lg span{display:inline-flex;align-items:center;gap:.3rem}.ptree .lg i{width:14px;height:10px;border:1.5px solid;border-radius:3px;display:inline-block}'+
-    '*{-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-    '@page{size:A4 '+(PT&&PT.landscape?'landscape':'portrait')+';margin:1.2cm}'+
-    '@media print{body{padding:0}}'+
     '</style></head><body>');
 
   let avatarBg=m.gender==='أنثى'?'background:linear-gradient(135deg,#c9748c,#e8a0b0)':'background:linear-gradient(135deg,#b8935a,#d4aa72)';
   if(m.status==='متوفى')avatarBg='background:linear-gradient(135deg,#999,#bbb)';
 
-  w.document.write('<div class="header">');
-  w.document.write('<div class="avatar" style="'+avatarBg+'">');
-  if(m.photo)w.document.write('<img src="'+escAttr(m.photo)+'">');
-  else w.document.write(esc((m.name||'?').charAt(0)));
-  w.document.write('</div>');
-  w.document.write('<div class="name">'+esc(m.name)+(m.status==='متوفى'?' 🕊':'')+'</div>');
-  if(m.fullName||m._fullName)w.document.write('<div class="fullname">'+esc(m.fullName||m._fullName)+'</div>');
-  if(m.role)w.document.write('<div class="role">'+esc(m.role)+'</div>');
-  w.document.write('</div>');
+  // ── الصفحة الأولى: معلومات الشخص ──
+  out.push('<div class="header"><div class="avatar" style="'+avatarBg+'">'+(m.photo?'<img src="'+escAttr(m.photo)+'">':esc((m.name||'?').charAt(0)))+'</div><div>'+
+    '<div class="name">'+esc(m.name)+(m.status==='متوفى'?(m.gender==='أنثى'?' — رحمها الله':' — رحمه الله'):'')+'</div>'+
+    '<div class="fullname">'+esc(printFullName(m))+'</div>'+
+    (m.role?'<div class="role">'+esc(m.role)+'</div>':'')+
+  '</div></div>');
 
-  if(chain.length>1){
-    w.document.write('<div class="chain">سلسلة النسب: <span>'+chain.map(esc).join(' ← ')+'</span></div>');
+  const row=function(l,v,dir){return v?'<div class="row"><span class="lbl">'+l+'</span><span class="val"'+(dir?' dir="'+dir+'"':'')+'>'+esc(v)+'</span></div>':'';};
+  out.push('<div class="grid">');
+  out.push('<div class="section"><div class="sec-title">المعلومات الشخصية</div>'+
+    row('الجنس',m.gender)+row('الحالة',m.status)+row('الكنية',m.role)+row('تاريخ الميلاد',m.birth)+row('المدينة',m.city)+row(m.gender==='أنثى'?'الزوج':'الزوجة',m.spouse)+'</div>');
+  if(m.phone||m.email||m.company||m.job){
+    out.push('<div class="section"><div class="sec-title">التواصل والعمل</div>'+
+      row('الجوال',m.phone,'ltr')+row('البريد',m.email,'ltr')+row('جهة العمل',m.company)+row('الوظيفة',m.job)+'</div>');
   }
-  if(PT)w.document.write(PT.html);
+  const extKids=Array.isArray(m.externalKids)?m.externalKids:[];
+  out.push('<div class="section wide"><div class="sec-title">الأسرة</div>'+
+    '<div class="row"><span class="lbl">الأب</span><span class="val">'+(par?esc(printFullName(par)):'جذر العائلة')+'</span></div>'+
+    ((kids.length||extKids.length)?'<div class="row"><span class="lbl">الأبناء ('+(kids.length+extKids.length)+')</span><span class="val"></span></div><div class="kids">'+
+      kids.map(function(k){return'<span class="kid'+(k.status==='متوفى'?' d':(k.gender==='أنثى'?' f':''))+'">'+esc(k.name)+'</span>';}).join('')+
+      extKids.map(function(k){return'<span class="kid">'+esc(k)+'</span>';}).join('')+'</div>':'')+
+  '</div>');
+  if(m.bio)out.push('<div class="section wide"><div class="sec-title">نبذة</div><p style="font-size:.85rem;line-height:1.8;white-space:pre-wrap">'+esc(m.bio)+'</p></div>');
+  out.push('</div>');
+  out.push('<div class="footer">طُبع من موقع '+esc(siteSettings.siteName||'شجرة العائلة')+' · '+new Date().toLocaleDateString('ar')+'</div>');
 
-  w.document.write('<div class="section"><div class="sec-title">المعلومات الشخصية</div>');
-  const rows=[['الجنس',m.gender],['الحالة',m.status],['الكنية',m.role],['تاريخ الميلاد',m.birth],['المدينة',m.city],[m.gender==='أنثى'?'الزوج':'الزوجة',m.spouse]];
-  rows.forEach(function(r){if(r[1])w.document.write('<div class="row"><span class="lbl">'+r[0]+'</span><span class="val">'+esc(r[1])+'</span></div>');});
-  w.document.write('</div>');
+  // ── الصفحة الثانية: الشجرة ──
+  if(PT)out.push(PT.html);
 
-  if(m.phone||m.email){
-    w.document.write('<div class="section"><div class="sec-title">التواصل</div>');
-    if(m.phone)w.document.write('<div class="row"><span class="lbl">الجوال</span><span class="val" dir="ltr">'+esc(m.phone)+'</span></div>');
-    if(m.email)w.document.write('<div class="row"><span class="lbl">البريد</span><span class="val" dir="ltr">'+esc(m.email)+'</span></div>');
-    w.document.write('</div>');
-  }
-
-  if(m.company||m.job){
-    w.document.write('<div class="section"><div class="sec-title">العمل</div>');
-    if(m.company)w.document.write('<div class="row"><span class="lbl">جهة العمل</span><span class="val">'+esc(m.company)+'</span></div>');
-    if(m.job)w.document.write('<div class="row"><span class="lbl">الوظيفة</span><span class="val">'+esc(m.job)+'</span></div>');
-    w.document.write('</div>');
-  }
-
-  w.document.write('<div class="section"><div class="sec-title">الشجرة</div>');
-  w.document.write('<div class="row"><span class="lbl">الأب</span><span class="val">'+(par?esc(par.name):'جذر العائلة')+'</span></div>');
-  if(kids.length){
-    w.document.write('<div class="row"><span class="lbl">الأبناء ('+kids.length+')</span></div>');
-    w.document.write('<div class="kids">');
-    kids.forEach(function(k){w.document.write('<div class="kid">'+esc(k.name)+(k.gender==='أنثى'?' ♀':' ♂')+'</div>');});
-    w.document.write('</div>');
-  }
-  w.document.write('</div>');
-
-  if(m.bio){
-    w.document.write('<div class="section"><div class="sec-title">نبذة</div><p style="font-size:.85rem;line-height:1.8">'+esc(m.bio)+'</p></div>');
-  }
-
-  w.document.write('<div class="footer">طُبع من موقع '+esc(siteSettings.siteName||'شجرة العائلة')+' · '+new Date().toLocaleDateString('ar')+'</div>');
-  w.document.write('</body></html>');
+  out.push('</body></html>');
+  w.document.write(out.join(''));
   w.document.close();
   // انتظار تحميل الخط ثم الطباعة
   function goPrint(){try{w.focus();w.print();}catch(e){}}
