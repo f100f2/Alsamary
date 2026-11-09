@@ -727,7 +727,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
     <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>صلاحيات الفروع</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V41 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V42 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1243,7 +1243,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V41';
+const APP_VERSION='V42';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1504,7 +1504,7 @@ var TC={
   dragging:false,lastX:0,lastY:0,
   nodes:[],
   pinchDist:0,
-  NW:116,NH:78,HGAP:10,VGAP:62,
+  NW:70,NH:74,HGAP:6,VGAP:56,
   _imgCache:{},
   _raf:0,
   _pal:null,
@@ -1739,7 +1739,7 @@ function treeLayout(list){
     const shift=xOffset-minX;
     let maxX=-Infinity;
     for(let i=before;i<after;i++){TC.nodes[i].x+=shift;maxX=Math.max(maxX,TC.nodes[i].x);}
-    xOffset=maxX+colW*2;
+    xOffset=maxX+colW*1.5;
   });
 }
 
@@ -1803,7 +1803,7 @@ function drawNode(c,n,detailed){
   const isFem=!isDead&&m.gender==='أنثى';
   const isRoot=!m.parentId;
   const editable=!!(TC._editSet&&TC._editSet.has(n.id));
-  const r=11;
+  const r=9;
 
   if(!detailed){
     c.beginPath();rrect(c,x,y,NW,NH,r);
@@ -1812,7 +1812,7 @@ function drawNode(c,n,detailed){
     c.strokeStyle=editable?P.edit:hl?P.brdHl:isDead?P.brdDead:isFem?P.femBrd:isRoot?P.brdRoot:P.brd;
     c.lineWidth=(editable?2.5:(hl||isRoot?2:1))/TC.scale;c.stroke();
     c.fillStyle=isDead?P.simpDotD:(isFem?P.simpDotF:P.simpDot);
-    c.beginPath();c.arc(x+NW/2,y+NH/2,10,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(x+NW/2,y+NH/2,9,0,Math.PI*2);c.fill();
     return;
   }
 
@@ -1837,7 +1837,7 @@ function drawNode(c,n,detailed){
   }
 
   // الصورة الرمزية
-  const avR=16,avX=x+NW/2,avY=y+21;
+  const avR=14,avX=x+NW/2,avY=y+19;
   c.save();
   c.beginPath();c.arc(avX,avY,avR,0,Math.PI*2);c.clip();
   const cached=TC._imgCache[m.id];
@@ -1849,7 +1849,7 @@ function drawNode(c,n,detailed){
     g.addColorStop(0,pair[0]);g.addColorStop(1,pair[1]);
     c.fillStyle=g;c.fill();
     c.fillStyle='#fff';
-    c.font='bold 14px Tajawal,Arial';
+    c.font='bold 12px Tajawal,Arial';
     c.textAlign='center';c.textBaseline='middle';
     c.fillText((m.name||'?').charAt(0),avX,avY+1);
     if(m.photo&&!cached){
@@ -1868,15 +1868,15 @@ function drawNode(c,n,detailed){
 
   // الاسم
   c.fillStyle=isDead?P.nameDead:P.name;
-  c.font='700 11.5px Tajawal,Arial';
+  c.font='700 10.5px Tajawal,Arial';
   c.textAlign='center';c.textBaseline='middle';
-  c.fillText(fitText(c,m.name||'—',NW-10),x+NW/2,y+NH-24);
+  c.fillText(fitText(c,m.name||'—',NW-6),x+NW/2,y+NH-24);
 
   // السطر الثانوي (الكنية أو الوظيفة)
   const sub=m.role||m.job||'';
   if(sub){
-    c.fillStyle=isDead?P.nameDead:P.sub;c.font='500 9px Tajawal,Arial';
-    c.fillText(fitText(c,sub,NW-10),x+NW/2,y+NH-11);
+    c.fillStyle=isDead?P.nameDead:P.sub;c.font='500 8px Tajawal,Arial';
+    c.fillText(fitText(c,sub,NW-6),x+NW/2,y+NH-11);
   }
 }
 
