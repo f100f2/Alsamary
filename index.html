@@ -750,7 +750,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
     <button class="drawer-item" id="tb-perms" style="display:none" onclick="toggleDrawer();openPermissions()"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>صلاحيات الفروع</button>
   </nav>
-  <div class="drawer-footer" id="drawer-footer">V44 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V45 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1267,7 +1267,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V44';
+const APP_VERSION='V45';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -3970,7 +3970,7 @@ window.showInTree=function(id){
   },250);
 };
 
-// ══ شجرة الطباعة المخصصة للعضو ══
+// ══ شجرة الطباعة المخصصة للعضو: الأب وكل ذريته (الإخوة وأبناؤهم) ══
 // ٣ أجيال أو أكثر أسفله ← جيلان أعلاه + حتى ٤ أجيال أسفله
 // جيلان أو أقل أسفله  ← ٣ أجيال أعلاه + كل ما أسفله
 // الحد الأقصى ٧ أجيال (مع العضو نفسه). الأعلى = خط الآباء المباشر فقط
@@ -3989,11 +3989,12 @@ function printTreeScope(id){
       totalBelow++;frontier=next;
     }
   }
-  const above=totalBelow>=3?2:3;
-  const below=Math.min(totalBelow,7-1-above);
+  // جيل واحد فوق العضو (الأب)
+  const above=1;
   const anc=ancestorsFrom(id,map).slice(-above);
   const top=anc.length?anc[0]:id;
-  const maxDepth=anc.length+below;
+  const maxDepth=7-1;
+  const below=maxDepth-anc.length;
   const ids=new Set([top]);
   let frontier=[top];
   for(let d=0;d<maxDepth&&frontier.length;d++){
@@ -4067,6 +4068,7 @@ function buildPrintTree(id){
   });
   svg+='</svg>';
   return{
+    svg:svg,
     html:'<div class="ptree"><h3>شجرة '+esc(printFullName(members.find(function(x){return x.id===id;})||{name:''}))+'</h3>'+svg+
       '<div class="lg"><span><i style="background:#fff;border-color:#e4ddd2"></i>رجل</span><span><i style="background:#fdeef2;border-color:#e9b1c1"></i>امرأة</span><span><i style="background:#f0eeeb;border-color:#c8c8c8"></i>متوفى</span><span><i style="background:#fff4df;border-color:#b8935a;border-width:2px"></i>صاحب الشجرة</span></div></div>',
     landscape:true,
@@ -4074,6 +4076,12 @@ function buildPrintTree(id){
   };
 }
 
+// شعار الطباعة: الشعار الفاتح (الطباعة على ورق أبيض)، أو علامة الموقع الافتراضية
+function printLogoHtml(){
+  const src=siteSettings.logo||siteSettings.logoDark||'';
+  if(src)return'<img class="brand-logo" src="'+escAttr(src)+'" alt="">';
+  return'<span class="brand-mark"><svg viewBox="0 0 24 24"><path fill="#fff" d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg></span>';
+}
 window.printMember=function(id){
   const m=members.find(function(x){return x.id===id;});if(!m)return;
   const par=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
@@ -4081,71 +4089,106 @@ window.printMember=function(id){
   const PT=buildPrintTree(id);
   const w=window.open('','_blank','width=1100,height=800');
   if(!w){toast('السماح بالنوافذ المنبثقة مطلوب للطباعة',true);return;}
+  const site=siteSettings.siteName||'شجرة العائلة';
+  const full=printFullName(m);
+  const dead=m.status==='متوفى',fem=m.gender==='أنثى';
+  const dateStr=new Date().toLocaleDateString('ar-u-ca-gregory-nu-latn',{year:'numeric',month:'long',day:'numeric'});
+  const brand='<div class="brand"><div class="brand-id">'+printLogoHtml()+'<span class="brand-name">'+esc(site)+'</span></div><div class="brand-date">'+esc(dateStr)+'</div></div>';
   const out=[];
-  out.push('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(m.name)+' — '+esc(siteSettings.siteName||'شجرة العائلة')+'</title>'+
+  out.push('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<title>'+esc(full)+'</title>'+
     '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">'+
-    '<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-    'body{font-family:Tajawal,sans-serif;padding:1.5rem;color:#1a1612;direction:rtl}'+
-    '@page{size:A4 landscape;margin:1.2cm}@media print{body{padding:0}}'+
-    '.header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:3px solid #b8935a}'+
-    '.avatar{width:72px;height:72px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:700;color:#fff;overflow:hidden}'+
+    '<style>'+
+    '*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    // هامش الصفحة صفر: يمنع المتصفح من طباعة العنوان والرابط (about:blank) والتاريخ ورقم الصفحة
+    '@page{size:A4 landscape;margin:0}'+
+    'html,body{background:#fff}'+
+    'body{font-family:Tajawal,Arial,sans-serif;color:#1a1612;direction:rtl}'+
+    '.sheet{width:297mm;min-height:210mm;padding:12mm 14mm;margin:0 auto;display:flex;flex-direction:column;break-after:page;page-break-after:always}'+
+    '.sheet:last-child{break-after:auto;page-break-after:auto}'+
+    '@media screen{body{background:#e9e5de}.sheet{background:#fff;margin:12px auto;box-shadow:0 2px 14px rgba(0,0,0,.12)}}'+
+    // ترويسة: الشعار واسم الموقع يميناً والتاريخ يساراً
+    '.brand{display:flex;align-items:center;justify-content:space-between;padding-bottom:4mm;margin-bottom:6mm;border-bottom:2px solid #b8935a}'+
+    '.brand-id{display:flex;align-items:center;gap:3mm}'+
+    '.brand-logo{height:13mm;width:auto;max-width:45mm;object-fit:contain}'+
+    '.brand-mark{width:11mm;height:11mm;border-radius:3mm;background:linear-gradient(135deg,#b8935a,#d4aa72);display:flex;align-items:center;justify-content:center}'+
+    '.brand-mark svg{width:6.5mm;height:6.5mm}'+
+    '.brand-name{font-size:13pt;font-weight:700;color:#1a1612}'+
+    '.brand-date{font-size:9pt;color:#8a8078}'+
+    // بطاقة الشخص
+    '.person{display:flex;align-items:center;gap:6mm;margin-bottom:7mm}'+
+    '.avatar{width:24mm;height:24mm;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24pt;font-weight:700;color:#fff;overflow:hidden;border:1mm solid #fff;box-shadow:0 0 0 .4mm #e4ddd2}'+
     '.avatar img{width:100%;height:100%;object-fit:cover}'+
-    '.name{font-size:1.5rem;font-weight:800}'+
-    '.fullname{font-size:1rem;color:#4a443c;margin-top:.15rem;font-weight:500}'+
-    '.role{font-size:.85rem;color:#b8935a;margin-top:.15rem}'+
-    '.grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem 1.2rem;align-items:start}'+
-    '.section{padding:.9rem 1rem;background:#f7f4ef;border-radius:10px;break-inside:avoid}'+
-    '.section.wide{grid-column:1/-1}'+
-    '.sec-title{font-size:.85rem;font-weight:700;color:#b8935a;margin-bottom:.5rem;border-bottom:1px solid #e4ddd2;padding-bottom:.3rem}'+
-    '.row{display:flex;justify-content:space-between;gap:1rem;padding:.28rem 0;border-bottom:1px solid #efeae1;font-size:.85rem}'+
-    '.row:last-child{border-bottom:none}.lbl{color:#8a8078}.val{font-weight:500;text-align:left}'+
-    '.kids{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}'+
-    '.kid{background:#fff;border:1px solid #e4ddd2;border-radius:8px;padding:.2rem .55rem;font-size:.8rem}'+
+    '.p-name{font-size:22pt;font-weight:800;line-height:1.2}'+
+    '.p-dead{font-size:11pt;font-weight:500;color:#8a8078;margin-inline-start:2mm}'+
+    '.p-full{font-size:12.5pt;color:#4a443c;margin-top:1mm;font-weight:500}'+
+    '.p-role{display:inline-block;margin-top:2mm;font-size:9.5pt;color:#9a7741;background:#f7efe1;border-radius:20px;padding:.6mm 3.5mm}'+
+    // البطاقات: أعمدة متساوية تملأ العرض
+    '.cards{display:flex;flex-direction:column;gap:5mm}'+
+    '.pair{display:flex;gap:5mm}.pair>.card{flex:1 1 0;min-width:0}'+
+    '.card{background:#faf7f2;border:.3mm solid #ece4d6;border-radius:3mm;padding:4.5mm 5mm;break-inside:avoid}'+
+    '.card h4{font-size:10.5pt;font-weight:700;color:#b8935a;margin-bottom:2.5mm;padding-bottom:1.5mm;border-bottom:.3mm solid #e4ddd2}'+
+    '.kv{display:grid;grid-template-columns:30mm 1fr;column-gap:3mm;font-size:10pt;line-height:1.5}'+
+    '.kv dt{color:#8a8078;padding:1.2mm 0;border-bottom:.2mm solid #efe9de}'+
+    '.kv dd{font-weight:600;padding:1.2mm 0;border-bottom:.2mm solid #efe9de;text-align:start;word-break:break-word}'+
+    '.kv dt:nth-last-of-type(1),.kv dd:last-of-type{border-bottom:none}'+
+    '.kids{display:flex;flex-wrap:wrap;gap:2mm;padding-top:1.2mm}'+
+    '.kid{background:#fff;border:.3mm solid #e4ddd2;border-radius:2mm;padding:.8mm 3mm;font-size:9.5pt}'+
     '.kid.f{background:#fdeef2;border-color:#e9b1c1}.kid.d{background:#f0eeeb;border-color:#c8c8c8;color:#7d7d7d}'+
-    '.footer{text-align:center;margin-top:1.2rem;font-size:.72rem;color:#8a8078;border-top:1px solid #e4ddd2;padding-top:.7rem}'+
-    '.ptree{break-before:page;page-break-before:always;padding-top:.2rem}'+
-    '.ptree h3{font-size:1.05rem;color:#b8935a;margin-bottom:.5rem;text-align:center}'+
-    '.ptree svg{display:block;width:100%;height:auto;max-height:16cm;margin:0 auto}'+
-    '.ptree .lg{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;font-size:.72rem;color:#8a8078;margin-top:.5rem}'+
-    '.ptree .lg span{display:inline-flex;align-items:center;gap:.3rem}.ptree .lg i{width:14px;height:10px;border:1.5px solid;border-radius:3px;display:inline-block}'+
+    '.bio{font-size:10pt;line-height:1.85;white-space:pre-wrap;color:#4a443c}'+
+    // صفحة الشجرة
+    '.t-title{text-align:center;font-size:14pt;font-weight:700;color:#1a1612;margin-bottom:4mm}'+
+    '.t-title small{display:block;font-size:9.5pt;color:#8a8078;font-weight:500;margin-top:1mm}'+
+    '.t-body{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}'+
+    '.t-body svg{display:block;width:100%;height:auto;max-height:138mm}'+
+    '.legend{display:flex;gap:7mm;justify-content:center;font-size:9pt;color:#8a8078;margin-top:4mm}'+
+    '.legend span{display:inline-flex;align-items:center;gap:1.8mm}'+
+    '.legend i{width:5mm;height:3.5mm;border:.4mm solid;border-radius:1mm;display:inline-block}'+
     '</style></head><body>');
 
-  let avatarBg=m.gender==='أنثى'?'background:linear-gradient(135deg,#c9748c,#e8a0b0)':'background:linear-gradient(135deg,#b8935a,#d4aa72)';
-  if(m.status==='متوفى')avatarBg='background:linear-gradient(135deg,#999,#bbb)';
-
   // ── الصفحة الأولى: معلومات الشخص ──
-  out.push('<div class="header"><div class="avatar" style="'+avatarBg+'">'+(m.photo?'<img src="'+escAttr(m.photo)+'">':esc((m.name||'?').charAt(0)))+'</div><div>'+
-    '<div class="name">'+esc(m.name)+(m.status==='متوفى'?(m.gender==='أنثى'?' — رحمها الله':' — رحمه الله'):'')+'</div>'+
-    '<div class="fullname">'+esc(printFullName(m))+'</div>'+
-    (m.role?'<div class="role">'+esc(m.role)+'</div>':'')+
-  '</div></div>');
-
-  const row=function(l,v,dir){return v?'<div class="row"><span class="lbl">'+l+'</span><span class="val"'+(dir?' dir="'+dir+'"':'')+'>'+esc(v)+'</span></div>':'';};
-  out.push('<div class="grid">');
-  out.push('<div class="section"><div class="sec-title">المعلومات الشخصية</div>'+
-    row('الجنس',m.gender)+row('الحالة',m.status)+row('الكنية',m.role)+row('تاريخ الميلاد',m.birth)+row('المدينة',m.city)+row(m.gender==='أنثى'?'الزوج':'الزوجة',m.spouse)+'</div>');
-  if(m.phone||m.email||m.company||m.job){
-    out.push('<div class="section"><div class="sec-title">التواصل والعمل</div>'+
-      row('الجوال',m.phone,'ltr')+row('البريد',m.email,'ltr')+row('جهة العمل',m.company)+row('الوظيفة',m.job)+'</div>');
-  }
+  let avatarBg=fem?'background:linear-gradient(135deg,#c9748c,#e8a0b0)':'background:linear-gradient(135deg,#b8935a,#d4aa72)';
+  if(dead)avatarBg='background:linear-gradient(135deg,#999,#bbb)';
+  const kv=function(pairs){
+    const rows=pairs.filter(function(p){return p[1];});
+    if(!rows.length)return'';
+    return'<dl class="kv">'+rows.map(function(p){return'<dt>'+p[0]+'</dt><dd'+(p[2]?' dir="'+p[2]+'" style="text-align:right"':'')+'>'+esc(p[1])+'</dd>';}).join('')+'</dl>';
+  };
+  out.push('<section class="sheet">'+brand+
+    '<div class="person"><div class="avatar" style="'+avatarBg+'">'+(m.photo?'<img src="'+escAttr(m.photo)+'" alt="">':esc((m.name||'?').charAt(0)))+'</div>'+
+      '<div><div class="p-name">'+esc(m.name)+(dead?'<span class="p-dead">'+(fem?'رحمها الله':'رحمه الله')+'</span>':'')+'</div>'+
+      '<div class="p-full">'+esc(full)+'</div>'+
+      (m.role?'<div class="p-role">'+esc(m.role)+'</div>':'')+'</div></div>'+
+    '<div class="cards">');
+  const personal=kv([['الجنس',m.gender],['الحالة',m.status],['تاريخ الميلاد',m.birth],['المدينة',m.city],[fem?'الزوج':'الزوجة',m.spouse]]);
+  const contact=kv([['الجوال',m.phone,'ltr'],['البريد',m.email,'ltr'],['جهة العمل',m.company],['الوظيفة',m.job]]);
+  // بطاقتان متجاورتان بعرض متساوٍ، أو بطاقة واحدة بكامل العرض
+  if(personal||contact)out.push('<div class="pair">'+
+    (personal?'<div class="card"><h4>المعلومات الشخصية</h4>'+personal+'</div>':'')+
+    (contact?'<div class="card"><h4>التواصل والعمل</h4>'+contact+'</div>':'')+'</div>');
   const extKids=Array.isArray(m.externalKids)?m.externalKids:[];
-  out.push('<div class="section wide"><div class="sec-title">الأسرة</div>'+
-    '<div class="row"><span class="lbl">الأب</span><span class="val">'+(par?esc(printFullName(par)):'جذر العائلة')+'</span></div>'+
-    ((kids.length||extKids.length)?'<div class="row"><span class="lbl">الأبناء ('+(kids.length+extKids.length)+')</span><span class="val"></span></div><div class="kids">'+
+  const nKids=kids.length+extKids.length;
+  out.push('<div class="card"><h4>الأسرة</h4><dl class="kv">'+
+    '<dt>الأب</dt><dd>'+(par?esc(printFullName(par)):'جذر العائلة')+'</dd>'+
+    (nKids?'<dt>الأبناء ('+nKids+')</dt><dd><div class="kids">'+
       kids.map(function(k){return'<span class="kid'+(k.status==='متوفى'?' d':(k.gender==='أنثى'?' f':''))+'">'+esc(k.name)+'</span>';}).join('')+
-      extKids.map(function(k){return'<span class="kid">'+esc(k)+'</span>';}).join('')+'</div>':'')+
-  '</div>');
-  if(m.bio)out.push('<div class="section wide"><div class="sec-title">نبذة</div><p style="font-size:.85rem;line-height:1.8;white-space:pre-wrap">'+esc(m.bio)+'</p></div>');
-  out.push('</div>');
-  out.push('<div class="footer">طُبع من موقع '+esc(siteSettings.siteName||'شجرة العائلة')+' · '+new Date().toLocaleDateString('ar')+'</div>');
+      extKids.map(function(k){return'<span class="kid">'+esc(k)+'</span>';}).join('')+'</div></dd>':'')+
+  '</dl></div>');
+  if(m.bio)out.push('<div class="card"><h4>نبذة</h4><p class="bio">'+esc(m.bio)+'</p></div>');
+  out.push('</div></section>');
 
   // ── الصفحة الثانية: الشجرة ──
-  if(PT)out.push(PT.html);
-
+  if(PT){
+    out.push('<section class="sheet">'+brand+
+      '<div class="t-title">شجرة '+esc(full)+'</div>'+
+      '<div class="t-body">'+PT.svg+'</div>'+
+      '<div class="legend"><span><i style="background:#fff;border-color:#e4ddd2"></i>رجل</span><span><i style="background:#fdeef2;border-color:#e9b1c1"></i>امرأة</span><span><i style="background:#f0eeeb;border-color:#c8c8c8"></i>متوفى</span><span><i style="background:#fff4df;border-color:#b8935a"></i>'+esc(m.name)+'</span></div>'+
+    '</section>');
+  }
   out.push('</body></html>');
   w.document.write(out.join(''));
   w.document.close();
-  // انتظار تحميل الخط ثم الطباعة
+  // انتظار تحميل الخط والشعار ثم الطباعة
   function goPrint(){try{w.focus();w.print();}catch(e){}}
   setTimeout(function(){
     try{
