@@ -402,6 +402,17 @@ img{-webkit-user-drag:none}
 .album-tag{background:rgba(184,147,90,.92);color:#fff;font-size:.58rem;font-weight:600;padding:.12rem .4rem;border-radius:10px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .album-date{position:absolute;top:.35rem;right:.35rem;background:rgba(0,0,0,.55);color:#fff;font-size:.58rem;font-weight:600;padding:.14rem .42rem;border-radius:8px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-variant-numeric:tabular-nums}
 .album-filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+/* ── V53: غلاف/شعار ليلي + خط ثمانية ── */
+.v53-dark-row{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;min-height:44px;padding:.35rem;border-radius:10px;background:#0e0c0a;border:1px solid #2b251d}
+.v53-dark-row:empty::before{content:'لا توجد صور ليلية';font-size:.68rem;color:#94897a;padding:0 .3rem}
+.v53-hint{font-size:.68rem;color:var(--ink3);margin-top:.35rem;line-height:1.6}
+.thm-box{margin-top:.7rem;padding:.7rem;border:1px dashed var(--sand3);border-radius:12px;background:var(--sand)}
+.thm-title{font-size:.8rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.thm-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;padding:.4rem .5rem;margin-bottom:.35rem;border-radius:10px;background:var(--white);border:1px solid var(--sand3);font-size:.72rem}
+.thm-row .thm-name{flex:1;min-width:120px;direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.thm-row select{font-family:inherit;font-size:.72rem;padding:.2rem .3rem;border-radius:8px;border:1px solid var(--sand3);background:var(--sand2);color:var(--ink)}
+.thm-row .thm-new{color:var(--gold);font-weight:700}
+.thm-sample{font-size:1rem;color:var(--ink);padding:.2rem 0 .4rem}
 /* ── الوثائق (V51) ── */
 .doc-item .doc-pdf{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:.8rem .6rem 2.6rem;background:linear-gradient(160deg,var(--sand2),var(--sand3))}
 .doc-pdf-ico{width:50px;height:62px;border-radius:5px 16px 5px 5px;background:linear-gradient(160deg,#c0392b,#86211a);color:#fff;font-weight:800;font-size:.74rem;letter-spacing:.06em;display:flex;align-items:flex-end;justify-content:center;padding-bottom:.55rem;box-shadow:0 6px 16px rgba(0,0,0,.28)}
@@ -862,7 +873,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V51 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V53 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1322,6 +1333,12 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         <button class="btn btn-sm" onclick="document.getElementById('hero-img-in').click()" style="margin-top:.4rem">+ إضافة صورة</button>
         <input type="file" id="hero-img-in" accept="image/*" multiple style="display:none" onchange="onHeroImgSelect(event)">
       </div>
+      <div class="field"><label>🌙 صورة الغلاف — الوضع الليلي</label>
+        <div class="v53-dark-row" id="hero-dark-imgs-preview"></div>
+        <button class="btn btn-sm" onclick="document.getElementById('hero-dark-img-in').click()" style="margin-top:.4rem">+ إضافة صورة ليلية</button>
+        <input type="file" id="hero-dark-img-in" accept="image/*" multiple style="display:none" onchange="onHeroDarkImgSelect(event)">
+        <div class="v53-hint">تظهر في الوضع الليلي بدل صور الغلاف الأساسية. إذا تُركت فارغة تُستخدم الصور الأساسية في الوضعين.</div>
+      </div>
     </div>
 
     <div class="settings-section">
@@ -1350,6 +1367,8 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
             <option value="Changa">تشانجا (Changa)</option>
             <option value="El Messiri">المسيري</option>
             <option value="Readex Pro">ريديكس برو</option>
+            <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
+            <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
           </select>
         </div>
         <div class="field"><label>خط العناوين</label>
@@ -1360,8 +1379,18 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
             <option value="Lemonada">ليموناضة (Lemonada)</option>
             <option value="Reem Kufi">ريم كوفي</option>
             <option value="Aref Ruqaa">عارف رقعة</option>
+            <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
+            <option value="Thmanyah Serif Display">ثمانية — سيرف للعناوين (Thmanyah)</option>
+            <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
           </select>
         </div>
+      </div>
+      <div class="thm-box" id="thm-font-box">
+        <div class="thm-title">ملفات خط ثمانية</div>
+        <p class="v53-hint" style="margin:0 0 .5rem">خط ثمانية ليس متوفراً في خطوط Google، لذلك: حمّله مجاناً من موقع ثمانية الرسمي (يصلك بالبريد)، ثم ارفع ملفاته هنا — يكفي الوزن العادي والعريض. بعد الحفظ يظهر الخط لكل الزوار.</p>
+        <div id="thm-font-list"></div>
+        <button class="btn btn-sm" onclick="document.getElementById('thm-font-in').click()">📁 رفع ملفات الخط (OTF)</button>
+        <input type="file" id="thm-font-in" accept=".otf,.ttf,.woff,.woff2" multiple style="display:none" onchange="onThmFontSelect(event)">
       </div>
     </div>
 
@@ -1376,6 +1405,16 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         <button class="btn btn-sm" onclick="document.getElementById('drawer-logo-in').click()">📁 اختر صورة</button>
         <button class="btn btn-sm btn-danger" onclick="removeDrawerLogo()">✕</button>
         <input type="file" id="drawer-logo-in" accept="image/*" style="display:none" onchange="onDrawerLogoSelect(event)">
+      </div>
+      <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.6rem">
+        <div id="drawer-logo-dark-preview" style="width:50px;height:50px;background:#0e0c0a;border-radius:14px;border:1px solid #2b251d;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+          <span id="drawer-logo-dark-ph" style="font-size:.55rem;color:#94897a;text-align:center;line-height:1.25">الوضع<br>الليلي</span>
+          <img id="drawer-logo-dark-img-preview" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+        </div>
+        <button class="btn btn-sm" onclick="document.getElementById('drawer-logo-dark-in').click()">🌙 شعار داكن</button>
+        <button class="btn btn-sm btn-danger" onclick="removeDrawerLogoDark()">✕</button>
+        <input type="file" id="drawer-logo-dark-in" accept="image/*" style="display:none" onchange="onDrawerLogoDarkSelect(event)">
+        <div class="v53-hint" style="flex-basis:100%">يظهر في القائمة الجانبية في الوضع الليلي بدل شعار القائمة.</div>
       </div>
     </div>
 
@@ -1469,7 +1508,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V51';
+const APP_VERSION='V53';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1855,6 +1894,7 @@ window.toggleTheme=function(){
   try{localStorage.setItem('familyThemeMode',next);}catch(e){}
   if(typeof applyTheme==='function')applyTheme();
   if(typeof applyTopLogo==='function')applyTopLogo();
+  if(typeof onThemeSwitchV53==='function')onThemeSwitchV53();
   treeThemeRefresh();
   if(TC.ctx)treeDraw();
 };
@@ -3098,6 +3138,7 @@ var pendingLogo=null;
 function loadSettings(){
   const raw=localStorage.getItem('familySiteSettings');
   if(raw){try{siteSettings=Object.assign({},siteSettings,JSON.parse(raw));}catch(e){}}
+  loadSettingsExtrasLocal();
   applySettings();
   if(configured&&db){
     db.collection('siteConfig').doc('settings').get().then(function(doc){
@@ -3112,6 +3153,7 @@ function loadSettings(){
         }
       }
     }).catch(function(e){console.log('Settings load from Firestore skipped:',e);});
+    if(typeof loadSettingsExtras==='function')loadSettingsExtras();
     db.collection('siteConfig').doc('settings').onSnapshot(function(doc){
       if(doc.exists&&doc.data()&&doc.data().json){
         try{
@@ -3124,6 +3166,9 @@ function loadSettings(){
   }
 }
 
+function loadSettingsExtrasLocal(){
+  try{const r=localStorage.getItem('familyHeroDark');if(r){const a=JSON.parse(r);if(Array.isArray(a))heroDarkImages=a;}}catch(e){}
+}
 function currentLogo(){
   const dark=(typeof isDarkMode==='function')?isDarkMode():true;
   return(dark&&siteSettings.logoDark)?siteSettings.logoDark:(siteSettings.logo||null);
@@ -3194,6 +3239,9 @@ function applySettingsRest(){
   }
   pendingLogoDark=null;
   showLogoDarkPreview(siteSettings.logoDark||null);
+  pendingHeroDarkImgs=null;renderHeroDarkPreview();
+  pendingDrawerLogoDark=null;showDrawerLogoDarkPreview(siteSettings.drawerLogoDark||null);
+  pendingFontFiles=null;renderThmFontList();
 }
 
 window.onLogoSelect=function(e){
@@ -3277,14 +3325,22 @@ window.saveSettings=function(){
   if(pendingDrawerLogo==='__remove__')siteSettings.drawerLogo=null;
   else if(pendingDrawerLogo)siteSettings.drawerLogo=pendingDrawerLogo;
   pendingDrawerLogo=null;
+  if(pendingDrawerLogoDark==='__remove__')siteSettings.drawerLogoDark=null;
+  else if(pendingDrawerLogoDark)siteSettings.drawerLogoDark=pendingDrawerLogoDark;
+  pendingDrawerLogoDark=null;
   pendingLogo=null;
+  const extras=takeSettingsExtras();
   const json=JSON.stringify(siteSettings);
   localStorage.setItem('familySiteSettings',json);
   if(configured&&db){
-    db.collection('siteConfig').doc('settings').set({json:json,updated:new Date().toISOString()}).catch(function(e){console.log('Firestore settings save error:',e);});
+    db.collection('siteConfig').doc('settings').set({json:json,updated:new Date().toISOString()}).catch(function(e){
+      console.log('Firestore settings save error:',e);
+      toast(json.length>1000000?'⚠️ تعذّر حفظ الإعدادات: صور الغلاف كبيرة جداً — احذف بعضها ثم احفظ':'⚠️ تعذّر حفظ الإعدادات في السحابة'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':''),true);
+    });
   }
   applySettings();
   closeOv('ov-settings');
+  runSettingsExtras(extras);
   toast('تم حفظ الإعدادات ✓');
 };
 
@@ -3318,24 +3374,26 @@ function applyTheme(){
   const fontsToLoad=[];
   const bodyFont=s.fontFamily||'Tajawal';
   const displayFont=(s.displayFont==='same'||!s.displayFont)?bodyFont:(s.displayFont||'Playfair Display');
-  if(bodyFont!=='Tajawal')fontsToLoad.push(bodyFont);
-  if(displayFont!=='Playfair Display'&&displayFont!==bodyFont)fontsToLoad.push(displayFont);
+  if(bodyFont!=='Tajawal'&&!isThmFont(bodyFont))fontsToLoad.push(bodyFont);
+  if(displayFont!=='Playfair Display'&&displayFont!==bodyFont&&!isThmFont(displayFont))fontsToLoad.push(displayFont);
+  applyThmFonts([bodyFont,displayFont].filter(isThmFont));
   if(fontsToLoad.length){
     let link=byId('dynamic-font');
     if(!link){link=document.createElement('link');link.id='dynamic-font';link.rel='stylesheet';document.head.appendChild(link);}
     const href='https://fonts.googleapis.com/css2?'+fontsToLoad.map(function(f){return'family='+encodeURIComponent(f)+':wght@300;400;500;700';}).join('&')+'&display=swap';
     if(link.href!==href)link.href=href;
   }
-  r.setProperty('--body-font',"'"+bodyFont+"',sans-serif");
-  document.body.style.fontFamily="'"+bodyFont+"',sans-serif";
-  const displayRule="'"+displayFont+"',serif";
+  const bodyRule="'"+bodyFont+"',"+(isThmFont(bodyFont)?"'Tajawal',":'')+"sans-serif";
+  r.setProperty('--body-font',bodyRule);
+  document.body.style.fontFamily=bodyRule;
+  const displayRule="'"+displayFont+"',"+(isThmFont(displayFont)?"'Tajawal',":'')+"serif";
   r.setProperty('--display-font',displayRule);
   // القائمة الجانبية
   const dn=byId('drawer-name');
   if(dn){dn.textContent=s.siteName||'شجرة العائلة';}
   const dl=byId('drawer-logo');
   if(dl){
-    const dImg=s.drawerLogo||currentLogo();
+    const dImg=(dark&&s.drawerLogoDark)?s.drawerLogoDark:(s.drawerLogo||currentLogo());
     if(dImg)dl.innerHTML='<img src="'+escAttr(dImg)+'" style="width:100%;height:100%;object-fit:cover" alt="">';
     else dl.innerHTML='<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg>';
   }
@@ -3392,6 +3450,258 @@ window.removeDrawerLogo=function(){
   if(dlp)dlp.style.display='none';
   if(dlph)dlph.style.display='block';
 };
+
+// ══ V53: غلاف الوضع الليلي ══
+// تُحفظ في مستند مستقل siteConfig/heroDark حتى لا تتجاوز الإعدادات حد ١ ميغابايت للمستند.
+var heroDarkImages=[],pendingHeroDarkImgs=null;
+function currentHeroImages(){
+  const dark=(typeof isDarkMode==='function')?isDarkMode():true;
+  return(dark&&heroDarkImages.length)?heroDarkImages:(siteSettings.heroImages||[]);
+}
+function setHeroDarkLocal(arr){
+  heroDarkImages=Array.isArray(arr)?arr.slice():[];
+  try{if(heroDarkImages.length)localStorage.setItem('familyHeroDark',JSON.stringify(heroDarkImages));else localStorage.removeItem('familyHeroDark');}catch(e){}
+  markDirty('home');if(active==='home')refreshPage('home');
+}
+async function persistHeroDark(arr){
+  const json=JSON.stringify(arr||[]);
+  if(configured&&db){
+    if(json.length>1000000){toast('⚠️ صور الغلاف الليلية كبيرة جداً — احذف بعضها ثم احفظ',true);return false;}
+    try{await db.collection('siteConfig').doc('heroDark').set({json:json,updated:new Date().toISOString()});}
+    catch(e){toast('⚠️ تعذّر حفظ صور الغلاف الليلية'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':''),true);return false;}
+  }
+  setHeroDarkLocal(arr);
+  return true;
+}
+function onThemeSwitchV53(){
+  // الغلاف يتبدّل فوراً مع الوضع
+  if(heroDarkImages.length){markDirty('home');if(active==='home')refreshPage('home');}
+}
+function loadSettingsExtras(){
+  if(!(configured&&db))return;
+  db.collection('siteConfig').doc('heroDark').onSnapshot(function(doc){
+    let arr=[];
+    if(doc.exists&&doc.data()&&doc.data().json){try{arr=JSON.parse(doc.data().json)||[];}catch(e){arr=[];}}
+    if(JSON.stringify(arr)!==JSON.stringify(heroDarkImages))setHeroDarkLocal(arr);
+    if(byId('ov-settings')&&!byId('ov-settings').classList.contains('on')){pendingHeroDarkImgs=null;renderHeroDarkPreview();}
+  },function(e){console.warn('heroDark:',e&&e.message);});
+  db.collection('siteConfig').doc('fonts').onSnapshot(function(doc){
+    let arr=[];
+    if(doc.exists&&doc.data()&&doc.data().json){try{arr=JSON.parse(doc.data().json)||[];}catch(e){arr=[];}}
+    fontFiles=Array.isArray(arr)?arr:[];
+    _thmKey='';applyTheme();
+    if(byId('ov-settings')&&!byId('ov-settings').classList.contains('on')){pendingFontFiles=null;renderThmFontList();}
+  },function(e){console.warn('fonts:',e&&e.message);});
+}
+window.onHeroDarkImgSelect=function(e){
+  if(!pendingHeroDarkImgs)pendingHeroDarkImgs=heroDarkImages.slice();
+  Array.from(e.target.files).forEach(function(f){
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const img=new Image();img.onload=function(){
+        const MAX=1200,c=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+        c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+        pendingHeroDarkImgs.push(c.toDataURL('image/jpeg',0.8));
+        renderHeroDarkPreview();
+      };img.src=ev.target.result;
+    };reader.readAsDataURL(f);
+  });
+  e.target.value='';
+};
+function renderHeroDarkPreview(){
+  const wrap=byId('hero-dark-imgs-preview');if(!wrap)return;
+  const imgs=pendingHeroDarkImgs||heroDarkImages;
+  wrap.innerHTML=imgs.map(function(src,i){
+    return'<div style="position:relative;width:60px;height:40px;border-radius:8px;overflow:hidden;border:1px solid #2b251d"><img src="'+escAttr(src)+'" style="width:100%;height:100%;object-fit:cover" alt=""><button onclick="removeHeroDarkImg('+i+')" aria-label="حذف" style="position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(192,57,43,.85);color:#fff;border:none;border-radius:50%;font-size:.6rem;line-height:1;cursor:pointer;padding:0">✕</button></div>';
+  }).join('');
+}
+window.removeHeroDarkImg=function(i){
+  if(!pendingHeroDarkImgs)pendingHeroDarkImgs=heroDarkImages.slice();
+  pendingHeroDarkImgs.splice(i,1);renderHeroDarkPreview();
+};
+
+// ══ V53: شعار القائمة — الوضع الليلي ══
+var pendingDrawerLogoDark=null;
+function showDrawerLogoDarkPreview(src){
+  const i=byId('drawer-logo-dark-img-preview'),p=byId('drawer-logo-dark-ph');
+  if(src){if(i){i.src=src;i.style.display='block';}if(p)p.style.display='none';}
+  else{if(i)i.style.display='none';if(p)p.style.display='block';}
+}
+window.onDrawerLogoDarkSelect=function(e){
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const img=new Image();img.onload=function(){
+      const MAX=200,c=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      pendingDrawerLogoDark=c.toDataURL('image/png');
+      showDrawerLogoDarkPreview(pendingDrawerLogoDark);
+    };img.src=ev.target.result;
+  };reader.readAsDataURL(f);
+  e.target.value='';
+};
+window.removeDrawerLogoDark=function(){pendingDrawerLogoDark='__remove__';showDrawerLogoDarkPreview(null);};
+
+// ══ V53: خط ثمانية ══
+// ليس على Google Fonts ولا أي خدمة خطوط، ورخصته لا تسمح بنشر ملفاته من مصدر آخر —
+// لذلك يرفع المدير الملفات التي حمّلها بنفسه من المصدر الرسمي، وتُحفظ في siteConfig
+// (قراءة للجميع، كتابة للمدير) مقسّمة إلى أجزاء، وتُعرض بـ @font-face.
+// بدون ملفات: يعمل إن كان الخط مثبّتاً على الجهاز، وإلا يظهر خط تجوال بدلاً منه.
+var THM_FAMILIES=['Thmanyah Sans','Thmanyah Serif Text','Thmanyah Serif Display'];
+var THM_LABEL={'Thmanyah Sans':'سانس','Thmanyah Serif Text':'سيرف','Thmanyah Serif Display':'سيرف للعناوين'};
+var THM_WEIGHTS=[[300,'خفيف'],[400,'عادي'],[500,'متوسط'],[700,'عريض'],[900,'ثقيل']];
+var fontFiles=[],pendingFontFiles=null,_fontUrlCache={},_demoFontData={},_thmKey='',_thmToken=0;
+var FONT_CHUNK=700000,FONT_MAX=4*1024*1024;
+function isThmFont(f){return THM_FAMILIES.indexOf(f)>=0;}
+function guessFontMeta(name){
+  const raw=String(name||''),n=raw.toLowerCase().replace(/[\s_.-]+/g,'');
+  let family='Thmanyah Sans';
+  if(n.indexOf('serif')>=0&&n.indexOf('sansserif')<0)family=n.indexOf('display')>=0?'Thmanyah Serif Display':'Thmanyah Serif Text';
+  let weight=400;
+  const num=/(?:^|[^0-9])([1-9]00)(?:[^0-9]|$)/.exec(raw);
+  if(num)weight=+num[1];
+  else if(/black|heavy/.test(n))weight=900;
+  else if(/extrabold|ultrabold/.test(n))weight=800;
+  else if(/semibold|demibold/.test(n))weight=600;
+  else if(/bold/.test(n))weight=700;
+  else if(/medium/.test(n))weight=500;
+  else if(/extralight|ultralight|thin|hairline/.test(n))weight=200;
+  else if(/light/.test(n))weight=300;
+  return{family:family,weight:weight};
+}
+function fontFmt(name){
+  const ext=(String(name).split('.').pop()||'').toLowerCase();
+  return{otf:['opentype','font/otf'],ttf:['truetype','font/ttf'],woff:['woff','font/woff'],woff2:['woff2','font/woff2']}[ext]||null;
+}
+function fontChunkKey(id,i){return'font_'+id+'_'+i;}
+async function readFontData(meta){
+  if(!(configured&&db))return _demoFontData[meta.id]||null;
+  const keys=[];for(let i=0;i<(meta.chunks||0);i++)keys.push(fontChunkKey(meta.id,i));
+  const parts=await Promise.all(keys.map(function(k){return db.collection('siteConfig').doc(k).get();}));
+  if(parts.some(function(p){return!p.exists||typeof p.data().data!=='string';}))return null;
+  return parts.map(function(p){return p.data().data;}).join('');
+}
+function fontObjectUrl(dataUrl){return(typeof dataUrlToObjectUrl==='function')?dataUrlToObjectUrl(dataUrl):dataUrl;}
+// تُستدعى من applyTheme — رخيصة إذا لم يتغيّر شيء
+function applyThmFonts(families){
+  const need=fontFiles.filter(function(f){return families.indexOf(f.family)>=0;});
+  const key=need.map(function(f){return f.id+':'+f.family+':'+f.weight;}).join('|');
+  if(key===_thmKey)return;
+  _thmKey=key;
+  const token=++_thmToken;
+  let st=byId('thm-font-faces');
+  if(!need.length){if(st)st.textContent='';return;}
+  Promise.all(need.map(function(f){
+    if(_fontUrlCache[f.id])return Promise.resolve(f);
+    return readFontData(f).then(function(d){if(d)_fontUrlCache[f.id]=fontObjectUrl(d);return f;}).catch(function(e){console.warn('font load:',e&&e.message);return f;});
+  })).then(function(list){
+    if(token!==_thmToken)return;
+    const css=list.filter(function(f){return _fontUrlCache[f.id];}).map(function(f){
+      const fm=fontFmt(f.name)||['opentype'];
+      return"@font-face{font-family:'"+f.family+"';src:url("+_fontUrlCache[f.id]+") format('"+fm[0]+"');font-weight:"+(+f.weight||400)+";font-style:normal;font-display:swap}";
+    }).join('\n');
+    st=byId('thm-font-faces');
+    if(!st){st=document.createElement('style');st.id='thm-font-faces';document.head.appendChild(st);}
+    st.textContent=css;
+  });
+}
+function renderThmFontList(){
+  const el=byId('thm-font-list');if(!el)return;
+  const list=pendingFontFiles||fontFiles;
+  if(!list.length){el.innerHTML='<div class="v53-hint" style="margin:0 0 .5rem">لم تُرفع ملفات بعد.</div>';return;}
+  el.innerHTML=list.map(function(f,i){
+    const fam=THM_FAMILIES.map(function(x){return'<option value="'+x+'"'+(x===f.family?' selected':'')+'>'+THM_LABEL[x]+'</option>';}).join('');
+    const wts=THM_WEIGHTS.map(function(w){return'<option value="'+w[0]+'"'+(+f.weight===w[0]?' selected':'')+'>'+w[1]+' '+w[0]+'</option>';}).join('');
+    return'<div class="thm-row"><span class="thm-name" title="'+escAttr(f.name)+'">'+esc(f.name)+'</span>'+
+      (f.dataUrl?'<span class="thm-new">جديد</span>':'')+
+      '<select data-thm-fam="'+i+'" aria-label="العائلة">'+fam+'</select>'+
+      '<select data-thm-wt="'+i+'" aria-label="الوزن">'+wts+'</select>'+
+      '<span style="color:var(--ink3)">'+(typeof fmtSize==='function'?fmtSize(f.size):'')+'</span>'+
+      '<button class="btn btn-sm btn-danger" data-thm-del="'+i+'" aria-label="حذف" style="min-height:30px;padding:.2rem .55rem">✕</button></div>';
+  }).join('')+'<div class="thm-sample" style="font-family:\'Thmanyah Sans\',\'Tajawal\',sans-serif">نموذج: شجرة عائلة السماري ١٢٣</div>';
+}
+function ensurePendingFonts(){if(!pendingFontFiles)pendingFontFiles=fontFiles.map(function(f){return Object.assign({},f);});}
+document.addEventListener('change',function(e){
+  const t=e.target;if(!t||!t.getAttribute)return;
+  const fi=t.getAttribute('data-thm-fam'),wi=t.getAttribute('data-thm-wt');
+  if(fi===null&&wi===null)return;
+  ensurePendingFonts();
+  const i=+(fi!==null?fi:wi);if(!pendingFontFiles[i])return;
+  if(fi!==null)pendingFontFiles[i].family=t.value;else pendingFontFiles[i].weight=+t.value;
+});
+document.addEventListener('click',function(e){
+  const b=e.target.closest&&e.target.closest('[data-thm-del]');if(!b)return;
+  ensurePendingFonts();pendingFontFiles.splice(+b.getAttribute('data-thm-del'),1);renderThmFontList();
+});
+window.onThmFontSelect=function(e){
+  const files=Array.from(e.target.files||[]);e.target.value='';
+  files.forEach(function(f){
+    if(!fontFmt(f.name)){toast('الملف '+f.name+' ليس ملف خط (OTF / TTF / WOFF)',true);return;}
+    if(f.size>FONT_MAX){toast('الملف '+f.name+' أكبر من 4 ميغابايت',true);return;}
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      ensurePendingFonts();
+      const g=guessFontMeta(f.name);
+      // ملف بنفس العائلة والوزن يستبدل السابق
+      pendingFontFiles=pendingFontFiles.filter(function(x){return!(x.family===g.family&&+x.weight===g.weight);});
+      const fm=fontFmt(f.name);
+      pendingFontFiles.push({family:g.family,weight:g.weight,name:f.name,size:f.size,dataUrl:String(ev.target.result||'').replace(/^data:[^;,]*/,'data:'+fm[1])});
+      renderThmFontList();
+    };
+    reader.readAsDataURL(f);
+  });
+};
+async function saveFontFiles(list){
+  const old=fontFiles.slice(),manifest=[],written=[];
+  try{
+    for(const f of list){
+      if(!f.dataUrl){manifest.push({id:f.id,family:f.family,weight:+f.weight,name:f.name,size:f.size,chunks:f.chunks});continue;}
+      const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      const n=Math.max(1,Math.ceil(f.dataUrl.length/FONT_CHUNK));
+      if(configured&&db){
+        for(let i=0;i<n;i++){
+          await db.collection('siteConfig').doc(fontChunkKey(id,i)).set({data:f.dataUrl.slice(i*FONT_CHUNK,(i+1)*FONT_CHUNK)});
+          written.push(fontChunkKey(id,i));
+        }
+      }else _demoFontData[id]=f.dataUrl;
+      _fontUrlCache[id]=fontObjectUrl(f.dataUrl);
+      manifest.push({id:id,family:f.family,weight:+f.weight,name:f.name,size:f.size,chunks:n});
+    }
+    if(configured&&db)await db.collection('siteConfig').doc('fonts').set({json:JSON.stringify(manifest),updated:new Date().toISOString()});
+    fontFiles=manifest;
+    // حذف أجزاء الملفات التي أزيلت
+    const gone=old.filter(function(o){return!manifest.some(function(m){return m.id===o.id;});});
+    for(const g of gone){
+      delete _fontUrlCache[g.id];delete _demoFontData[g.id];
+      if(configured&&db)for(let i=0;i<(g.chunks||0);i++){try{await db.collection('siteConfig').doc(fontChunkKey(g.id,i)).delete();}catch(e){}}
+    }
+    _thmKey='';applyTheme();renderThmFontList();
+    if(list.some(function(f){return f.dataUrl;}))toast('تم رفع ملفات خط ثمانية ✓');
+  }catch(e){
+    console.error('font save:',e);
+    if(configured&&db)for(const k of written){try{await db.collection('siteConfig').doc(k).delete();}catch(x){}}
+    toast('⚠️ تعذّر حفظ ملفات الخط'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':': '+((e&&e.message)||e)),true);
+  }
+}
+// نلتقط كل التغييرات المعلّقة قبل أي كتابة (أي تحديث يصل من السحابة أثناء الحفظ يعيد ضبطها)،
+// ثم تُحفظ بعد مستند الإعدادات الرئيسي
+function takeSettingsExtras(){
+  const x={heroDark:pendingHeroDarkImgs,fonts:pendingFontFiles};
+  pendingHeroDarkImgs=null;pendingFontFiles=null;
+  return x;
+}
+function runSettingsExtras(x){
+  const heroDark=x.heroDark,fontsList=x.fonts;
+  if(heroDark!==null)persistHeroDark(heroDark);
+  if(fontsList!==null){
+    if(fontsList.some(function(f){return f.dataUrl;}))toast('جاري رفع ملفات الخط…');
+    saveFontFiles(fontsList);
+  }
+}
 
 // ══ HERO IMAGES ══
 var pendingHeroImgs=null;
@@ -4500,6 +4810,7 @@ window.exportFullBackup=async function(){
     photos:photos,
     documents:docs,
     documentFiles:docFiles,
+    heroDarkImages:heroDarkImages,
     siteSettings:siteSettings
   };
   const json=JSON.stringify(backup);
@@ -4556,6 +4867,7 @@ window.importFullBackup=function(e){
             db.collection('siteConfig').doc('settings').set({json:JSON.stringify(siteSettings),updated:new Date().toISOString()});
             applySettings();
           }
+          if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
         }else{
           members=withAncestors(normMembers(backup.members.map(function(m){return Object.assign({},m,{id:m.id||uid('imp')});})));
           if(backup.events)events=backup.events;
@@ -4570,6 +4882,7 @@ window.importFullBackup=function(e){
             localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
             applySettings();
           }
+          if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
           dataChanged();
         }
         TC._imgCache={};
@@ -4772,8 +5085,22 @@ window.printMember=function(id){
   const par=m.parentId?members.find(function(x){return x.id===m.parentId;}):null;
   const kids=kidSeq(members.filter(function(x){return x.parentId===id;}));
   const PT=buildPrintTree(id);
-  const w=window.open('','_blank','width=1100,height=800');
-  if(!w){toast('السماح بالنوافذ المنبثقة مطلوب للطباعة',true);return;}
+  let w=null;
+  try{w=window.open('','_blank','width=1100,height=800');}catch(e){w=null;}
+  let inFrame=false;
+  if(!w||!w.document){
+    // النوافذ المنبثقة ممنوعة: نطبع من إطار مخفي داخل الصفحة نفسها
+    try{
+      const old=document.getElementById('print-frame');if(old)old.remove();
+      const fr=document.createElement('iframe');
+      fr.id='print-frame';fr.setAttribute('aria-hidden','true');fr.title='print';
+      fr.style.cssText='position:fixed;left:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none';
+      document.body.appendChild(fr);
+      w=fr.contentWindow;inFrame=true;
+      setTimeout(function(){try{fr.remove();}catch(e){}},120000);
+    }catch(e){w=null;}
+    if(!w){toast('تعذّر فتح صفحة الطباعة — اسمح بالنوافذ المنبثقة ثم أعد المحاولة',true);return;}
+  }
   const site=siteSettings.siteName||'شجرة العائلة';
   const full=printFullName(m);
   const dead=m.status==='متوفى',fem=m.gender==='أنثى';
@@ -4792,6 +5119,14 @@ window.printMember=function(id){
     '.sheet{width:297mm;min-height:210mm;padding:12mm 14mm;margin:0 auto;display:flex;flex-direction:column;break-after:page;page-break-after:always}'+
     '.sheet:last-child{break-after:auto;page-break-after:auto}'+
     '@media screen{body{background:#e9e5de}.sheet{background:#fff;margin:12px auto;box-shadow:0 2px 14px rgba(0,0,0,.12)}}'+
+    // شريط الطباعة: زر ظاهر احتياطاً إن منع المتصفح الطباعة التلقائية
+    '.pbar{position:sticky;top:0;z-index:10;display:flex;gap:8px;justify-content:center;align-items:center;padding:10px 12px;background:rgba(26,22,18,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}'+
+    '.pbar button{font-family:inherit;font-size:16px;font-weight:700;border:0;border-radius:12px;padding:12px 22px;cursor:pointer;background:linear-gradient(135deg,#b8935a,#d4aa72);color:#1a1612;min-height:44px}'+
+    '.pbar button.ghost{background:transparent;color:#e9e5de;border:1px solid rgba(233,229,222,.35);font-weight:500}'+
+    '.pbar .hint{color:#cfc6b8;font-size:12px}'+
+    // على الجوال تُعرض الورقة (A4) مصغّرة لتناسب الشاشة، فنكبّر الشريط بنفس النسبة ليبقى الزر سهل اللمس
+    '@media screen and (max-width:760px){.pbar{width:297mm;margin:0 auto;padding:26px;gap:26px}.pbar button{font-size:46px;padding:30px 70px;border-radius:30px}.pbar .ghost{font-size:40px}}'+
+    '@media print{.pbar{display:none!important}}'+
     // ترويسة: الشعار واسم الموقع يميناً والتاريخ يساراً
     '.brand{display:flex;align-items:center;justify-content:space-between;padding-bottom:4mm;margin-bottom:6mm;border-bottom:2px solid #b8935a}'+
     '.brand-id{display:flex;align-items:center;gap:3mm}'+
@@ -4870,17 +5205,26 @@ window.printMember=function(id){
       '<div class="legend"><span><i style="background:#fff;border-color:#e4ddd2"></i>رجل</span><span><i style="background:#fdeef2;border-color:#e9b1c1"></i>امرأة</span><span><i style="background:#f0eeeb;border-color:#c8c8c8"></i>متوفى</span><span><i style="background:#fff4df;border-color:#b8935a"></i>'+esc(m.name)+'</span></div>'+
     '</section>');
   }
+  // الشريط يُضاف أول الصفحة (على الشاشة فقط)
+  const bar='<div class="pbar"><button type="button" onclick="window.print()">🖨️ طباعة</button>'+
+    (inFrame?'':'<button type="button" class="ghost" onclick="window.close()">إغلاق</button>')+'</div>';
+  const bodyAt=out.findIndex(function(x){return x.indexOf('<body')>=0;});
+  if(bodyAt>=0)out[bodyAt]=out[bodyAt].replace(/(<body[^>]*>)/,'$1'+bar);
+  // الطباعة التلقائية من داخل صفحة الطباعة نفسها: بعد تحميل الخط والشعار، مرة واحدة فقط.
+  // السكربت يوضع في <head> قبل رابط الخط — لو وُضع بعده لانتظر تحميل الخط، وعلى شبكة
+  // بطيئة أو مقطوعة لا تبدأ الطباعة أبداً. مؤقت احتياطي يطبع حتى لو لم يكتمل تحميل الخط.
+  const autoPrint='<script>(function(){var done=false;'+
+    'function go(){if(done)return;done=true;window.__autoPrinted=true;try{window.focus();}catch(e){}try{window.print();}catch(e){}}'+
+    'function ready(){try{var f=document.fonts&&document.fonts.ready;if(f&&f.then)f.then(function(){setTimeout(go,150);});else setTimeout(go,150);}catch(e){go();}}'+
+    'window.addEventListener("load",function(){setTimeout(ready,250);});'+
+    'setTimeout(function(){if(document.readyState!=="loading"&&document.body)ready();},1200);'+
+    'setTimeout(go,4000);'+
+  '})();<\/script>';
+  out[0]=out[0].replace('<link href="https://fonts.googleapis.com',autoPrint+'<link href="https://fonts.googleapis.com');
   out.push('</body></html>');
   w.document.write(out.join(''));
   w.document.close();
-  // انتظار تحميل الخط والشعار ثم الطباعة
-  function goPrint(){try{w.focus();w.print();}catch(e){}}
-  setTimeout(function(){
-    try{
-      const fr=w.document.fonts&&w.document.fonts.ready;
-      if(fr&&fr.then)fr.then(function(){setTimeout(goPrint,150);});else goPrint();
-    }catch(e){goPrint();}
-  },400);
+  if(inFrame)toast('جاري تجهيز الطباعة…');
 };
 
 // ══ DRAWER ══
@@ -4931,7 +5275,7 @@ function renderHome(){
   // ── HERO ──
   const heroEl=byId('home-hero');
   if(heroEl){
-    const imgs=siteSettings.heroImages||[];
+    const imgs=currentHeroImages();
     let bgHtml='';
     if(imgs.length){
       bgHtml=imgs.map(function(src,i){return'<div class="hero-bg'+(i===0?' on':'')+'" style="background-image:url('+escAttr(src)+');opacity:'+(i===0?1:0)+'"></div>';}).join('');
