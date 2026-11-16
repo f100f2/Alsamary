@@ -501,7 +501,7 @@ img{-webkit-user-drag:none}
 .img-card-tag{display:inline-block;font-size:.62rem;font-weight:700;color:var(--gold);background:var(--gold-dim);padding:.16rem .55rem;border-radius:10px;margin-bottom:.4rem;border:1px solid rgba(212,170,114,.2)}
 .img-card-title{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .img-card-meta{font-size:.72rem;color:var(--ink3)}
-.about-block{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);font-size:.88rem;line-height:2.05;color:var(--ink2);position:relative;overflow:hidden}
+.about-block{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);font-size:clamp(1rem,.95rem + .25vw,1.08rem);line-height:2;color:var(--ink2);position:relative;overflow:hidden}
 .about-block::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:linear-gradient(to bottom,var(--gold),transparent);box-shadow:var(--glow)}
 /* V54: النبذة — فقرات متعددة + «اقرأ المزيد» للنصوص الطويلة */
 .about-body p{margin:0 0 .95em;overflow-wrap:anywhere}
@@ -910,7 +910,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V55 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V57 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1582,7 +1582,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V55';
+const APP_VERSION='V57';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -5414,6 +5414,17 @@ function renderHome(){
       '<div class="ql-item" onclick="goPage(\'album\')"><div class="ql-icon" style="background:linear-gradient(140deg,#dae3ec,#e6edf4)"><svg viewBox="0 0 24 24" fill="#3A6A9A"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div><div class="ql-label">الألبوم</div></div>'+
     '</div></div>';
 
+  // من نحن — فقرات كاملة، والنص الطويل يُطوى مع زر «اقرأ المزيد»
+  const aboutParas=aboutParagraphs(siteSettings.aboutText);
+  if(aboutParas.length){
+    const aboutLen=aboutParas.join(' ').length;
+    const longAbout=aboutLen>900||aboutParas.length>4;
+    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">نبذة عن الأسرة</div></div></div>'+
+      '<div class="about-block'+(longAbout?' collapsible':'')+'" id="about-block"><div class="about-body">'+
+        aboutParas.map(function(p){return'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>';}).join('')+
+      '</div>'+(longAbout?'<button type="button" class="about-more" onclick="toggleAbout()">اقرأ المزيد ▾</button>':'')+'</div></div>';
+  }
+
   // الإحصائيات
   const total=members.length;
   const males=members.filter(function(m){return m.gender==='ذكر'}).length;
@@ -5421,7 +5432,7 @@ function renderHome(){
   const alive=members.filter(function(m){return m.status!=='متوفى'}).length;
   const deceased=members.filter(function(m){return m.status==='متوفى'}).length;
 
-  html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-label">الإحصائيات</div><div class="home-sec-title">أفراد العائلة بالأرقام</div></div></div>'+
+  html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">أفراد العائلة بالأرقام</div></div></div>'+
     '<div class="stats-strip">'+
       '<div class="ss-item" onclick="goPage(\'members\');setFilter(\'all\')"><div class="ss-num" data-count="'+total+'">'+total+'</div><div class="ss-lbl">إجمالي الأفراد</div></div>'+
       '<div class="ss-item" onclick="goPage(\'members\');setFilter(\'male\')"><div class="ss-num" data-count="'+males+'">'+males+'</div><div class="ss-lbl">ذكور</div></div>'+
@@ -5433,17 +5444,6 @@ function renderHome(){
   // إحصائيات الأسماء والأجيال
   html2+=nameStatsSectionHtml();
 
-  // من نحن — فقرات كاملة، والنص الطويل يُطوى مع زر «اقرأ المزيد»
-  const aboutParas=aboutParagraphs(siteSettings.aboutText);
-  if(aboutParas.length){
-    const aboutLen=aboutParas.join(' ').length;
-    const longAbout=aboutLen>900||aboutParas.length>4;
-    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-label">من نحن</div><div class="home-sec-title">نبذة عن الأسرة</div></div></div>'+
-      '<div class="about-block'+(longAbout?' collapsible':'')+'" id="about-block"><div class="about-body">'+
-        aboutParas.map(function(p){return'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>';}).join('')+
-      '</div>'+(longAbout?'<button type="button" class="about-more" onclick="toggleAbout()">اقرأ المزيد ▾</button>':'')+'</div></div>';
-  }
-
   // أحدث الفعاليات
   if(events.length){
     let evCards='';
@@ -5453,7 +5453,7 @@ function renderHome(){
         (img?'<img class="img-card-img" src="'+escAttr(img)+'" loading="lazy" decoding="async" alt="">':'<div class="img-card-img" style="background:linear-gradient(140deg,#d4b896,#c4a882);display:flex;align-items:center;justify-content:center;font-size:2rem">📅</div>')+
         '<div class="img-card-body"><div class="img-card-tag">فعالية</div><div class="img-card-title">'+esc(e.title)+'</div><div class="img-card-meta">'+esc(e.date||'')+(e.place?' · '+esc(e.place):'')+'</div></div></div>';
     });
-    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-label">الفعاليات</div><div class="home-sec-title">أحدث المناسبات</div></div></div><div class="img-cards">'+evCards+'</div></div>';
+    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">أحدث المناسبات</div></div></div><div class="img-cards">'+evCards+'</div></div>';
   }
 
   // آخر الأخبار
@@ -5464,7 +5464,7 @@ function renderHome(){
         '<div class="img-card-img" style="background:linear-gradient(140deg,#b8c8d8,#a0b8cc);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>'+
         '<div class="img-card-body"><div class="img-card-tag">'+esc(n.cat||'خبر')+'</div><div class="img-card-title">'+esc(n.title)+'</div><div class="img-card-meta">'+esc(n.date||'')+'</div></div></div>';
     });
-    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-label">الأخبار</div><div class="home-sec-title">آخر الأخبار</div></div></div><div class="img-cards">'+nwCards+'</div></div>';
+    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">آخر الأخبار</div></div></div><div class="img-cards">'+nwCards+'</div></div>';
   }
 
   html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">'+APP_VERSION+' · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
@@ -5542,7 +5542,7 @@ function nameStatsSectionHtml(){
   const st=computeNameStats(),gens=computeGenerations();
   const top=st.list[0];
   const max=top?top.count:1;
-  let h='<div class="home-sec" id="name-stats"><div class="home-sec-header"><div><div class="home-sec-label">الأسماء والأجيال</div><div class="home-sec-title">إحصائيات الأسماء</div></div></div>'+
+  let h='<div class="home-sec" id="name-stats"><div class="home-sec-header"><div><div class="home-sec-title">إحصائيات الأسماء</div></div></div>'+
     '<div class="ns-tiles">'+
       '<div class="ss-item" onclick="goPage(\'tree\')"><div class="ss-num" data-count="'+gens.count+'">'+gens.count+'</div><div class="ss-lbl">عدد الأجيال</div></div>'+
       '<div class="ss-item"><div class="ss-num" data-count="'+st.list.length+'">'+st.list.length+'</div><div class="ss-lbl">أسماء مختلفة</div></div>'+
