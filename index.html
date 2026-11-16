@@ -161,6 +161,9 @@ img{-webkit-user-drag:none}
 .drawer-logo{width:48px;height:48px;border-radius:15px;background:radial-gradient(circle at 30% 25%,var(--gold2),var(--gold));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:var(--glow)}
 .drawer-logo img{width:100%;height:100%;object-fit:cover}
 .drawer-logo svg{width:22px;height:22px;fill:#fff}
+/* V54: شعار بصورة — خلفية شفافة بدون إطار ذهبي، والصورة كاملة بدون قص */
+.drawer-logo.has-img{background:none;box-shadow:none;border-radius:0;overflow:visible}
+.drawer-logo.has-img img{object-fit:contain}
 .drawer-site-name{font-family:var(--display-font);font-size:1.02rem;color:var(--ink);font-weight:500}
 .drawer-nav{flex:1;overflow-y:auto;padding:.7rem .6rem;-webkit-overflow-scrolling:touch}
 .drawer-item{display:flex;align-items:center;gap:.8rem;padding:.72rem .85rem;font-size:.9rem;color:var(--ink2);cursor:pointer;border:none;background:none;width:100%;text-align:right;transition:all .15s;border-radius:12px;margin-bottom:2px;font-weight:500;position:relative}
@@ -469,9 +472,11 @@ img{-webkit-user-drag:none}
 .hero-badge::after{content:'';position:absolute;top:0;bottom:0;width:36%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-18deg);animation:badgeShine 5.5s ease 1.2s infinite}
 @keyframes badgeShine{0%{left:-50%}30%,100%{left:130%}}
 .hero h1{font-family:var(--display-font);font-size:clamp(1.75rem,5.5vw,2.7rem);font-weight:500;line-height:1.35;margin-bottom:.5rem;
-  background:linear-gradient(115deg,#fff 45%,var(--gold3) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 2px 22px rgba(0,0,0,.4))}
+  color:#fff;letter-spacing:0;word-spacing:normal;font-kerning:normal;font-variant-ligatures:normal;
+  text-shadow:0 2px 18px rgba(0,0,0,.45),0 0 28px color-mix(in srgb,var(--gold3) 35%,transparent)}
 .hero p{font-size:.9rem;opacity:.88;line-height:1.7;max-width:440px}
+/* V54: الحروف العربية متصلة — أي تباعد بين الحروف يقطعها */
+.top-logo,.page-hero h1,.hero p,.hero-badge,.home-sec-label,.settings-sec-title,.section-header .sec-label,.tree-sec-lbl,.d-sec-title,.drawer-footer,.loader-txt,.bnav-item span{letter-spacing:0}
 .hero-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.45rem;z-index:3}
 .hero-dot{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.4);border:none;cursor:pointer;transition:all .3s;padding:0}
 .hero-dot.on{background:#fff;width:22px;box-shadow:0 0 10px rgba(255,255,255,.7)}
@@ -538,8 +543,7 @@ img{-webkit-user-drag:none}
 .ns-sub small{font-weight:500;opacity:.8;margin-inline-start:.4rem}
 .ns-go{display:inline-flex;margin-inline-start:.5rem;font-family:inherit;font-size:.74rem;font-weight:700;color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd);border-radius:14px;padding:.18rem .65rem;cursor:pointer;vertical-align:middle}
 /* V54: فقاعات الأسماء — حجم الدائرة يتناسب مع عدد التكرار */
-.ns-bubbles{position:relative;width:100%;min-height:220px;background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;
-  background-image:radial-gradient(var(--grid-dot) 1px,transparent 1px);background-size:22px 22px}
+.ns-bubbles{position:relative;width:100%;min-height:220px;background:none;border:none;box-shadow:none;overflow:visible}
 .ns-bubbles-in{position:relative;margin:0 auto}
 .ns-bub{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;
   border:1.5px solid var(--glass-brd);color:var(--ink);padding:0;font-family:inherit;line-height:1.15;
@@ -906,7 +910,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V54 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V55 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1397,32 +1401,61 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <div class="form-grid">
         <div class="field"><label>خط النصوص</label>
           <select id="s-font">
-            <option value="Tajawal">تجوال (Tajawal)</option>
-            <option value="Cairo">كايرو (Cairo)</option>
-            <option value="Almarai">المراعي (Almarai)</option>
-            <option value="Noto Kufi Arabic">نوتو كوفي</option>
-            <option value="IBM Plex Sans Arabic">IBM بلكس عربي</option>
-            <option value="Changa">تشانجا (Changa)</option>
-            <option value="El Messiri">المسيري</option>
-            <option value="Readex Pro">ريديكس برو</option>
-            <option value="Rakkas">رقاص (Rakkas)</option>
-            <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
-            <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
-            <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
+            <optgroup label="خطوط عربية">
+              <option value="Tajawal">تجوال (Tajawal)</option>
+              <option value="Cairo">كايرو (Cairo)</option>
+              <option value="Almarai">المراعي (Almarai)</option>
+              <option value="Noto Kufi Arabic">نوتو كوفي</option>
+              <option value="IBM Plex Sans Arabic">IBM بلكس عربي</option>
+              <option value="Changa">تشانجا (Changa)</option>
+              <option value="El Messiri">المسيري</option>
+              <option value="Readex Pro">ريديكس برو</option>
+              <option value="Amiri">أميري (Amiri)</option>
+              <option value="Lemonada">ليموناضة (Lemonada)</option>
+              <option value="Reem Kufi">ريم كوفي</option>
+            </optgroup>
+            <optgroup label="خطوط خطّاطية">
+              <option value="Rakkas">رقاص (Rakkas)</option>
+              <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
+            </optgroup>
+            <optgroup label="ثمانية">
+              <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
+              <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
+              <option value="Thmanyah Serif Display">ثمانية — سيرف للعناوين (Thmanyah)</option>
+            </optgroup>
+            <optgroup label="لاتيني (الحروف العربية بخط تجوال)">
+              <option value="Playfair Display">بلايفير (Playfair)</option>
+            </optgroup>
           </select>
         </div>
         <div class="field"><label>خط العناوين</label>
           <select id="s-display-font">
-            <option value="Playfair Display">بلايفير (Playfair)</option>
             <option value="same">نفس خط النصوص</option>
-            <option value="Amiri">أميري (Amiri)</option>
-            <option value="Lemonada">ليموناضة (Lemonada)</option>
-            <option value="Reem Kufi">ريم كوفي</option>
-            <option value="Rakkas">رقاص (Rakkas)</option>
-            <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
-            <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
-            <option value="Thmanyah Serif Display">ثمانية — سيرف للعناوين (Thmanyah)</option>
-            <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
+            <optgroup label="خطوط عربية">
+              <option value="Tajawal">تجوال (Tajawal)</option>
+              <option value="Cairo">كايرو (Cairo)</option>
+              <option value="Almarai">المراعي (Almarai)</option>
+              <option value="Noto Kufi Arabic">نوتو كوفي</option>
+              <option value="IBM Plex Sans Arabic">IBM بلكس عربي</option>
+              <option value="Changa">تشانجا (Changa)</option>
+              <option value="El Messiri">المسيري</option>
+              <option value="Readex Pro">ريديكس برو</option>
+              <option value="Amiri">أميري (Amiri)</option>
+              <option value="Lemonada">ليموناضة (Lemonada)</option>
+              <option value="Reem Kufi">ريم كوفي</option>
+            </optgroup>
+            <optgroup label="خطوط خطّاطية">
+              <option value="Rakkas">رقاص (Rakkas)</option>
+              <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
+            </optgroup>
+            <optgroup label="ثمانية">
+              <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
+              <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
+              <option value="Thmanyah Serif Display">ثمانية — سيرف للعناوين (Thmanyah)</option>
+            </optgroup>
+            <optgroup label="لاتيني (الحروف العربية بخط تجوال)">
+              <option value="Playfair Display">بلايفير (Playfair)</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -1441,7 +1474,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
         <div id="drawer-logo-preview" style="width:50px;height:50px;background:var(--white);border-radius:14px;border:1px solid var(--sand3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
           <span id="drawer-logo-ph" style="font-size:.6rem;color:var(--ink3)">بدون</span>
-          <img id="drawer-logo-img-preview" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+          <img id="drawer-logo-img-preview" style="display:none;width:100%;height:100%;object-fit:contain" alt="">
         </div>
         <button class="btn btn-sm" onclick="document.getElementById('drawer-logo-in').click()">📁 اختر صورة</button>
         <button class="btn btn-sm btn-danger" onclick="removeDrawerLogo()">✕</button>
@@ -1450,7 +1483,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.6rem">
         <div id="drawer-logo-dark-preview" style="width:50px;height:50px;background:#0e0c0a;border-radius:14px;border:1px solid #2b251d;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
           <span id="drawer-logo-dark-ph" style="font-size:.55rem;color:#94897a;text-align:center;line-height:1.25">الوضع<br>الليلي</span>
-          <img id="drawer-logo-dark-img-preview" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+          <img id="drawer-logo-dark-img-preview" style="display:none;width:100%;height:100%;object-fit:contain" alt="">
         </div>
         <button class="btn btn-sm" onclick="document.getElementById('drawer-logo-dark-in').click()">🌙 شعار داكن</button>
         <button class="btn btn-sm btn-danger" onclick="removeDrawerLogoDark()">✕</button>
@@ -1549,7 +1582,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V54';
+const APP_VERSION='V55';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -3408,7 +3441,8 @@ var FONT_WEIGHTS={
   'Cairo':'300;400;500;700','Almarai':'300;400;700;800','Noto Kufi Arabic':'300;400;500;700',
   'IBM Plex Sans Arabic':'300;400;500;700','Changa':'300;400;500;700','El Messiri':'400;500;700',
   'Readex Pro':'300;400;500;700','Amiri':'400;700','Lemonada':'300;400;500;700','Reem Kufi':'400;500;700',
-  'Aref Ruqaa':'400;700','Rakkas':''
+  'Aref Ruqaa':'400;700','Rakkas':'',
+  'Tajawal':'300;400;500;700;800','Playfair Display':'400;500;700'
 };
 function applyTheme(){
   const r=document.documentElement.style;
@@ -3440,7 +3474,7 @@ function applyTheme(){
   const bodyFont=s.fontFamily||'Tajawal';
   const displayFont=(s.displayFont==='same'||!s.displayFont)?bodyFont:(s.displayFont||'Playfair Display');
   if(bodyFont!=='Tajawal'&&!isThmFont(bodyFont))fontsToLoad.push(bodyFont);
-  if(displayFont!=='Playfair Display'&&displayFont!==bodyFont&&!isThmFont(displayFont))fontsToLoad.push(displayFont);
+  if(displayFont!=='Playfair Display'&&displayFont!=='Tajawal'&&displayFont!==bodyFont&&!isThmFont(displayFont))fontsToLoad.push(displayFont);
   applyThmFonts([bodyFont,displayFont].filter(isThmFont));
   if(fontsToLoad.length){
     let link=byId('dynamic-font');
@@ -3452,7 +3486,7 @@ function applyTheme(){
     }).join('&')+'&display=swap';
     if(link.href!==href)link.href=href;
   }
-  const bodyRule="'"+bodyFont+"',"+(isThmFont(bodyFont)?"'Tajawal',":'')+"sans-serif";
+  const bodyRule="'"+bodyFont+"',"+(isThmFont(bodyFont)||bodyFont==='Playfair Display'?"'Tajawal',":'')+"sans-serif";
   r.setProperty('--body-font',bodyRule);
   document.body.style.fontFamily=bodyRule;
   const displayRule="'"+displayFont+"',"+(isThmFont(displayFont)?"'Tajawal',":'')+"serif";
@@ -3463,7 +3497,8 @@ function applyTheme(){
   const dl=byId('drawer-logo');
   if(dl){
     const dImg=(dark&&s.drawerLogoDark)?s.drawerLogoDark:(s.drawerLogo||currentLogo());
-    if(dImg)dl.innerHTML='<img src="'+escAttr(dImg)+'" style="width:100%;height:100%;object-fit:cover" alt="">';
+    dl.classList.toggle('has-img',!!dImg);
+    if(dImg)dl.innerHTML='<img src="'+escAttr(dImg)+'" style="width:100%;height:100%" alt="">';
     else dl.innerHTML='<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg>';
   }
   const mc=document.querySelector('meta[name=theme-color]');
