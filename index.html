@@ -914,7 +914,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V59 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V60 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1590,7 +1590,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V59';
+const APP_VERSION='V60';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -6260,10 +6260,21 @@ function permMemberOptionLabel(m){return permMemberLabel(m)+(m.phone?' · '+m.ph
 window.openPermissions=function(prefillMemberId){
   if(!requireAdmin())return;
   resetPermForm();
-  if(prefillMemberId&&members.some(function(m){return m.id===prefillMemberId;})){
-    const pm=members.find(function(m){return m.id===prefillMemberId;});
-    byId('perm-member-q').value=pm.name||'';filterPermMember();
-    byId('perm-member').value=prefillMemberId;onPermMemberChange();
+  const pm=prefillMemberId?members.find(function(m){return m.id===prefillMemberId;}):null;
+  if(pm){
+    // V60: الشخص المختار = رأس الفرع دائماً (يُضبط أولاً حتى لا يغيّره اختيار صاحب الصلاحية)
+    byId('perm-role').value='editor';onPermRoleChange();
+    byId('perm-branch-q').value=pm.name||'';filterPermBranch();
+    byId('perm-branch').value=pm.id;updatePermPreview();
+    if(phoneKey(pm.phone)){
+      // له رقم جوال: يُختار أيضاً كصاحب الصلاحية
+      byId('perm-member-q').value=pm.name||'';filterPermMember();
+      byId('perm-member').value=pm.id;
+    }else{
+      // بدون رقم: لا نختار أحداً بالنيابة عنه — يبقى رأس الفرع، ويختار المدير صاحب الصلاحية
+      byId('perm-member-q').value='';filterPermMember();byId('perm-member').value='';
+      setTimeout(function(){toast('تم اختيار «'+(pm.name||'')+'» رأساً للفرع — لا يوجد له رقم جوال، اختر الشخص الذي سيُمنح الصلاحية');},350);
+    }
   }
   renderPermIndexStatus();
   renderPermList();
