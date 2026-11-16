@@ -496,8 +496,18 @@ img{-webkit-user-drag:none}
 .img-card-tag{display:inline-block;font-size:.62rem;font-weight:700;color:var(--gold);background:var(--gold-dim);padding:.16rem .55rem;border-radius:10px;margin-bottom:.4rem;border:1px solid rgba(212,170,114,.2)}
 .img-card-title{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .img-card-meta{font-size:.72rem;color:var(--ink3)}
-.about-block{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);font-size:.88rem;line-height:2.05;color:var(--ink2);white-space:pre-wrap;position:relative;overflow:hidden}
+.about-block{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);font-size:.88rem;line-height:2.05;color:var(--ink2);position:relative;overflow:hidden}
 .about-block::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:linear-gradient(to bottom,var(--gold),transparent);box-shadow:var(--glow)}
+/* V54: النبذة — فقرات متعددة + «اقرأ المزيد» للنصوص الطويلة */
+.about-body p{margin:0 0 .95em;overflow-wrap:anywhere}
+.about-body p:last-child{margin-bottom:0}
+.about-block.collapsible .about-body{max-height:22em;overflow:hidden;position:relative;transition:max-height .5s var(--spring)}
+.about-block.collapsible .about-body::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4.5em;background:linear-gradient(to bottom,transparent,var(--white));pointer-events:none;transition:opacity .3s}
+.about-block.collapsible.open .about-body{max-height:none}
+.about-block.collapsible.open .about-body::after{opacity:0}
+.about-more{margin-top:.8rem;background:none;border:1px solid var(--glass-brd);color:var(--gold);font-family:inherit;font-size:.78rem;font-weight:700;padding:.4rem 1rem;border-radius:20px;cursor:pointer}
+.about-more:active{transform:scale(.95)}
+.field-count{font-size:.68rem;color:var(--ink3);margin-top:.3rem;text-align:left;font-variant-numeric:tabular-nums}
 .quick-links{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 .ql-item{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.1rem .5rem;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:all .2s var(--spring);display:flex;flex-direction:column;align-items:center;gap:.5rem;position:relative;overflow:hidden}
 .ql-item::before{content:'';position:absolute;top:0;right:20%;left:20%;height:1px;background:linear-gradient(to left,transparent,var(--glass-brd),transparent)}
@@ -525,6 +535,29 @@ img{-webkit-user-drag:none}
 .ns-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(270deg,var(--gold),var(--gold2))}
 .ns-cnt{text-align:left;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
 .ns-sub{font-size:.72rem;color:var(--ink3);font-weight:700;margin:1rem .1rem .45rem}
+.ns-sub small{font-weight:500;opacity:.8;margin-inline-start:.4rem}
+.ns-go{display:inline-flex;margin-inline-start:.5rem;font-family:inherit;font-size:.74rem;font-weight:700;color:var(--gold);background:var(--gold-dim);border:1px solid var(--glass-brd);border-radius:14px;padding:.18rem .65rem;cursor:pointer;vertical-align:middle}
+/* V54: فقاعات الأسماء — حجم الدائرة يتناسب مع عدد التكرار */
+.ns-bubbles{position:relative;width:100%;min-height:220px;background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;
+  background-image:radial-gradient(var(--grid-dot) 1px,transparent 1px);background-size:22px 22px}
+.ns-bubbles-in{position:relative;margin:0 auto}
+.ns-bub{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;
+  border:1.5px solid var(--glass-brd);color:var(--ink);padding:0;font-family:inherit;line-height:1.15;
+  background:var(--sand2);
+  background:radial-gradient(circle at 32% 26%,color-mix(in srgb,var(--gold2) calc(var(--t)*100%),var(--white)),color-mix(in srgb,var(--gold) calc(var(--t)*100%),var(--sand2)));
+  box-shadow:0 4px 14px rgba(0,0,0,.14);
+  transform:scale(0);opacity:0;transition:transform .55s var(--pop),opacity .4s ease,box-shadow .25s,border-color .25s}
+.ns-bub.strong{color:#fff;border-color:rgba(255,255,255,.28);text-shadow:0 1px 3px rgba(0,0,0,.25)}
+[data-theme="light"] .ns-bub.strong:not(.xstrong){color:var(--ink);border-color:var(--glass-brd);text-shadow:none}
+.ns-bub .bn{font-weight:800;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+.ns-bub .bc{font-weight:700;opacity:.85;font-variant-numeric:tabular-nums;margin-top:.12em}
+.ns-bubbles.in .ns-bub{transform:scale(1);opacity:1}
+.ns-bubbles.in .ns-bub.float{animation:bubFloat 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes bubFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+.ns-bubbles.in .ns-bub:hover,.ns-bubbles.in .ns-bub:focus-visible{z-index:3;border-color:var(--gold2);box-shadow:var(--glow),0 8px 22px rgba(0,0,0,.22);transform:scale(1.08)}
+.ns-bubbles.in .ns-bub.on{z-index:2;border-color:var(--gold3);box-shadow:0 0 0 3px var(--gold-dim),var(--glow);transform:scale(1.06)}
+.ns-bubbles.in .ns-bub:active{transform:scale(.94)}
+@media(prefers-reduced-motion:reduce){.ns-bubbles.in .ns-bub.float{animation:none}}
 
 /* ══ ORDER CHILDREN ══ */
 .ok-list{display:flex;flex-direction:column;gap:.4rem}
@@ -873,7 +906,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V53 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V54 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1325,8 +1358,13 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
       <div class="field"><label>العنوان الفرعي (وصف مختصر)</label>
         <input id="settings-home-subtitle" placeholder="نبذة مختصرة عن العائلة…">
       </div>
+      <div class="field"><label>نص الغلاف (سطر قصير تحت العنوان — مختلف عن النبذة)</label>
+        <textarea id="settings-hero-text" rows="2" placeholder="مثال: من الرياض إلى كل مكان… قصة عائلة ممتدة عبر الأجيال" style="resize:vertical"></textarea>
+        <div class="v53-hint">إذا تُرك فارغاً يظهر سطر تلقائي بعدد الأفراد والأجيال.</div>
+      </div>
       <div class="field"><label>نبذة عن الأسرة</label>
-        <textarea id="settings-about-text" rows="4" placeholder="اكتب نبذة تفصيلية عن العائلة وتاريخها…" style="resize:vertical"></textarea>
+        <textarea id="settings-about-text" rows="10" placeholder="اكتب نبذة تفصيلية عن العائلة وتاريخها…&#10;&#10;اترك سطراً فارغاً بين الفقرات." style="resize:vertical;min-height:12rem;line-height:1.9" oninput="updateAboutCount()"></textarea>
+        <div class="field-count" id="about-count"></div>
       </div>
       <div class="field"><label>صورة الغلاف الرئيسية</label>
         <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap" id="hero-imgs-preview"></div>
@@ -1367,6 +1405,8 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
             <option value="Changa">تشانجا (Changa)</option>
             <option value="El Messiri">المسيري</option>
             <option value="Readex Pro">ريديكس برو</option>
+            <option value="Rakkas">رقاص (Rakkas)</option>
+            <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
             <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
             <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
           </select>
@@ -1378,7 +1418,8 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
             <option value="Amiri">أميري (Amiri)</option>
             <option value="Lemonada">ليموناضة (Lemonada)</option>
             <option value="Reem Kufi">ريم كوفي</option>
-            <option value="Aref Ruqaa">عارف رقعة</option>
+            <option value="Rakkas">رقاص (Rakkas)</option>
+            <option value="Aref Ruqaa">عارف رقعة (Aref Ruqaa)</option>
             <option value="Thmanyah Sans">ثمانية — سانس (Thmanyah)</option>
             <option value="Thmanyah Serif Display">ثمانية — سيرف للعناوين (Thmanyah)</option>
             <option value="Thmanyah Serif Text">ثمانية — سيرف (Thmanyah)</option>
@@ -1508,7 +1549,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V53';
+const APP_VERSION='V54';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -3132,7 +3173,7 @@ window.openAdminRequests=function(){
 // ══════════════════════════════════════════════════
 //  SETTINGS — الشعار، اسم الموقع، النبذة، الألوان، الخطوط
 // ══════════════════════════════════════════════════
-var siteSettings={logo:null,drawerLogo:null,siteName:'شجرة العائلة',familyName:'السماري',aboutText:'',homeSubtitle:'',heroImages:[],primaryColor:'#b8935a',secondaryColor:'#d4aa72',bgColor:'#f7f4ef',textColor:'#1a1612',textSecondary:'#4a443c',textMuted:'#8a8078',fontFamily:'Tajawal',displayFont:'Playfair Display'};
+var siteSettings={logo:null,drawerLogo:null,siteName:'شجرة العائلة',familyName:'السماري',aboutText:'',homeSubtitle:'',heroText:'',heroImages:[],primaryColor:'#b8935a',secondaryColor:'#d4aa72',bgColor:'#f7f4ef',textColor:'#1a1612',textSecondary:'#4a443c',textMuted:'#8a8078',fontFamily:'Tajawal',displayFont:'Playfair Display'};
 var pendingLogo=null;
 
 function loadSettings(){
@@ -3220,6 +3261,9 @@ function applySettingsRest(){
   if(shs)shs.value=siteSettings.homeSubtitle||'';
   const sat=byId('settings-about-text');
   if(sat)sat.value=siteSettings.aboutText||'';
+  const sht=byId('settings-hero-text');
+  if(sht)sht.value=siteSettings.heroText||'';
+  updateAboutCount();
   pendingHeroImgs=null;renderHeroPreview();
   fillColorInputs();
   // شعار القائمة الجانبية
@@ -3299,6 +3343,18 @@ window.removeLogo=function(){
   if(lpp)lpp.style.display='block';
 };
 
+// عدّاد الكلمات والفقرات في خانة النبذة (بدون حد أقصى)
+function aboutParagraphs(t){
+  return String(t||'').replace(/\r\n?/g,'\n').split(/\n\s*\n+/).map(function(p){return p.trim();}).filter(Boolean);
+}
+function updateAboutCount(){
+  const ta=byId('settings-about-text'),el=byId('about-count');if(!ta||!el)return;
+  const t=ta.value.trim();
+  const words=t?t.split(/\s+/).length:0,paras=aboutParagraphs(t).length;
+  el.textContent=words+' كلمة · '+paras+' '+(paras===1?'فقرة':'فقرات');
+}
+window.updateAboutCount=updateAboutCount;
+
 window.saveSettings=function(){
   const name=byId('settings-site-name').value.trim()||'شجرة العائلة';
   const about=byId('settings-about-text').value;
@@ -3311,8 +3367,10 @@ window.saveSettings=function(){
   siteSettings.siteName=name;
   const sfnIn=byId('settings-family-name');
   if(sfnIn)siteSettings.familyName=sfnIn.value.trim();
-  siteSettings.aboutText=about;
+  siteSettings.aboutText=about.replace(/\s+$/,'');
   siteSettings.homeSubtitle=homeSubtitle;
+  const shtIn=byId('settings-hero-text');
+  if(shtIn)siteSettings.heroText=shtIn.value.trim();
   if(pendingHeroImgs!==null)siteSettings.heroImages=pendingHeroImgs;
   pendingHeroImgs=null;
   // الألوان
@@ -3345,6 +3403,13 @@ window.saveSettings=function(){
 };
 
 // ══ APPLY THEME ══
+// الأوزان المتوفرة لكل خط على Google Fonts ('' = وزن واحد فقط)
+var FONT_WEIGHTS={
+  'Cairo':'300;400;500;700','Almarai':'300;400;700;800','Noto Kufi Arabic':'300;400;500;700',
+  'IBM Plex Sans Arabic':'300;400;500;700','Changa':'300;400;500;700','El Messiri':'400;500;700',
+  'Readex Pro':'300;400;500;700','Amiri':'400;700','Lemonada':'300;400;500;700','Reem Kufi':'400;500;700',
+  'Aref Ruqaa':'400;700','Rakkas':''
+};
 function applyTheme(){
   const r=document.documentElement.style;
   const s=siteSettings;
@@ -3380,7 +3445,11 @@ function applyTheme(){
   if(fontsToLoad.length){
     let link=byId('dynamic-font');
     if(!link){link=document.createElement('link');link.id='dynamic-font';link.rel='stylesheet';document.head.appendChild(link);}
-    const href='https://fonts.googleapis.com/css2?'+fontsToLoad.map(function(f){return'family='+encodeURIComponent(f)+':wght@300;400;500;700';}).join('&')+'&display=swap';
+    // كل خط بأوزانه المتوفرة فعلاً — طلب وزن غير موجود يجعل Google Fonts يرفض الرابط كاملاً
+    const href='https://fonts.googleapis.com/css2?'+fontsToLoad.map(function(f){
+      const w=FONT_WEIGHTS.hasOwnProperty(f)?FONT_WEIGHTS[f]:'300;400;500;700';
+      return'family='+encodeURIComponent(f).replace(/%20/g,'+')+(w?':wght@'+w:'');
+    }).join('&')+'&display=swap';
     if(link.href!==href)link.href=href;
   }
   const bodyRule="'"+bodyFont+"',"+(isThmFont(bodyFont)?"'Tajawal',":'')+"sans-serif";
@@ -5260,6 +5329,7 @@ function animateCount(el){
 }
 function runCounters(scope){
   (scope||document).querySelectorAll('.ss-num[data-count]').forEach(animateCount);
+  if(typeof revealBubbles==='function')(scope||document).querySelectorAll('#ns-bubbles').forEach(revealBubbles);
 }
 function observeHomeSections(){
   initScrollObs();
@@ -5285,12 +5355,12 @@ function renderHome(){
     }else{
       bgHtml='<div class="hero-bg on" style="background:linear-gradient(150deg,#241a10 0%,#40301e 45%,#6b4a30 100%)"></div>';
     }
+    // نص الغلاف مستقل عن «نبذة عن الأسرة» حتى لا يتكرر نفس المحتوى في الصفحة
     heroEl.innerHTML=bgHtml+
       '<div class="hero-gradient"></div>'+
       '<div class="hero-content">'+
-        '<div class="hero-badge">'+esc(siteSettings.siteName||'شجرة العائلة')+'</div>'+
         '<h1>'+esc(siteSettings.homeSubtitle||'مرحباً بكم في موقع العائلة')+'</h1>'+
-        '<p>'+esc(siteSettings.aboutText?siteSettings.aboutText.slice(0,120)+(siteSettings.aboutText.length>120?'…':''):'اكتشف تاريخ العائلة وتواصل مع أفرادها')+'</p>'+
+        '<p>'+esc(heroIntroText())+'</p>'+
       '</div>';
     clearInterval(window._heroTimer);
     if(imgs.length>1){window._heroSlide=0;window._heroTimer=setInterval(function(){window._heroSlide=(window._heroSlide+1)%imgs.length;heroSlide(window._heroSlide);},5000);}
@@ -5328,10 +5398,15 @@ function renderHome(){
   // إحصائيات الأسماء والأجيال
   html2+=nameStatsSectionHtml();
 
-  // من نحن
-  if(siteSettings.aboutText){
+  // من نحن — فقرات كاملة، والنص الطويل يُطوى مع زر «اقرأ المزيد»
+  const aboutParas=aboutParagraphs(siteSettings.aboutText);
+  if(aboutParas.length){
+    const aboutLen=aboutParas.join(' ').length;
+    const longAbout=aboutLen>900||aboutParas.length>4;
     html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-label">من نحن</div><div class="home-sec-title">نبذة عن الأسرة</div></div></div>'+
-      '<div class="about-block">'+esc(siteSettings.aboutText)+'</div></div>';
+      '<div class="about-block'+(longAbout?' collapsible':'')+'" id="about-block"><div class="about-body">'+
+        aboutParas.map(function(p){return'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>';}).join('')+
+      '</div>'+(longAbout?'<button type="button" class="about-more" onclick="toggleAbout()">اقرأ المزيد ▾</button>':'')+'</div></div>';
   }
 
   // أحدث الفعاليات
@@ -5360,8 +5435,27 @@ function renderHome(){
   html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">'+APP_VERSION+' · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
 
   secWrap.innerHTML=html2;
+  layoutNameBubbles(true);
   setTimeout(observeHomeSections,100);
 }
+// نص الغلاف: من الإعدادات، وإلا سطر تلقائي بعدد الأفراد والأجيال
+function heroIntroText(){
+  const t=String(siteSettings.heroText||'').trim();
+  if(t)return t;
+  const n=members.length;
+  if(!n)return'اكتشف تاريخ العائلة وتواصل مع أفرادها';
+  const g=computeGenerations().count;
+  const nTxt=n===1?'فرداً واحداً':(n===2?'فردين':n+' '+(n<=10?'أفراد':'فرداً'));
+  const gTxt=g<=1?'':(g===2?' عبر جيلين':' عبر '+g+' '+(g<=10?'أجيال':'جيلاً'));
+  return'شجرة تجمع '+nTxt+gTxt+' — تصفّح الفروع وتعرّف على أفراد العائلة';
+}
+window.toggleAbout=function(){
+  const b=byId('about-block');if(!b)return;
+  const open=b.classList.toggle('open');
+  const btn=b.querySelector('.about-more');if(btn)btn.textContent=open?'عرض أقل ▴':'اقرأ المزيد ▾';
+  if(!open){try{b.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}}
+};
+
 // ══ إحصائيات الأسماء والأجيال ══
 // توحيد كتابة الأسماء: أحمد/احمد، عبدالله/عبد الله، فاطمة/فاطمه، مصطفى/مصطفي
 function normName(s){
@@ -5424,21 +5518,100 @@ function nameStatsSectionHtml(){
       '<span class="search-ico"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>'+
     '</div>'+
     '<div class="ns-res" id="name-stat-res">'+nameStatResultHtml(_nameQ,st)+'</div>'+
-    '<div class="ns-sub">الأسماء الأكثر تكراراً</div>'+
-    '<div class="ns-list">'+st.list.slice(0,10).map(function(g,i){
-      return'<div class="ns-row" data-ns-name="'+escAttr(g.name)+'"><span class="ns-rank">'+(i+1)+'</span><span class="ns-name">'+esc(g.name)+'</span>'+
-        '<span class="ns-bar"><i style="width:'+Math.max(4,Math.round(g.count/max*100))+'%"></i></span><span class="ns-cnt">'+g.count+'</span></div>';
-    }).join('')+'</div>'+
+    '<div class="ns-sub">الأسماء الأكثر تكراراً<small>— الدائرة الأكبر هي الأكثر تكراراً، اضغط على أي اسم</small></div>'+
+    '<div class="ns-bubbles" id="ns-bubbles" role="list" aria-label="الأسماء الأكثر تكراراً"></div>'+
   '</div>';
+  _nsBubbleData=st.list.slice(0,24).map(function(g){return{name:g.name,count:g.count};});
+  _nsBubbleW=0;
   return h;
 }
+
+// ══ فقاعات الأسماء ══
+// مساحة كل دائرة تتناسب مع عدد التكرار، وتُرصّ حلزونياً حول المركز.
+// الشكل أعرض على الكمبيوتر وأقرب للمربع على الجوال، ويُعاد ترتيبه عند تغيّر عرض الشاشة.
+var _nsBubbleData=[],_nsBubbleW=0;
+function layoutNameBubbles(force){
+  const box=byId('ns-bubbles');if(!box)return;
+  const W=box.clientWidth;if(W<10)return;
+  if(!force&&Math.abs(W-_nsBubbleW)<4)return;
+  _nsBubbleW=W;
+  if(!_nsBubbleData.length){box.innerHTML='';return;}
+  const mobile=W<560;
+  const data=_nsBubbleData.slice(0,mobile?14:(W<820?18:24));
+  const max=data[0].count,min=data[data.length-1].count;
+  const R=100,MINR=mobile?40:34,GAP=5;
+  // نسبة العرض للارتفاع المستهدفة
+  const aspect=mobile?1.05:(W<820?1.6:2.3);
+  const ax=Math.sqrt(aspect),ay=1/ax;
+  const placed=[];
+  data.forEach(function(d,i){
+    const r=Math.max(MINR,R*Math.sqrt(d.count/max));
+    if(!placed.length){placed.push({d:d,i:i,r:r,x:0,y:0});return;}
+    for(let t=0;t<900;t+=0.06){
+      const rad=2.2*t,x=rad*Math.cos(t)*ax,y=rad*Math.sin(t)*ay;
+      let ok=true;
+      for(let k=0;k<placed.length;k++){
+        const p=placed[k],dx=p.x-x,dy=p.y-y,need=p.r+r+GAP;
+        if(dx*dx+dy*dy<need*need){ok=false;break;}
+      }
+      if(ok){placed.push({d:d,i:i,r:r,x:x,y:y});return;}
+    }
+  });
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+  placed.forEach(function(p){x0=Math.min(x0,p.x-p.r);x1=Math.max(x1,p.x+p.r);y0=Math.min(y0,p.y-p.r);y1=Math.max(y1,p.y+p.r);});
+  const pad=mobile?10:16;
+  const maxD=Math.min(mobile?170:230,W*0.42); // أكبر قطر للدائرة بالبكسل
+  const s=Math.min((W-pad*2)/(x1-x0),maxD/(2*R));
+  const iw=(x1-x0)*s,ih=(y1-y0)*s;
+  const inner=document.createElement('div');
+  inner.className='ns-bubbles-in';
+  inner.style.width=Math.ceil(iw)+'px';inner.style.height=Math.ceil(ih)+'px';
+  const sel=normName(_nameQ);
+  inner.innerHTML=placed.map(function(p){
+    const d=p.d,rp=p.r*s,size=rp*2;
+    const t=max===min?.85:(.18+.82*(d.count-min)/(max-min));
+    // حجم الخط: يناسب نصف القطر وطول الاسم
+    const len=Math.max(2,String(d.name).length);
+    const fs=Math.max(9,Math.min(rp*0.42,(size*0.82)/(len*0.56)));
+    const showCount=rp>=17;
+    const left=(p.x-p.r-x0)*s,top=(p.y-p.r-y0)*s;
+    return'<button type="button" role="listitem" class="ns-bub'+(t>=.5?' strong':'')+(t>=.78?' xstrong':'')+(p.i<8?'':' float')+(sel&&normName(d.name)===sel?' on':'')+'"'+
+      ' data-ns-name="'+escAttr(d.name)+'" title="'+escAttr(d.name+' — '+timesAr(d.count,false))+'"'+
+      ' aria-label="'+escAttr(d.name+' '+timesAr(d.count,false))+'"'+
+      ' style="left:'+left.toFixed(1)+'px;top:'+top.toFixed(1)+'px;width:'+size.toFixed(1)+'px;height:'+size.toFixed(1)+'px;--t:'+t.toFixed(2)+';--d:'+(-(p.i*0.7)%6).toFixed(1)+'s;transition-delay:'+(p.i*35)+'ms">'+
+      '<span class="bn" style="font-size:'+fs.toFixed(1)+'px">'+esc(d.name)+'</span>'+
+      (showCount?'<span class="bc" style="font-size:'+Math.max(9,fs*0.62).toFixed(1)+'px">'+d.count+'</span>':'')+
+    '</button>';
+  }).join('');
+  box.classList.remove('in');
+  box.innerHTML='';box.appendChild(inner);
+  box.style.padding=pad+'px 0';
+  // ظهور تدريجي للدوائر — الآن إن كان القسم ظاهراً، وإلا عند الوصول إليه بالتمرير
+  const sec=box.closest('.home-sec');
+  if(!sec||sec.classList.contains('visible'))revealBubbles(box);
+}
+function revealBubbles(box){
+  if(!box||!box.firstChild||box.classList.contains('in'))return;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    box.classList.add('in');
+    // بعد اكتمال الظهور: بدون تأخير حتى يستجيب التمرير فوق الدائرة فوراً
+    setTimeout(function(){box.querySelectorAll('.ns-bub').forEach(function(b){b.style.transitionDelay='';});},1500);
+  });});
+}
+function markActiveBubble(name){
+  const k=normName(name);
+  document.querySelectorAll('#ns-bubbles .ns-bub').forEach(function(b){
+    b.classList.toggle('on',!!k&&normName(b.getAttribute('data-ns-name'))===k);
+  });
+}
+window.addEventListener('resize',debounce(function(){if(active==='home')layoutNameBubbles(false);},150));
 function nameStatResultHtml(q,st){
   q=String(q||'').trim();
   if(!q)return'<span style="color:var(--ink3)">اكتب اسماً مثل «'+esc((st.list[0]&&st.list[0].name)||'محمد')+'»</span>';
   const k=normName(q);
   const g=st.byKey[k];
   let h=g
-    ?'الاسم «'+esc(g.name)+'» تكرر '+timesAr(g.count,true)
+    ?'الاسم «'+esc(g.name)+'» تكرر '+timesAr(g.count,true)+'<button type="button" class="ns-go" data-ns-members="'+escAttr(g.name)+'">عرض الأفراد ←</button>'
     :'لا يوجد أحد باسم «'+esc(q)+'»';
   const near=st.list.filter(function(x){return x.key!==k&&x.key.indexOf(k)>=0;}).slice(0,6);
   if(near.length)h+='<div class="ns-sugg">'+near.map(function(x){return'<button type="button" data-ns-name="'+escAttr(x.name)+'">'+esc(x.name)+' · <b>'+x.count+'</b></button>';}).join('')+'</div>';
@@ -5447,6 +5620,7 @@ function nameStatResultHtml(q,st){
 const _nameStatDeb=debounce(function(){
   const el=byId('name-stat-res');if(!el)return;
   el.innerHTML=nameStatResultHtml(_nameQ,computeNameStats());
+  markActiveBubble(_nameQ);
 },140);
 window.nameStatSearch=function(){
   const i=byId('name-stat-q');_nameQ=i?i.value:'';
@@ -5454,12 +5628,24 @@ window.nameStatSearch=function(){
 };
 // النقر على اسم يعرض عدد تكراره في خانة البحث
 document.addEventListener('click',function(e){
-  const t=e.target.closest&&e.target.closest('[data-ns-name]');
+  if(!e.target.closest)return;
+  const go=e.target.closest('[data-ns-members]');
+  if(go){
+    const mq=byId('members-q');if(mq)mq.value=go.getAttribute('data-ns-members')||'';
+    goPage('members');return;
+  }
+  const t=e.target.closest('[data-ns-name]');
   if(!t)return;
   const n=t.getAttribute('data-ns-name');if(!n)return;
   const i=byId('name-stat-q');if(!i)return;
-  i.value=n;_nameQ=n;
+  i.value=n;_nameQ=n;haptic();
   const el=byId('name-stat-res');if(el)el.innerHTML=nameStatResultHtml(n,computeNameStats());
+  markActiveBubble(n);
+  // على الجوال: إظهار النتيجة إن كانت خارج الشاشة
+  if(t.classList.contains('ns-bub')&&el){
+    const r=el.getBoundingClientRect();
+    if(r.top<70||r.bottom>window.innerHeight-90){try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){}}
+  }
 });
 
 // ══ الأنسباء — من حقل «اسم الزوج / الزوجة» ══
