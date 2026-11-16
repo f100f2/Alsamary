@@ -232,7 +232,7 @@ img{-webkit-user-drag:none}
 .stat{background:var(--white);border:1px solid var(--sand3);border-radius:15px;padding:.75rem 1rem;display:flex;flex-direction:column;gap:.12rem;min-width:94px;flex-shrink:0;box-shadow:var(--shadow);cursor:pointer;transition:all .18s var(--spring);position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;top:0;right:0;left:0;height:1px;background:linear-gradient(to left,transparent,var(--glass-brd),transparent)}
 .stat:active{transform:scale(.95)}
-.stat-n{font-size:1.45rem;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 18px rgba(212,170,114,.35)}
+.stat-n{font-size:1.45rem;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .stat-l{font-size:.7rem;color:var(--ink3);font-weight:500}
 .stat.active-filter{border-color:var(--gold);background:var(--gold-dim);box-shadow:var(--shadow),var(--glow-soft)}
 
@@ -422,7 +422,7 @@ img{-webkit-user-drag:none}
 .doc-pdf-name{font-size:.64rem;color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr}
 .doc-item img{object-position:top center}
 .doc-kind{position:absolute;top:.35rem;left:.35rem;background:rgba(0,0,0,.58);color:#fff;font-size:.56rem;font-weight:700;padding:.14rem .42rem;border-radius:8px;letter-spacing:.03em}
-.doc-desc{flex-basis:100%;color:#fff;font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.12rem;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.doc-desc{flex-basis:100%;color:#fff;font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.12rem}
 .doc-private{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:600;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold3);border-radius:14px;padding:.18rem .6rem;margin-top:.45rem}
 .doc-view{width:100%;border-radius:var(--r2);overflow:hidden;margin-bottom:.9rem;background:var(--sand2);min-height:180px;max-height:62vh;display:flex;align-items:center;justify-content:center;position:relative}
 .doc-view img{max-width:100%;max-height:62vh;object-fit:contain;display:block}
@@ -490,7 +490,7 @@ img{-webkit-user-drag:none}
 .ss-item{background:var(--white);border:1px solid var(--sand3);border-radius:16px;padding:1.05rem .5rem;text-align:center;box-shadow:var(--shadow);transition:all .2s var(--spring);position:relative;overflow:hidden;cursor:pointer}
 .ss-item::before{content:'';position:absolute;top:0;right:15%;left:15%;height:1px;background:linear-gradient(to left,transparent,var(--glass-brd),transparent)}
 .ss-item:active{transform:scale(.95)}
-.ss-num{font-size:1.6rem;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 22px rgba(212,170,114,.4)}
+.ss-num{font-size:1.6rem;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .ss-lbl{font-size:.66rem;color:var(--ink3);margin-top:.34rem;font-weight:600}
 .img-cards{display:flex;gap:.7rem;overflow-x:auto;padding:.15rem .15rem .6rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .img-cards::-webkit-scrollbar{display:none}
@@ -524,7 +524,7 @@ img{-webkit-user-drag:none}
 /* ══ NAME STATISTICS ══ */
 .ns-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-bottom:.9rem}
 .ns-tiles .ss-item{padding:.95rem .45rem}
-.ns-top{font-size:1.1rem;font-weight:800;color:var(--gold);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 22px rgba(212,170,114,.35)}
+.ns-top{font-size:1.1rem;font-weight:800;color:var(--gold);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ns-top small{display:block;font-size:.66rem;color:var(--ink3);font-weight:600;text-shadow:none;margin-top:.15rem}
 .ns-res{margin:.6rem .1rem 1rem;min-height:1.6em;font-size:.86rem;color:var(--ink2);line-height:1.8}
 .ns-res b{color:var(--gold);font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
@@ -551,7 +551,7 @@ img{-webkit-user-drag:none}
   background:radial-gradient(circle at 32% 26%,color-mix(in srgb,var(--gold2) calc(var(--t)*100%),var(--white)),color-mix(in srgb,var(--gold) calc(var(--t)*100%),var(--sand2)));
   box-shadow:0 4px 14px rgba(0,0,0,.14);
   transform:scale(0);opacity:0;transition:transform .55s var(--pop),opacity .4s ease,box-shadow .25s,border-color .25s}
-.ns-bub.strong{color:#fff;border-color:rgba(255,255,255,.28);text-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ns-bub.strong{color:#fff;border-color:rgba(255,255,255,.28)}
 [data-theme="light"] .ns-bub.strong:not(.xstrong){color:var(--ink);border-color:var(--glass-brd);text-shadow:none}
 .ns-bub .bn{font-weight:800;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
 .ns-bub .bc{font-weight:700;opacity:.85;font-variant-numeric:tabular-nums;margin-top:.12em}
@@ -910,7 +910,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V57 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V58 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1582,7 +1582,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V57';
+const APP_VERSION='V58';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
