@@ -914,7 +914,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V60 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V63 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1590,7 +1590,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V60';
+const APP_VERSION='V63';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -2576,26 +2576,119 @@ window.deleteAllMembers=async function(){
 };
 
 // ══ EXCEL EXPORT ══
+// V63: كل حقول الفرد + المعرّف ومعرّف الأب، حتى يُعاد استيراد الملف ويرجع كل شخص لمكانه بالضبط.
+// (الصور الشخصية لا تدخل في Excel — هي في «النسخة الاحتياطية» فقط)
+var EXPORT_COLS=[
+  ['المعرف',function(m){return m.id;}],
+  ['معرف الأب',function(m){return m.parentId||'';}],
+  ['الاسم الكامل',function(m){return m._fullName||m.fullName||m.name;}],
+  ['الاسم',function(m){return m.name;}],
+  ['اسم الأب',function(m,par){return par?par.name:'';}],
+  ['اسم الجد',function(m,par,grand){return grand?grand.name:'';}],
+  ['الجنس',function(m){return m.gender;}],
+  ['الحالة',function(m){return m.status;}],
+  ['ترتيب الميلاد',function(m){return m.order||'';}],
+  ['الكنية',function(m){return m.role;}],
+  ['الجوال',function(m){return m.phone;}],
+  ['البريد',function(m){return m.email;}],
+  ['جهة العمل',function(m){return m.company;}],
+  ['الوظيفة',function(m){return m.job;}],
+  ['المدينة',function(m){return m.city;}],
+  ['الميلاد',function(m){return m.birth;}],
+  ['LinkedIn',function(m){return m.linkedin;}],
+  ['الزوج/الزوجة',function(m){return m.spouse;}],
+  ['أبناء من خارج العائلة',function(m){return(m.externalKids||[]).join('، ');}],
+  ['نبذة',function(m){return m.bio;}]
+];
+// ترتيب الشجرة: كل أب قبل أبنائه (الأكبر أولاً)
+function membersInTreeOrder(){
+  const kids={},byId={},out=[],seen={};
+  members.forEach(function(m){byId[m.id]=m;});
+  members.forEach(function(m){const p=(m.parentId&&byId[m.parentId])?m.parentId:'';(kids[p]=kids[p]||[]).push(m);});
+  (function walk(pid){kidSeq(kids[pid]||[]).forEach(function(m){if(seen[m.id])return;seen[m.id]=1;out.push(m);walk(m.id);});})('');
+  members.forEach(function(m){if(!seen[m.id])out.push(m);}); // احتياط لأي حلقة في البيانات
+  return out;
+}
 window.exportMembersExcel=function(){
   if(!members.length){toast('لا يوجد أعضاء للتصدير',true);return;}
-  const hdrs=['الاسم الكامل','الاسم','اسم الأب','اسم الجد','الجوال','البريد','جهة العمل','الوظيفة','المدينة','الميلاد','LinkedIn','الكنية','الجنس','الحالة','الزوج/الزوجة'];
-  function escCsv(v){const s=String(v||'');return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.split('"').join('""')+'"':s;}
-  const rows=members.map(function(m){
-    const par=m.parentId?members.find(function(p){return p.id===m.parentId;}):null;
-    const grand=par&&par.parentId?members.find(function(p){return p.id===par.parentId;}):null;
-    return[m._fullName||m.fullName||m.name,m.name,par?par.name:'',grand?grand.name:'',m.phone||'',m.email||'',m.company||'',m.job||'',m.city||'',m.birth||'',m.linkedin||'',m.role||'',m.gender||'',m.status||'',m.spouse||''].map(escCsv).join(',');
+  const map={};members.forEach(function(m){map[m.id]=m;});
+  const hdrs=EXPORT_COLS.map(function(c){return c[0];});
+  const rows=membersInTreeOrder().map(function(m){
+    const par=m.parentId?map[m.parentId]:null;
+    const grand=par&&par.parentId?map[par.parentId]:null;
+    return EXPORT_COLS.map(function(c){const v=c[1](m,par,grand);return v==null?'':(typeof v==='number'?v:String(v));});
   });
-  const csv='\uFEFF'+hdrs.map(escCsv).join(',')+String.fromCharCode(13,10)+rows.join(String.fromCharCode(13,10));
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='family_'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('تم تصدير '+members.length+' عضو ✓');
+  const fname='family_'+new Date().toISOString().slice(0,10);
+  if(typeof XLSX!=='undefined'){
+    const ws=XLSX.utils.aoa_to_sheet([hdrs].concat(rows));
+    ws['!cols']=hdrs.map(function(h,i){
+      const w=[14,14,38,12,12,12,7,8,8,12,14,22,18,16,12,12,22,16,24,40][i]||14;return{wch:w};
+    });
+    ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length,c:hdrs.length-1}})};
+    const wb=XLSX.utils.book_new();
+    wb.Workbook={Views:[{RTL:true}]};
+    XLSX.utils.book_append_sheet(wb,ws,'الأفراد');
+    XLSX.writeFile(wb,fname+'.xlsx');
+  }else{
+    // احتياط إذا لم تُحمَّل مكتبة Excel: ملف CSV يفتحه Excel
+    function escCsv(v){const s=String(v==null?'':v);return(/[",\n\r]/.test(s))?'"'+s.split('"').join('""')+'"':s;}
+    const csv='﻿'+[hdrs].concat(rows).map(function(r){return r.map(escCsv).join(',');}).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=fname+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},2000);
+  }
+  toast('تم تصدير '+members.length+' فرد ✓ (الصور الشخصية في النسخة الاحتياطية فقط)');
 };
 
 // ══ EXCEL IMPORT ══
+// V61: الأعمدة تُقرأ حسب عناوينها (الاسم الكامل، الجنس، …) وليس حسب ترتيبها،
+// والأب يُبحث عنه في الملف نفسه ثم بين الموجودين في الموقع — فيكفي «الاسم الكامل» و«الجنس».
+var IMPORT_COLS={
+  fullName:['الاسم الكامل','الاسم الرباعي','الاسم الثلاثي','الاسم بالكامل'],
+  name:['الاسم'],
+  gender:['الجنس','النوع'],
+  phone:['الجوال','رقم الجوال','الهاتف','رقم الهاتف'],
+  email:['البريد','البريد الإلكتروني','الايميل','الإيميل'],
+  company:['جهة العمل'],job:['الوظيفة','المهنة'],city:['المدينة'],
+  birth:['الميلاد','تاريخ الميلاد'],linkedin:['linkedin','لينكدإن','لينكدان'],
+  role:['الكنية','اللقب'],status:['الحالة'],
+  spouse:['الزوج/الزوجة','الزوج','الزوجة'],bio:['نبذة','السيرة','نبذة مختصرة'],
+  // V63: أعمدة ملف التصدير — تعيد كل شخص لمكانه بالضبط
+  rowId:['المعرف','id'],parentRef:['معرف الأب','parentid'],
+  order:['ترتيب الميلاد','الترتيب'],externalKids:['أبناء من خارج العائلة','ابناء من خارج العائله']
+};
+// الترتيب القديم بدون عناوين (للملفات السابقة)
+var IMPORT_LEGACY={fullName:0,phone:1,email:2,company:3,job:4,city:5,birth:6,linkedin:7,role:8,gender:9,status:10,spouse:13,bio:14};
+function impNorm(t){
+  return String(t==null?'':t).replace(/[ً-ٰٟـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة(?=\s|$)/g,'ه')
+    .replace(/\s+/g,' ').trim().toLowerCase();
+}
+// مفتاح مطابقة الاسم الكامل: بدون «بن/بنت/ابن» وبدون فروق الهمزات والتاء المربوطة والمسافات
+function nameKey(t){
+  return impNorm(t).split(' ').filter(function(w){return w&&w!=='بن'&&w!=='بنت'&&w!=='ابن'&&w!=='ابنه';}).join(' ');
+}
+function normGender(g){
+  const v=impNorm(g);if(!v)return'';
+  if(/^(ذكر|ذ|م|ابن|ولد|رجل|m|male)$/.test(v))return'ذكر';
+  if(/^(انثي|انثى|ا|ف|بنت|امراه|f|female)$/.test(v))return'أنثى';
+  return String(g).trim();
+}
+function detectImportColumns(rows){
+  for(let r=0;r<Math.min(rows.length,4);r++){
+    const cells=(rows[r]||[]).map(function(c){return impNorm(c);});
+    const map={};
+    Object.keys(IMPORT_COLS).forEach(function(f){
+      const syn=IMPORT_COLS[f].map(impNorm);
+      const i=cells.findIndex(function(c){return c&&syn.indexOf(c)>=0;});
+      if(i>=0)map[f]=i;
+    });
+    if(map.fullName==null&&map.name!=null){map.fullName=map.name;}
+    if(map.fullName!=null)return{map:map,start:r+1,byHeader:true};
+  }
+  return{map:IMPORT_LEGACY,start:2,byHeader:false};
+}
 window.onExcelImport=function(e){
   const file=e.target.files[0];if(!file)return;
   byId('excel-in').value='';
@@ -2605,9 +2698,11 @@ window.onExcelImport=function(e){
       const wb=XLSX.read(ev.target.result,{type:'array'});
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const dataRows=rows.slice(2).filter(r=>r[0]&&String(r[0]).trim());
+      const cols=detectImportColumns(rows);
+      const dataRows=rows.slice(cols.start).filter(function(r){return r[cols.map.fullName]&&String(r[cols.map.fullName]).trim();});
       if(!dataRows.length){showImportStatus('لم يتم العثور على بيانات في الملف','err');return;}
-      pendingImport=parseExcelRows(dataRows);
+      pendingImport=parseExcelRows(dataRows,cols.map);
+      pendingImport._byHeader=cols.byHeader;
       showImportPreview(pendingImport);
       openOv('ov-excel');
     }catch(err){toast('خطأ في قراءة الملف: '+err.message,true);}
@@ -2615,56 +2710,101 @@ window.onExcelImport=function(e){
   reader.readAsArrayBuffer(file);
 };
 
-function parseExcelRows(rows){
+function parseExcelRows(rows,colMap){
+  const map=colMap||IMPORT_LEGACY;
+  function cell(row,f){const i=map[f];return i==null?'':String(row[i]==null?'':row[i]).trim();}
   const parsed=[];
   for(const row of rows){
-    const fullChain=String(row[0]||'').trim();
+    const fullChain=cell(row,'fullName').replace(/\s+/g,' ');
     if(!fullChain)continue;
-    const parts=fullChain.split(/\s+/).filter(Boolean);
-    const displayName=parts[0];
-    const fatherFullName=parts.length>1?parts.slice(1).join(' '):null;
+    const parts=fullChain.split(' ');
+    const displayName=cell(row,'name')&&map.name!==map.fullName?cell(row,'name'):parts[0];
+    const rowId=cell(row,'rowId');
+    const okId=rowId&&rowId.length<=150&&rowId.indexOf('/')<0&&rowId!=='.'&&rowId!=='..';
+    const ord=parseInt(cell(row,'order'),10);
+    const ek=cell(row,'externalKids');
     parsed.push({
+      _rowId:okId?rowId:'',
+      _parentRef:cell(row,'parentRef'),
+      order:(isFinite(ord)&&ord>=1)?ord:null,
+      externalKids:ek?ek.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean):[],
       _fullName:fullChain,
-      _fatherFullName:fatherFullName,
-      _resolvedParentFull:null,
+      _key:nameKey(fullChain),
+      _fatherKey:parts.length>1?nameKey(parts.slice(1).join(' ')):'',
+      _resolvedParentFull:null,_parentInFile:null,_parentExistingId:null,_parentName:'',
       name:displayName,
       fullName:fullChain,
-      phone:String(row[1]||'').trim(),
-      email:String(row[2]||'').trim(),
-      company:String(row[3]||'').trim(),
-      job:String(row[4]||'').trim(),
-      city:String(row[5]||'').trim(),
-      birth:String(row[6]||'').trim(),
-      linkedin:String(row[7]||'').trim(),
-      role:String(row[8]||'').trim(),
-      gender:String(row[9]||'').trim()||'',
-      status:String(row[10]||'').trim()||'حي',
-      spouse:String(row[13]||'').trim(),
-      bio:String(row[14]||'').trim(),
+      phone:cell(row,'phone'),email:cell(row,'email'),company:cell(row,'company'),job:cell(row,'job'),
+      city:cell(row,'city'),birth:cell(row,'birth'),linkedin:cell(row,'linkedin'),role:cell(row,'role'),
+      gender:normGender(cell(row,'gender')),
+      status:cell(row,'status')||'حي',
+      spouse:cell(row,'spouse'),bio:cell(row,'bio'),
       photo:null,parentId:null,
-      id:'imp_'+Math.random().toString(36).slice(2),
+      id:okId?rowId:'imp_'+Math.random().toString(36).slice(2),
     });
   }
-  const fnMap={};parsed.forEach(p=>{fnMap[p._fullName]=p;});
-  parsed.forEach(p=>{if(p._fatherFullName&&fnMap[p._fatherFullName])p._resolvedParentFull=p._fatherFullName;});
+  resolveImportParents(parsed);
   return parsed;
+}
+// ربط كل صف بأبيه: أولاً بين الموجودين في الموقع، ثم بين الصفوف الجديدة في نفس الملف
+function existingByKey(){
+  const m={};
+  members.forEach(function(x){
+    [x._fullName,x.fullName].forEach(function(f){const k=nameKey(f);if(k&&!m[k])m[k]=x;});
+  });
+  return m;
+}
+function resolveImportParents(parsed){
+  const ex=existingByKey();
+  const exIds={};members.forEach(function(m){exIds[m.id]=m;});
+  parsed.forEach(function(p){p._exists=!!((p._rowId&&exIds[p._rowId])||ex[p._key]);});
+  const fileMap={},fileIds={};
+  parsed.forEach(function(p){if(p._exists)return;fileMap[p._key]=p;if(p._rowId)fileIds[p._rowId]=p;});
+  parsed.forEach(function(p){
+    p._resolvedParentFull=null;p._parentInFile=null;p._parentExistingId=null;p._parentName='';
+    // ١) معرّف الأب (من ملف التصدير) — أدق طريقة
+    if(p._parentRef){
+      const ep=exIds[p._parentRef];
+      if(ep){p._parentExistingId=ep.id;p._parentName=ep.name;p._resolvedParentFull=ep.fullName||ep.name;return;}
+      const fp0=fileIds[p._parentRef];
+      if(fp0&&fp0!==p){p._parentInFile=fp0;p._parentName=fp0.name;p._resolvedParentFull=fp0._fullName;return;}
+    }
+    // صف من ملف التصدير بمعرّف وبدون معرّف أب = جذر (لا نخمّن أباه من اسمه)
+    if(p._rowId&&!p._parentRef)return;
+    // ٢) الاسم الكامل
+    if(!p._fatherKey)return;
+    const exPar=ex[p._fatherKey];
+    if(exPar){p._parentExistingId=exPar.id;p._parentName=exPar.name;p._resolvedParentFull=exPar.fullName||exPar._fullName||exPar.name;return;}
+    const fp=fileMap[p._fatherKey];
+    if(fp&&fp!==p){p._parentInFile=fp;p._parentName=fp.name;p._resolvedParentFull=fp._fullName;}
+  });
 }
 
 function showImportPreview(rows){
-  const noParent=rows.filter(r=>!r._resolvedParentFull).length;
-  const withParent=rows.filter(r=>r._resolvedParentFull).length;
-  const existingFull=new Set(members.map(m=>m._fullName||m.fullName||m.name));
-  const dupes=rows.filter(r=>existingFull.has(r._fullName)).length;
-  const newCount=rows.length-dupes;
+  resolveImportParents(rows);
+  const fresh=rows.filter(function(r){return!r._exists;});
+  const dupes=rows.length-fresh.length;
+  const linkedSite=fresh.filter(function(r){return r._parentExistingId;}).length;
+  const linkedFile=fresh.filter(function(r){return r._parentInFile;}).length;
+  const isRootRow=function(r){return!r._parentRef&&(!r._fatherKey||!!r._rowId);};
+  const roots=fresh.filter(isRootRow).length;
+  const orphans=fresh.filter(function(r){return!isRootRow(r)&&!r._parentExistingId&&!r._parentInFile;});
+  const noGender=fresh.filter(function(r){return r.gender!=='ذكر'&&r.gender!=='أنثى';}).length;
   byId('excel-status').innerHTML=`
     <div style="background:var(--sand);border:1px solid var(--sand3);border-radius:12px;padding:.9rem 1rem;font-size:.84rem;line-height:2.1">
       <div>📊 إجمالي الصفوف: <strong>${rows.length}</strong></div>
-      <div>🌳 جذور (بدون أب): <strong>${noParent}</strong></div>
-      <div>👤 مرتبطون بأب: <strong>${withParent}</strong></div>
-      ${dupes?`<div style="color:var(--gold)">⚠️ موجودون مسبقاً: <strong>${dupes}</strong></div>`:''}
-      <div style="color:var(--ok);font-weight:600">✅ سيتم إضافة: <strong>${newCount}</strong> فرد</div>
+      ${rows._byHeader===false?'<div style="color:var(--err);font-weight:600;line-height:1.7">❗ لم يُعثر على عنوان «الاسم الكامل» في الصف الأول — تم تخطي أول صفين في الملف. أضف «الاسم الكامل» كعنوان في الخلية A1 حتى لا يضيع أحد.</div>':''}
+      <div>👤 مرتبطون بأب موجود في الموقع: <strong>${linkedSite}</strong></div>
+      <div>👥 مرتبطون بأب جديد من نفس الملف: <strong>${linkedFile}</strong></div>
+      ${roots?`<div>🌳 جذور (بدون أب): <strong>${roots}</strong></div>`:''}
+      ${dupes?`<div style="color:var(--gold)">⚠️ موجودون مسبقاً (لن يُضافوا): <strong>${dupes}</strong></div>`:''}
+      ${noGender?`<div style="color:var(--gold)">⚠️ بدون جنس واضح (ذكر/أنثى): <strong>${noGender}</strong></div>`:''}
+      ${orphans.length?`<div style="color:var(--err);font-weight:600">❗ لم يُعثر على الأب — سيُضافون كجذور منفصلة: <strong>${orphans.length}</strong></div>
+        <div style="font-size:.74rem;color:var(--ink2);line-height:1.8;max-height:7.5em;overflow:auto">${orphans.slice(0,30).map(function(r){return'• '+esc(r._fullName);}).join('<br>')}</div>
+        <div style="font-size:.72rem;color:var(--ink3)">تأكد أن بقية الاسم بعد الاسم الأول مطابق للاسم الكامل للأب في الموقع.</div>`:''}
+      <div style="color:var(--ok);font-weight:600">✅ سيتم إضافة: <strong>${fresh.length}</strong> فرد</div>
     </div>`;
-  const toPreview=rows.filter(r=>!existingFull.has(r._fullName)).slice(0,8);
+  const toPreview=fresh.slice(0,8);
   byId('excel-preview').innerHTML=`
     <div style="font-size:.76rem;color:var(--ink3);margin:.7rem 0 .4rem;font-weight:600">معاينة ${toPreview.length} أفراد:</div>
     <div style="border:1px solid var(--sand3);border-radius:12px;overflow:hidden">
@@ -2672,13 +2812,13 @@ function showImportPreview(rows){
         <div style="display:flex;align-items:center;gap:.7rem;padding:.55rem .8rem;background:${i%2===0?'var(--white)':'var(--sand)'};font-size:.8rem;border-bottom:1px solid var(--sand2)">
           <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(140deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0">${esc(r.name.charAt(0))}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-weight:600;color:var(--ink)">${esc(r.name)}</div>
-            <div style="color:var(--ink3);font-size:.71rem">${r._resolvedParentFull?'👤 ابن: '+esc(r._resolvedParentFull.split(' ')[0]):'🌟 جذر'}</div>
+            <div style="font-weight:600;color:var(--ink)">${esc(r.name)}${r.gender?` <span style="color:var(--ink3);font-weight:500;font-size:.72rem">· ${esc(r.gender)}</span>`:''}</div>
+            <div style="color:${(r._parentRef||(r._fatherKey&&!r._rowId))&&!r._parentName?'var(--err)':'var(--ink3)'};font-size:.71rem">${r._parentName?(r.gender==='أنثى'?'👤 ابنة: ':'👤 ابن: ')+esc(r._parentName)+(r._parentExistingId?' (موجود في الموقع)':' (من الملف)'):((r._parentRef||(r._fatherKey&&!r._rowId))?'❗ الأب غير موجود':'🌟 جذر')}</div>
           </div>
           ${r.job?`<div style="color:var(--ink3);font-size:.71rem;flex-shrink:0">${esc(r.job)}</div>`:''}
         </div>`).join('')}
     </div>`;
-  byId('excel-confirm-btn').style.display=newCount>0?'inline-flex':'none';
+  byId('excel-confirm-btn').style.display=fresh.length>0?'inline-flex':'none';
 }
 
 function showImportStatus(msg,type){
@@ -2689,26 +2829,25 @@ function showImportStatus(msg,type){
 }
 
 window.confirmExcelImport=async function(){
-  const existingFull=new Set(members.map(m=>m._fullName||m.fullName||m.name));
-  const toAdd=pendingImport.filter(r=>!existingFull.has(r._fullName));
+  resolveImportParents(pendingImport);
+  const toAdd=pendingImport.filter(function(r){return!r._exists;});
   if(!toAdd.length){toast('لا يوجد أفراد جدد');return;}
   const btn=byId('excel-confirm-btn');
   btn.disabled=true;btn.textContent='جاري الاستيراد...';
-
-  const tempMap={};toAdd.forEach(m=>{tempMap[m._fullName]=m.id;});
-  toAdd.forEach(m=>{if(m._resolvedParentFull&&tempMap[m._resolvedParentFull])m.parentId=tempMap[m._resolvedParentFull];});
-
+  toAdd.forEach(function(m){
+    m.parentId=m._parentExistingId||(m._parentInFile?m._parentInFile.id:null)||null;
+  });
   try{
     // كتابة على دفعات مع فهرس الفروع (ancestors)
-    await commitMemberChanges(toAdd.map(m=>({
+    await commitMemberChanges(toAdd.map(m=>Object.assign({
       id:m.id,_fullName:m._fullName,name:m.name,fullName:m.fullName,
       role:m.role,gender:m.gender,status:m.status||'حي',
       phone:m.phone,email:m.email,company:m.company,job:m.job,
       city:m.city,birth:m.birth,linkedin:m.linkedin,
       spouse:m.spouse||'',bio:m.bio||'',
-      externalKids:[],
+      externalKids:m.externalKids||[],
       photo:null,parentId:m.parentId||null,
-    })),[]);
+    },m.order?{order:m.order}:{})),[]);
     closeOv('ov-excel');pendingImport=[];
     dataChanged();
     toast(`✓ تم استيراد ${toAdd.length} فرد بنجاح`);
@@ -4909,26 +5048,54 @@ window.deleteCurrentDoc=async function(){
 };
 
 // ══ FULL BACKUP (EXPORT/IMPORT) ══
+// V63: النسخة تشمل كل ما في قاعدة البيانات: الأفراد بكل حقولهم وصورهم، الفعاليات، الأخبار، الألبوم،
+// الوثائق وملفاتها، وكل siteConfig (الإعدادات، غلاف الوضع الليلي، الخطوط المرفوعة)،
+// والصلاحيات (users + logins) وطلبات التسجيل — ويمكن استعادتها كاملة.
+async function fetchCollectionRaw(col){
+  const snap=await db.collection(col).get();
+  return snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});
+}
+function demoSiteConfigDocs(){
+  const out=[{id:'settings',json:JSON.stringify(siteSettings),updated:new Date().toISOString()}];
+  if(heroDarkImages.length)out.push({id:'heroDark',json:JSON.stringify(heroDarkImages)});
+  if(fontFiles.length){
+    out.push({id:'fonts',json:JSON.stringify(fontFiles)});
+    fontFiles.forEach(function(f){
+      const d=_demoFontData[f.id]||'';const n=Math.max(1,f.chunks||Math.ceil(d.length/FONT_CHUNK));
+      for(let i=0;i<n;i++)out.push({id:fontChunkKey(f.id,i),data:d.slice(i*FONT_CHUNK,(i+1)*FONT_CHUNK)});
+    });
+  }
+  return out;
+}
 window.exportFullBackup=async function(){
+  if(!requireAdmin())return;
   toast('جاري إنشاء النسخة الاحتياطية…');
-  let docFiles=[];
-  try{
-    if(configured&&db){if(isAdmin){const fs=await db.collection('documentFiles').get();docFiles=fs.docs.map(function(d){return Object.assign({id:d.id},d.data());});}}
-    else docFiles=Object.keys(_demoDocFiles).map(function(k){return Object.assign({id:k},_demoDocFiles[k]);});
-  }catch(e){console.warn('backup documents:',e&&e.message);}
   const backup={
-    version:APP_VERSION,
-    date:new Date().toISOString(),
+    format:2,version:APP_VERSION,date:new Date().toISOString(),
     siteName:siteSettings.siteName||'شجرة العائلة',
-    members:members,
-    events:events,
-    news:news,
-    photos:photos,
-    documents:docs,
-    documentFiles:docFiles,
-    heroDarkImages:heroDarkImages,
-    siteSettings:siteSettings
+    members:members,events:events,news:news,photos:photos,documents:docs,documentFiles:[],
+    heroDarkImages:heroDarkImages,siteSettings:siteSettings,
+    siteConfig:[],users:[],logins:[],registrationRequests:[]
   };
+  const missing=[];
+  if(configured&&db){
+    // قراءة مباشرة من الخادم حتى لا يفوت شيء
+    const cols={members:'members',events:'events',news:'news',photos:'photos',documents:'documents',documentFiles:'documentFiles',
+      siteConfig:'siteConfig',users:'users',logins:'logins',registrationRequests:'registrationRequests'};
+    for(const k in cols){
+      try{backup[k]=await fetchCollectionRaw(cols[k]);}
+      catch(e){missing.push(k);console.warn('backup '+k+':',e&&e.message);}
+    }
+    if(missing.indexOf('members')>=0)backup.members=members; // احتياط: النسخة المحمّلة في الصفحة
+  }else{
+    backup.documentFiles=Object.keys(_demoDocFiles).map(function(k){return Object.assign({id:k},_demoDocFiles[k]);});
+    backup.siteConfig=demoSiteConfigDocs();
+    backup.users=(typeof demoUsers!=='undefined'?demoUsers:[]).map(function(u){return Object.assign({},u,{id:u.uid||u.id});});
+    backup.registrationRequests=registrationRequests||[];
+  }
+  backup.counts={members:backup.members.length,events:backup.events.length,news:backup.news.length,photos:backup.photos.length,
+    documents:backup.documents.length,siteConfig:backup.siteConfig.length,users:backup.users.length,logins:backup.logins.length,
+    registrationRequests:backup.registrationRequests.length};
   const json=JSON.stringify(backup);
   const blob=new Blob([json],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -4936,12 +5103,14 @@ window.exportFullBackup=async function(){
   a.href=url;
   a.download='backup_'+(siteSettings.siteName||'family')+'_'+new Date().toISOString().slice(0,10)+'.json';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('✅ تم تصدير النسخة الاحتياطية بنجاح');
+  setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  if(missing.length)toast('⚠️ تم التصدير، لكن تعذّرت قراءة: '+missing.join('، '),true);
+  else toast('✅ تم تصدير النسخة الاحتياطية — '+backup.members.length+' فرد · '+(json.length/1048576).toFixed(1)+' MB');
 };
 
 window.importFullBackup=function(e){
   const file=e.target.files[0];if(!file)return;
+  if(!requireAdmin()){e.target.value='';return;}
   const reader=new FileReader();
   reader.onload=function(ev){
     try{
@@ -4949,60 +5118,98 @@ window.importFullBackup=function(e){
       if(!backup.members||!Array.isArray(backup.members)){
         toast('ملف غير صالح — لا يحتوي على بيانات أعضاء',true);return;
       }
+      const arr=function(k){return Array.isArray(backup[k])?backup[k]:null;};
       let msg='استيراد نسخة احتياطية:\n\n';
-      msg+='• '+backup.members.length+' عضو\n';
+      msg+='• '+backup.members.length+' فرد\n';
       msg+='• '+(backup.events?backup.events.length:0)+' فعالية\n';
       msg+='• '+(backup.news?backup.news.length:0)+' خبر\n';
       msg+='• '+(backup.photos?backup.photos.length:0)+' صورة\n';
-      if(backup.documents)msg+='• '+backup.documents.length+' وثيقة\n';
+      if(arr('documents'))msg+='• '+backup.documents.length+' وثيقة\n';
+      if(arr('siteConfig'))msg+='• الإعدادات والغلاف والخطوط ('+backup.siteConfig.length+' عنصر)\n';
+      else if(backup.siteSettings)msg+='• الإعدادات\n';
+      if(arr('users'))msg+='• '+backup.users.length+' صلاحية\n';
+      if(arr('registrationRequests'))msg+='• '+backup.registrationRequests.length+' طلب تسجيل\n';
       if(backup.date)msg+='\nتاريخ النسخة: '+new Date(backup.date).toLocaleDateString('ar');
       msg+='\n\n⚠️ سيتم استبدال جميع البيانات الحالية!';
       if(!confirm(msg))return;
       if(!confirm('تأكيد أخير — هل أنت متأكد من استبدال جميع البيانات؟'))return;
 
       toast('جاري الاستيراد…');
+      const restoredMembers=withAncestors(normMembers(backup.members.map(function(m){return Object.assign({},m,{id:m.id||uid('imp')});})));
+      function settingsFrom(list){
+        const d=(list||[]).find(function(x){return x&&x.id==='settings';});
+        if(d&&d.json){try{return JSON.parse(d.json);}catch(_){}}
+        return backup.siteSettings||null;
+      }
 
       (async function(){
         if(configured&&db){
-          async function replaceCollection(col,items,prefix){
+          // يكتب عناصر النسخة أولاً ثم يحذف ما ليس فيها — فلا توجد لحظة تكون فيها البيانات فارغة
+          async function replaceCollection(col,items,prefix,opts){
+            opts=opts||{};
             const existing=await db.collection(col).get();
-            await commitOpsInChunks(existing.docs.map(function(doc){return{t:'del',ref:doc.ref};}));
-            await commitOpsInChunks(items.map(function(item){return{t:'set',ref:db.collection(col).doc(item.id||uid(prefix)),data:item};}));
+            const keep={};
+            const sets=items.map(function(item){
+              const id=String(item.id||uid(prefix));keep[id]=1;
+              let data=item;
+              if(opts.stripId){data=Object.assign({},item);delete data.id;}
+              return{t:'set',ref:db.collection(col).doc(id),data:data};
+            });
+            await commitOpsInChunks(sets);
+            const dels=existing.docs.filter(function(d){return!keep[d.id]&&!(opts.protect&&opts.protect(d.id));}).map(function(d){return{t:'del',ref:d.ref};});
+            await commitOpsInChunks(dels);
           }
-          await replaceCollection('members',withAncestors(normMembers(backup.members.map(function(m){return Object.assign({},m,{id:m.id||uid('imp')});}))),'imp');
-          if(backup.events)await replaceCollection('events',backup.events,'ev');
-          if(backup.news)await replaceCollection('news',backup.news,'nw');
-          if(backup.photos)await replaceCollection('photos',backup.photos,'ph');
-          if(Array.isArray(backup.documents)){
+          await replaceCollection('members',restoredMembers,'imp');
+          if(arr('events'))await replaceCollection('events',backup.events,'ev');
+          if(arr('news'))await replaceCollection('news',backup.news,'nw');
+          if(arr('photos'))await replaceCollection('photos',backup.photos,'ph');
+          if(arr('documents')){
             await replaceCollection('documentFiles',backup.documentFiles||[],'df');
             await replaceCollection('documents',backup.documents,'doc');
           }
-          if(backup.siteSettings){
-            siteSettings=backup.siteSettings;
-            localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
-            db.collection('siteConfig').doc('settings').set({json:JSON.stringify(siteSettings),updated:new Date().toISOString()});
-            applySettings();
+          if(arr('siteConfig')){
+            await replaceCollection('siteConfig',backup.siteConfig,'cfg',{stripId:true});
+          }else{
+            if(backup.siteSettings)await db.collection('siteConfig').doc('settings').set({json:JSON.stringify(backup.siteSettings),updated:new Date().toISOString()});
+            if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
           }
-          if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
+          const me=(fbAuth&&fbAuth.currentUser)?fbAuth.currentUser.uid:'';
+          if(arr('users'))await replaceCollection('users',backup.users,'u',{stripId:true,protect:function(id){return id===me;}});
+          if(arr('logins'))await replaceCollection('logins',backup.logins,'l',{stripId:true});
+          if(arr('registrationRequests'))await replaceCollection('registrationRequests',backup.registrationRequests,'rq',{stripId:true});
+          const ss=settingsFrom(backup.siteConfig);
+          if(ss){siteSettings=ss;localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));applySettings();}
         }else{
-          members=withAncestors(normMembers(backup.members.map(function(m){return Object.assign({},m,{id:m.id||uid('imp')});})));
-          if(backup.events)events=backup.events;
-          if(backup.news)news=backup.news;
-          if(backup.photos)photos=backup.photos;
-          if(Array.isArray(backup.documents)){
+          members=restoredMembers;
+          if(arr('events'))events=backup.events;
+          if(arr('news'))news=backup.news;
+          if(arr('photos'))photos=backup.photos;
+          if(arr('documents')){
             docs=backup.documents.slice();clearDocCache();_demoDocFiles={};
             (backup.documentFiles||[]).forEach(function(x){if(x&&x.id){const c=Object.assign({},x);delete c.id;_demoDocFiles[x.id]=c;}});
           }
-          if(backup.siteSettings){
-            siteSettings=backup.siteSettings;
-            localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));
-            applySettings();
-          }
-          if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
+          const sc=arr('siteConfig');
+          const ss=settingsFrom(sc);
+          if(ss){siteSettings=ss;localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));}
+          if(sc){
+            const hd=sc.find(function(x){return x.id==='heroDark';});
+            setHeroDarkLocal(hd&&hd.json?JSON.parse(hd.json):[]);
+            const fd=sc.find(function(x){return x.id==='fonts';});
+            const man=fd&&fd.json?JSON.parse(fd.json):[];
+            _demoFontData={};_fontUrlCache={};
+            man.forEach(function(f){
+              let d='';for(let i=0;i<(f.chunks||1);i++){const c=sc.find(function(x){return x.id===fontChunkKey(f.id,i);});d+=c&&c.data?c.data:'';}
+              _demoFontData[f.id]=d;
+            });
+            fontFiles=man;_thmKey='';
+          }else if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
+          if(arr('users')&&typeof demoUsers!=='undefined'){demoUsers.length=0;backup.users.forEach(function(u){const c=Object.assign({},u);delete c.id;demoUsers.push(c);});}
+          if(arr('registrationRequests'))registrationRequests=backup.registrationRequests.slice();
+          applySettings();
           dataChanged();
         }
         TC._imgCache={};
-        toast('✅ تم استيراد النسخة الاحتياطية — '+backup.members.length+' عضو');
+        toast('✅ تم استيراد النسخة الاحتياطية — '+backup.members.length+' فرد');
       })().catch(function(err){
         console.error('Import error:',err);
         toast('حدث خطأ أثناء الاستيراد: '+err.message,true);
