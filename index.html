@@ -13,6 +13,7 @@
 /* منع وميض الوضع الخاطئ قبل تحميل الأنماط */
 try{if(localStorage.getItem('familyThemeMode')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}
 /* أيقونة الشاشة الرئيسية من آخر زيارة — متاحة فوراً لآيفون */
+try{var _fv=localStorage.getItem('familyFavicon');if(_fv){var _f=document.createElement('link');_f.rel='icon';_f.type='image/png';_f.href=_fv;document.head.appendChild(_f);}}catch(e){}
 try{var _ai=localStorage.getItem('familyAppIcon180');if(_ai){var _l=document.createElement('link');_l.rel='apple-touch-icon';_l.sizes='180x180';_l.href=_ai;document.head.appendChild(_l);}}catch(e){}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -322,6 +323,27 @@ img{-webkit-user-drag:none}
 .nw-tag{background:var(--gold-dim);color:var(--gold);font-size:.64rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;white-space:nowrap;border:1px solid rgba(212,170,114,.25)}
 .nw-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;line-height:1.5}
 .nw-body{font-size:.8rem;color:var(--ink2);line-height:1.75;white-space:pre-wrap}
+.nw-meta{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-size:.72rem;color:var(--ink3);margin:.1rem 0 .4rem}
+.nw-gal{display:grid;gap:4px;border-radius:12px;overflow:hidden;margin:.2rem 0 .6rem;grid-template-columns:repeat(2,1fr)}
+.nw-gal.n1{grid-template-columns:1fr}
+.nw-gal.n3 .nw-gi:first-child{grid-row:span 2}
+.nw-gi{position:relative;cursor:pointer;background:var(--sand2);aspect-ratio:16/10;overflow:hidden}
+.nw-gal.n1 .nw-gi{aspect-ratio:16/10;max-height:460px;width:100%}
+.nw-gal.n3 .nw-gi:first-child{aspect-ratio:auto}
+.nw-gi img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.nw-gi:hover img{transform:scale(1.03)}
+.nw-gi .nw-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(140deg,#3a3430,#1f1b18)}
+.nw-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.nw-play span{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;padding-right:3px}
+.nw-more{position:absolute;inset:0;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;pointer-events:none}
+.nw-vid{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin:.2rem 0 .6rem;background:#000}
+.nw-vid iframe,.nw-vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.nw-alb{margin-top:.5rem;padding:.55rem .65rem;border:1px solid var(--sand3);border-radius:12px;background:var(--sand)}
+.nw-alb-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-size:.76rem;font-weight:700;color:var(--gold);cursor:pointer}
+.nw-alb-strip{display:flex;gap:5px;overflow-x:auto;margin-top:.45rem;scrollbar-width:none}
+.nw-alb-strip img{width:62px;height:62px;object-fit:cover;border-radius:8px;flex:0 0 auto;cursor:pointer}
+.nw-hint{font-size:.66rem;color:var(--ink3);margin-top:.35rem}
+.up-prevs{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
 .nw-date{font-size:.7rem;color:var(--ink3);margin-top:.45rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-variant-numeric:tabular-nums}
 
 /* ══ UPLOAD ══ */
@@ -390,6 +412,13 @@ img{-webkit-user-drag:none}
 /* ══ LIGHTBOX ══ */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(8,6,5,.97);z-index:2000;align-items:center;justify-content:center}
 .lightbox.on{display:flex;animation:overlayIn .2s ease}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(255,255,255,.14);border:none;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.6rem;line-height:1;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lb-prev{right:.8rem}.lb-next{left:.8rem}
+.lightbox.gal .lb-nav{display:flex}
+.lb-count{position:absolute;bottom:calc(1rem + var(--sab,0px));left:50%;transform:translateX(-50%);color:rgba(255,255,255,.8);font-size:.78rem;display:none}
+.lightbox.gal .lb-count{display:block}
+.lb-inner iframe{width:min(96vw,1000px);aspect-ratio:16/9;border:0;border-radius:12px}
+.lb-load{color:rgba(255,255,255,.7);font-size:.85rem}
 .lb-inner img,.lb-inner video{max-width:96vw;max-height:86dvh;border-radius:12px;object-fit:contain}
 .lb-x{position:absolute;top:calc(1rem + var(--sat));right:1rem;background:rgba(255,255,255,.14);border:none;color:#fff;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 
@@ -434,7 +463,9 @@ img{-webkit-user-drag:none}
 .lg-ico{font-size:1.1rem;line-height:1.4}
 .lg-main{flex:1;min-width:0}
 .lg-sum{font-weight:700;font-size:.86rem;color:var(--ink);overflow-wrap:anywhere}
-.lg-meta{font-size:.72rem;color:var(--ink3);margin-top:.15rem}
+.lg-meta{font-size:.72rem;color:var(--ink3);margin-top:.15rem;line-height:1.7}
+.lg-who{color:var(--ink2);font-weight:600}
+.lg-ph{font-variant-numeric:tabular-nums;unicode-bidi:isolate;color:var(--ink3)}
 .lg-role{font-size:.64rem;background:var(--gold-dim);color:var(--gold);border-radius:8px;padding:0 .35rem}
 .lg-rev{color:var(--ok);font-weight:700}
 .lg-det{margin-top:.45rem;font-size:.78rem}
@@ -973,7 +1004,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
   <button class="bnav-item on" id="bn-home" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>الرئيسية</span></button>
   <button class="bnav-item" id="bn-tree" onclick="goPage('tree')"><svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-1.13 0-1.9.16-2.53.33C14.28 12.31 16 10.35 17 8zm0-8a5 5 0 00-5 5c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5z"/></svg><span>الشجرة</span></button>
   <button class="bnav-item" id="bn-members" onclick="goPage('members')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>الأعضاء</span></button>
-  <button class="bnav-item" id="bn-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg><span>الفعاليات</span></button>
+  <button class="bnav-item" id="bn-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>الأخبار</span></button>
   <button class="bnav-item" id="bn-album" onclick="goPage('album')"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><span>الألبوم</span></button>
 </nav>
 
@@ -991,7 +1022,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <button class="drawer-item" id="tb-album" onclick="goPage('album')"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>الألبوم</button>
     <button class="drawer-item" id="tb-docs" style="display:none" onclick="goPage('docs')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>الوثائق</button>
     <div class="drawer-divider"></div>
-    <button class="drawer-item" id="tb-events" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
+    <button class="drawer-item" id="tb-events" style="display:none" onclick="goPage('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>الفعاليات</button>
     <button class="drawer-item" id="tb-news" onclick="goPage('news')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>الأخبار</button>
     <div class="drawer-divider" id="tb-perms-div" style="display:none"></div>
     <button class="drawer-item" id="tb-inlaws" style="display:none" onclick="goPage('inlaws')"><svg viewBox="0 0 24 24"><path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 000 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0020 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>الأنسباء</button>
@@ -1006,7 +1037,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V65 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V67 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1158,10 +1189,24 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="modal-title">إضافة خبر</div>
     <div class="field"><label>العنوان *</label><input id="nw-title" placeholder="عنوان الخبر"></div>
     <div class="field"><label>التصنيف</label><select id="nw-cat"><option>إعلان</option><option>تهنئة</option><option>خبر</option><option>أخرى</option></select></div>
+    <div class="form-grid">
+      <div class="field"><label>التاريخ</label><input type="date" id="nw-date"></div>
+      <div class="field"><label>المكان</label><input id="nw-place" placeholder="مثال: الرياض"></div>
+    </div>
     <div class="field"><label>التفاصيل</label><textarea id="nw-body" rows="4" placeholder="تفاصيل الخبر…"></textarea></div>
+    <div class="field"><label>الصور والفيديو</label>
+      <div class="upload-zone" onclick="document.getElementById('nw-files').click()">
+        <div class="up-icon">📷🎬</div>اضغط لاختيار صور أو فيديو
+        <input type="file" id="nw-files" accept="image/*,video/*" multiple style="display:none" onchange="onNewsMedia(event)">
+      </div>
+      <div class="up-prevs" id="nw-prev"></div>
+      <div class="nw-hint">الصور تُضغط تلقائياً · حد الفيديو 30 ميغابايت — للفيديو الطويل استخدم رابطاً (يوتيوب)</div>
+    </div>
+    <div class="field"><label>رابط فيديو (اختياري)</label><input id="nw-video-url" dir="ltr" placeholder="https://youtube.com/…"></div>
+    <div class="field"><label>ربط بألبوم صور (اختياري)</label><select id="nw-album"></select></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-news')">إلغاء</button>
-      <button class="btn btn-primary" onclick="saveNews()">نشر</button>
+      <button class="btn btn-primary" id="nw-save-btn" onclick="saveNews()">نشر</button>
     </div>
   </div>
 </div>
@@ -1375,12 +1420,12 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     <div class="field"><label>الألبوم</label><select id="ph-album"></select></div>
     <div class="form-grid">
       <div class="field"><label>تاريخ الصورة</label><input type="date" id="ph-date"></div>
-      <div class="field"><label>ربط بفعالية</label>
-        <select id="ph-event-link"><option value="">— لا يوجد —</option></select>
+      <div class="field"><label>ربط بخبر</label>
+        <select id="ph-news-link"><option value="">— لا يوجد —</option></select>
       </div>
     </div>
-    <div class="field"><label>ربط بخبر</label>
-      <select id="ph-news-link"><option value="">— لا يوجد —</option></select>
+    <div class="field" style="display:none"><label>ربط بفعالية</label>
+      <select id="ph-event-link"><option value="">— لا يوجد —</option></select>
     </div>
     <div class="field">
       <label>وصف الصورة</label>
@@ -1718,6 +1763,9 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-x" onclick="closeLb()" aria-label="إغلاق">✕</button>
+  <button class="lb-nav lb-prev" id="lb-prev" onclick="lbStep(-1)" aria-label="السابق">›</button>
+  <button class="lb-nav lb-next" id="lb-next" onclick="lbStep(1)" aria-label="التالي">‹</button>
+  <div class="lb-count" id="lb-count"></div>
   <div class="lb-inner" id="lb-content"></div>
 </div>
 </div>
@@ -1744,7 +1792,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V65';
+const APP_VERSION='V67';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -1868,8 +1916,8 @@ async function init(){
     fsdb.collection('members').onSnapshot(s=>{members=normMembers(s.docs.map(d=>({id:d.id,...d.data()})));shadowFill('members',members);dataChanged();if(typeof scheduleIndexSync==='function')scheduleIndexSync();});
     fsdb.collection('events').onSnapshot(s=>{events=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('events',events);markDirty('events','home');if(active==='events'||active==='home')refreshPage(active);});
     fsdb.collection('news').onSnapshot(s=>{news=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('news',news);markDirty('news','home');if(active==='news'||active==='home')refreshPage(active);});
-    fsdb.collection('photos').onSnapshot(s=>{photos=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('photos',photos);markDirty('album');if(active==='album')refreshPage('album');});
-    fsdb.collection('albums').onSnapshot(s=>{albums=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('albums',albums);markDirty('album');if(active==='album')refreshPage('album');},
+    fsdb.collection('photos').onSnapshot(s=>{photos=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('photos',photos);markDirty('album','news');if(active==='album'||active==='news')refreshPage(active);});
+    fsdb.collection('albums').onSnapshot(s=>{albums=s.docs.map(d=>({id:d.id,...d.data()}));shadowFill('albums',albums);markDirty('album','news');if(active==='album'||active==='news')refreshPage(active);},
       e=>console.warn('albums:',e&&e.message));
     // طلبات التسجيل: يُفتح الاستماع لها للمدير فقط بعد الدخول (محميّة بقواعد الخادم)
     initAuth(fbApp);
@@ -2036,11 +2084,14 @@ function logItem(col,id,before,after){
 function logActor(){
   if(!isAdmin&&!isEditor)return null;
   const prof=myProfile||editorProfile||null;
-  let name='';
-  if(prof){const pm=prof.memberId&&members.find(function(x){return x.id===prof.memberId;});name=(pm&&pm.name)||prof.name||'';}
+  let name='',pm=null;
+  if(prof)pm=accountMember(prof);
+  if(!pm&&loggedInMemberId)pm=members.find(function(x){return x.id===loggedInMemberId;})||null;
+  name=pm?tripleNameKunya(pm):((prof&&prof.name)||'');
   if(!name&&authUser)name=authUser.displayName||authUser.email||'';
   if(!name)name=isAdmin?'المدير':'محرر فرع';
-  return{uid:authUser?authUser.uid:'demo',name:name,role:isAdmin?'admin':'editor',phone:(prof&&prof.phone)||''};
+  const phone=(prof&&prof.phone)||(pm&&pm.phone)||'';
+  return{uid:authUser?authUser.uid:'demo',name:name,role:isAdmin?'admin':'editor',phone:phone};
 }
 var COL_AR={members:['فرد','أفراد'],events:['فعالية','فعاليات'],news:['خبر','أخبار'],photos:['صورة','صور'],albums:['ألبوم','ألبومات'],
   settings:['الإعدادات','الإعدادات'],documents:['وثيقة','وثائق'],users:['صلاحية','صلاحيات'],siteConfig:['إعدادات الموقع','إعدادات الموقع'],
@@ -2143,7 +2194,7 @@ var FIELD_AR={name:'الاسم',fullName:'الاسم الكامل',_fullName:'ا
   primaryColor:'اللون الأساسي',secondaryColor:'اللون الثانوي',bgColor:'لون الخلفية',textColor:'لون النص',textSecondary:'لون النص الثانوي',textMuted:'لون النص الخافت',
   fontFamily:'خط النصوص',displayFont:'خط العناوين',positions:'المناصب',newsCategories:'تصنيفات الأخبار',albumCategories:'تصنيفات الألبومات'};
 var LOG_ICON={members:'👤',events:'📅',news:'📰',photos:'🖼️',albums:'📁',settings:'⚙️',siteConfig:'⚙️',documents:'📄',users:'🛡️',registrationRequests:'📝',backup:'💾',other:'•'};
-var LOG_FILTERS=[['','الكل'],['members','الأفراد'],['events','الفعاليات'],['news','الأخبار'],['album','الألبوم'],['settings','الإعدادات'],['documents','الوثائق'],['users','الصلاحيات']];
+var LOG_FILTERS=[['','الكل'],['members','الأفراد'],['news','الأخبار'],['album','الألبوم'],['settings','الإعدادات'],['documents','الوثائق'],['users','الصلاحيات']];
 var _logEntries=[],_logLast=null,_logDone=false,_logFilter='',_logBusy=false;
 function timeAgo(ts){
   const d=(Date.now()-ts)/1000;
@@ -2188,7 +2239,8 @@ function logMatches(e,q){
     if(!(e.cols||[]).some(function(c){return want.indexOf(c)>=0;}))return false;
   }
   if(q){
-    const hay=[e.summary,e.reason,e.by&&e.by.name].concat((e.items||[]).map(function(i){return i.label;})).join(' ').toLowerCase();
+    const av=logActorView(e.by);
+    const hay=[e.summary,e.reason,e.by&&e.by.name,av.name,av.phone].concat((e.items||[]).map(function(i){return i.label;})).join(' ').toLowerCase();
     if(hay.indexOf(q)<0)return false;
   }
   return true;
@@ -2204,10 +2256,11 @@ function renderLog(){
     const icon=LOG_ICON[(e.cols||[])[0]]||'•';
     const n=(e.items||[]).length;
     const can=isAdmin&&e.revertible&&!e.revertedAt&&n;
+    const av=logActorView(e.by);
     return'<div class="lg-entry'+(e.revertedAt?' reverted':'')+'">'+
       '<div class="lg-top"><span class="lg-ico">'+icon+'</span><div class="lg-main">'+
         '<div class="lg-sum">'+esc(e.summary||'')+'</div>'+
-        '<div class="lg-meta">'+esc((e.by&&e.by.name)||'')+(e.by&&e.by.role==='editor'?' <span class="lg-role">محرر</span>':'')+' · <span title="'+escAttr(new Date(e.ts).toLocaleString('ar'))+'">'+timeAgo(e.ts)+'</span>'+
+        '<div class="lg-meta"><span class="lg-who">'+esc(av.name)+'</span>'+(av.phone?' · 📱 <span class="lg-ph" dir="ltr">'+esc(av.phone)+'</span>':'')+(e.by&&e.by.role==='editor'?' <span class="lg-role">محرر</span>':'')+' · <span title="'+escAttr(new Date(e.ts).toLocaleString('ar'))+'">'+timeAgo(e.ts)+'</span>'+
           (e.revertedAt?' · <span class="lg-rev">↩︎ تم التراجع'+(e.revertedBy?' ('+esc(e.revertedBy)+')':'')+'</span>':'')+'</div>'+
       '</div>'+(can?'<button class="btn btn-sm btn-outline-gold" data-log-undo="'+escAttr(e.id)+'">↩︎ تراجع</button>':'')+'</div>'+
       (n?'<details class="lg-det"'+(n===1&&(e.items[0].keys||[]).length<=4?' open':'')+'><summary>التفاصيل'+(n>1?' ('+n+')':'')+'</summary>'+
@@ -2344,11 +2397,44 @@ function buildFullName(memberId,localMembers){
   while(cur&&!seen[cur.id]){seen[cur.id]=1;chain.push(cur.name);cur=cur.parentId?src.find(m=>m.id===cur.parentId):null;}
   return chain.join(' ');
 }
+// V67: الاسم الثلاثي (الاسم + الأب + الجد) — والكنية إن وُجدت
+function tripleName(m){
+  if(!m)return'';
+  const chain=[];const seen={};let cur=m;
+  while(cur&&!seen[cur.id]&&chain.length<3){seen[cur.id]=1;chain.push(String(cur.name||'').trim());cur=cur.parentId?members.find(function(x){return x.id===cur.parentId;}):null;}
+  return chain.filter(Boolean).join(' ');
+}
+function tripleNameKunya(m){
+  if(!m)return'';
+  const k=String(m.role||'').trim();
+  return tripleName(m)+(k?' ('+k+')':'');
+}
+function memberByPhone(ph){
+  const k=phoneKey(ph);if(!k)return null;
+  return members.find(function(x){return x.phone&&phoneKey(x.phone)===k;})||null;
+}
+// فرد صاحب الحساب: من memberId، وإلا من رقم الجوال
+function accountMember(u){
+  if(!u)return null;
+  return(u.memberId&&members.find(function(x){return x.id===u.memberId;}))||memberByPhone(u.phone)||null;
+}
+function accountDisplayName(u){
+  const m=accountMember(u);
+  return m?tripleNameKunya(m):String((u&&u.name)||'—');
+}
+// صاحب التعديل في السجل: الاسم الثلاثي (يُحدَّث من الشجرة حتى للسجلات القديمة) + الجوال
+function logActorView(by){
+  if(!by)return{name:'',phone:''};
+  let m=memberByPhone(by.phone);
+  if(!m){const acc=listAccounts().find(function(x){return x.uid===by.uid;});if(acc)m=accountMember(acc);if(acc&&!by.phone)by=Object.assign({},by,{phone:acc.phone||''});}
+  return{name:m?tripleNameKunya(m):(by.name||''),phone:by.phone||(m&&m.phone)||''};
+}
 
 // ══ NAV ══
 var active='home';
 window.goPage=function(p){
   haptic();
+  if(p==='events')p='news'; // V66: الفعاليات مخفية — حلّت محلها الأخبار
   if(p==='inlaws'&&!isAdmin){if(typeof denied==='function')denied('⛔ صفحة الأنسباء متاحة للمدير فقط');p='home';}
   if(p==='docs'&&!(isAdmin||isEditor)){if(typeof denied==='function')denied('⛔ صفحة الوثائق متاحة لأصحاب الصلاحية فقط');p='home';}
   const d=byId('drawer'),ov=byId('drawer-overlay'),hb=byId('hamburger-btn');
@@ -2438,7 +2524,7 @@ function renderStats(){
     s('female','إناث ♀',females)+
     s('alive','أحياء',alive)+
     s('deceased','متوفون 🕊',deceased)+
-    `<div class="stat" onclick="goPage('events')"><div class="stat-n">${events.length}</div><div class="stat-l">فعاليات</div></div>`;
+    `<div class="stat" onclick="goPage('news')"><div class="stat-n">${news.length}</div><div class="stat-l">أخبار</div></div>`;
   const tc=byId('tree-count');
   if(tc)tc.textContent=members.length+' فرد';
 }
@@ -3114,12 +3200,14 @@ window.deleteAllMembers=async function(){
   const _delItems=members.map(function(m){return logItem('members',m.id,shadowGet('members',m.id),null);});
   toast('جاري الحذف…');
   if(configured&&db){
-    let batch=db.batch(),count=0;
-    for(const id of ids){
-      batch.delete(db.collection('members').doc(id));count++;
-      if(count>=400){await batch.commit();batch=db.batch();count=0;}
-    }
-    if(count>0)await batch.commit();
+    try{
+      let batch=db.batch(),count=0;
+      for(const id of ids){
+        batch.delete(db.collection('members').doc(id));count++;
+        if(count>=400){await batch.commit();batch=db.batch();count=0;}
+      }
+      if(count>0)await batch.commit();
+    }catch(e){toast(writeErrMsg(e),true);return;}
   }else{
     for(const id of ids)await _dbDelRaw('members',id);
   }
@@ -3657,7 +3745,7 @@ window.openLb=function(evId,idx){
   byId('lb-content').innerHTML=m.type==='video'?'<video controls src="'+escAttr(m.src)+'" style="max-width:96vw;max-height:86dvh"></video>':'<img src="'+escAttr(m.src)+'" alt="">';
   byId('lightbox').classList.add('on');
 };
-window.closeLb=function(){byId('lightbox').classList.remove('on');byId('lb-content').innerHTML='';};
+window.closeLb=function(){const lb=byId('lightbox');lb.classList.remove('on','gal');byId('lb-content').innerHTML='';_lbGal=null;};
 
 window.openExMedia=function(evId){haptic();targetEvId=evId;pendingExtraMedia=[];byId('ev-prev-ex').innerHTML='';byId('ev-files-ex').value='';openOv('ov-evmedia');};
 window.saveExtraMedia=async function(){
@@ -3760,67 +3848,292 @@ function renderNews(){
   if(!news.length){l.innerHTML='<div class="empty"><div class="empty-ico">📰</div><p>لا توجد أخبار</p></div>';return;}
   const list=newsCatFilter?news.filter(function(n){return(n.cat||'')===newsCatFilter;}):news;
   if(!list.length){l.innerHTML='<div class="empty"><div class="empty-ico">📰</div><p>لا توجد أخبار في «'+esc(newsCatFilter)+'»</p></div>';return;}
-  l.innerHTML=list.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).map(function(n){
-    return'<div class="nw-card"><div class="nw-head"><div class="nw-tag" data-news-cat="'+escAttr(n.cat||'')+'" style="cursor:pointer">'+esc(n.cat||'خبر')+'</div>'+(n.date?'<div class="nw-date" style="margin:0">📅 '+esc(n.date)+'</div>':'')+'</div><div class="nw-title">'+esc(n.title)+'</div><div class="nw-body">'+esc(n.body)+'</div>'+(isAdmin?'<div class="nw-date"><button class="btn btn-ghost btn-sm" onclick="openEditNews(\''+escAttr(n.id)+'\')">✏️ تعديل</button><button class="btn btn-danger btn-sm" onclick="delNw(\''+escAttr(n.id)+'\')">حذف</button></div>':'')+'</div>';
-  }).join('');
+  l.innerHTML=list.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).map(newsCardHtml).join('');
 }
 
-// ══ EDIT NEWS ══
+// ══ V66: وسائط الأخبار — صور/فيديو + المكان + التاريخ + ربط بألبوم ══
+// الصورة المصغّرة تُحفظ داخل مستند الخبر (للعرض السريع)، والملف الكامل في مجموعة newsMedia على شكل أجزاء ≤700KB
+var NM_CHUNK=700000,NM_VIDEO_MAX=30*1024*1024,NM_MAX_ITEMS=20;
+var _nmLocal={},_nmCache={},_nmPending=[],_nmRemoved=[],_lbGal=null;
+function nmId(){return'nm_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function nmImageFrom(src,max,q){return new Promise(function(res){
+  const img=new Image();
+  img.onload=function(){
+    let w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+    const k=Math.min(1,max/Math.max(w,h));w=Math.max(1,Math.round(w*k));h=Math.max(1,Math.round(h*k));
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);
+    try{res(c.toDataURL('image/jpeg',q));}catch(e){res(null);}
+  };
+  img.onerror=function(){res(null);};
+  img.src=src;
+});}
+function nmVideoThumb(file){return new Promise(function(res){
+  let done=false;const url=URL.createObjectURL(file);
+  const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='metadata';
+  function fin(r){if(done)return;done=true;try{v.onerror=null;v.removeAttribute('src');v.load();URL.revokeObjectURL(url);}catch(e){}res(r);}
+  v.onloadeddata=function(){try{v.currentTime=Math.min(1,(v.duration||2)/3);}catch(e){fin(null);}};
+  v.onseeked=function(){
+    try{const k=Math.min(1,480/Math.max(v.videoWidth,v.videoHeight||1));const c=document.createElement('canvas');
+      c.width=Math.max(1,Math.round(v.videoWidth*k));c.height=Math.max(1,Math.round(v.videoHeight*k));
+      c.getContext('2d').drawImage(v,0,0,c.width,c.height);fin(c.toDataURL('image/jpeg',.7));}catch(e){fin(null);}
+  };
+  v.onerror=function(){fin(null);};setTimeout(function(){fin(null);},6000);
+  v.src=url;
+});}
+function readAsDataURL(f){return new Promise(function(res,rej){const r=new FileReader();r.onload=function(){res(r.result);};r.onerror=function(){rej(r.error);};r.readAsDataURL(f);});}
+window.onNewsMedia=async function(e){
+  const files=Array.from(e.target.files||[]);e.target.value='';
+  for(const f of files){
+    if(_nmPending.length>=NM_MAX_ITEMS){toast('الحد الأقصى '+NM_MAX_ITEMS+' ملف للخبر الواحد',true);break;}
+    const isV=(f.type||'').indexOf('video')===0;
+    if(!isV&&(f.type||'').indexOf('image')!==0)continue;
+    if(isV&&f.size>NM_VIDEO_MAX){toast('الفيديو «'+f.name+'» أكبر من 30 ميغابايت — ارفعه على يوتيوب وضع الرابط',true);continue;}
+    try{
+      const raw=await readAsDataURL(f);
+      let item;
+      if(isV)item={mid:nmId(),type:'video',mime:f.type||'video/mp4',full:raw,thumb:await nmVideoThumb(f),isNew:true};
+      else{
+        const full=await nmImageFrom(raw,1600,.82),thumb=await nmImageFrom(raw,480,.7);
+        if(!full){toast('تعذّرت قراءة الصورة «'+f.name+'»',true);continue;}
+        item={mid:nmId(),type:'image',mime:'image/jpeg',full:full,thumb:thumb,isNew:true};
+      }
+      _nmPending.push(item);renderNewsPrevs();
+    }catch(err){toast('تعذّرت قراءة الملف «'+f.name+'»',true);}
+  }
+};
+function renderNewsPrevs(){
+  const el=byId('nw-prev');if(!el)return;
+  el.innerHTML=_nmPending.map(function(m,i){
+    return'<div class="up-th">'+(m.thumb?'<img src="'+escAttr(m.thumb)+'" alt="">':'<div class="up-th up-th-v">🎬</div>')+
+      (m.type==='video'&&m.thumb?'<div class="nw-play" style="font-size:.7rem"><span style="width:20px;height:20px;font-size:.55rem">▶</span></div>':'')+
+      '<button class="up-rm" onclick="rmNewsMedia('+i+')">✕</button></div>';
+  }).join('');
+}
+window.rmNewsMedia=function(i){
+  const m=_nmPending[i];if(!m)return;
+  _nmPending.splice(i,1);if(!m.isNew)_nmRemoved.push(m);
+  renderNewsPrevs();
+};
+function nmMeta(m){const o={mid:m.mid,type:m.type,mime:m.mime||'',n:m.n||1};if(m.thumb)o.thumb=m.thumb;return o;}
+async function nmUpload(newsId,items,onProg){
+  const ops=[];
+  items.forEach(function(m){
+    const d=m.full||'';const n=Math.max(1,Math.ceil(d.length/NM_CHUNK));m.n=n;
+    if(!configured||!db){_nmLocal[m.mid]=d;return;}
+    for(let i=0;i<n;i++)ops.push({t:'set',ref:db.collection('newsMedia').doc(m.mid+'_'+i),
+      data:{newsId:newsId,mid:m.mid,i:i,n:n,type:m.type,mime:m.mime||'',data:d.slice(i*NM_CHUNK,(i+1)*NM_CHUNK)}});
+  });
+  if(!ops.length)return;
+  // دفعات صغيرة حتى يظهر التقدّم ولا يتجاوز الطلب حد Firestore
+  let done=0;const step=8;
+  for(let k=0;k<ops.length;k+=step){
+    await commitOpsInChunks(ops.slice(k,k+step));
+    done=Math.min(ops.length,k+step);if(onProg)onProg(done,ops.length);
+  }
+}
+async function nmDelete(list){
+  list=(list||[]).filter(function(m){return m&&m.mid;});if(!list.length)return;
+  if(!configured||!db){list.forEach(function(m){delete _nmLocal[m.mid];delete _nmCache[m.mid];});return;}
+  const ops=[];list.forEach(function(m){for(let i=0;i<(m.n||1);i++)ops.push({t:'del',ref:db.collection('newsMedia').doc(m.mid+'_'+i)});delete _nmCache[m.mid];});
+  try{await commitOpsInChunks(ops);}catch(e){console.warn('newsMedia cleanup:',e&&e.message);}
+}
+function dataUrlToBlobUrl(d){
+  try{const c=d.indexOf(',');const mime=(d.slice(5,c).split(';')[0])||'application/octet-stream';
+    const bin=atob(d.slice(c+1));const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    return URL.createObjectURL(new Blob([u],{type:mime}));}catch(e){return d;}
+}
+// يجلب الملف الكامل (مع ذاكرة مؤقتة) — وإن لم يوجد يعود للمصغّرة
+async function nmFull(m){
+  if(!m||!m.mid)return null;
+  if(_nmCache[m.mid])return _nmCache[m.mid];
+  let d=null;
+  if(!configured||!db)d=_nmLocal[m.mid]||null;
+  else{
+    try{
+      const n=m.n||1,parts=await Promise.all(Array.from({length:n},function(_,i){return db.collection('newsMedia').doc(m.mid+'_'+i).get();}));
+      if(parts.every(function(p){return p.exists;}))d=parts.map(function(p){return p.data().data||'';}).join('');
+    }catch(e){console.warn('newsMedia read:',e&&e.message);}
+  }
+  if(!d)return null;
+  const src=m.type==='video'?dataUrlToBlobUrl(d):d;
+  _nmCache[m.mid]=src;return src;
+}
+function ytId(u){
+  const m=String(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{6,})/);
+  return m?m[1]:'';
+}
+function newsVideoUrlHtml(u){
+  u=String(u||'').trim();if(!/^https?:\/\//i.test(u))return'';
+  const y=ytId(u);
+  if(y)return'<div class="nw-vid"><iframe src="https://www.youtube-nocookie.com/embed/'+escAttr(y)+'" loading="lazy" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>';
+  if(/\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(u))return'<div class="nw-vid"><video controls preload="metadata" src="'+escAttr(u)+'"></video></div>';
+  return'<div class="nw-meta"><a href="'+escAttr(u)+'" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600">🎬 مشاهدة الفيديو</a></div>';
+}
+function newsGalleryHtml(n){
+  const media=(n.media||[]);if(!media.length)return'';
+  const show=media.slice(0,4),extra=media.length-show.length;
+  return'<div class="nw-gal n'+Math.min(show.length,4)+'">'+show.map(function(m,i){
+    return'<div class="nw-gi" data-nw-lb="'+escAttr(n.id)+'" data-i="'+i+'">'+
+      (m.thumb?'<img src="'+escAttr(m.thumb)+'" loading="lazy" decoding="async" alt="">':'<div class="nw-ph">'+(m.type==='video'?'🎬':'🖼️')+'</div>')+
+      (m.type==='video'?'<div class="nw-play"><span>▶</span></div>':'')+
+      (i===show.length-1&&extra>0?'<div class="nw-more">+'+extra+'</div>':'')+'</div>';
+  }).join('')+'</div>';
+}
+function newsLinkedPhotos(n){
+  const seen={},out=[];
+  if(n.albumId&&albumById(n.albumId))albumPhotos(n.albumId,true).sort(byNewest).forEach(function(p){if(!seen[p.id]){seen[p.id]=1;out.push(p);}});
+  photos.filter(function(p){return p.newsId===n.id;}).forEach(function(p){if(!seen[p.id]){seen[p.id]=1;out.push(p);}});
+  return out;
+}
+function newsAlbumHtml(n){
+  const al=n.albumId?albumById(n.albumId):null;
+  const ps=newsLinkedPhotos(n);
+  if(!al&&!ps.length)return'';
+  const strip=ps.slice(0,12).map(function(p){return'<img src="'+escAttr(p.src)+'" loading="lazy" decoding="async" alt="" onclick="openPhotoDetail(\''+escAttr(p.id)+'\')">';}).join('');
+  return'<div class="nw-alb">'+
+    (al?'<div class="nw-alb-h" data-album-open="'+escAttr(al.id)+'"><span>📁 ألبوم: '+esc(al.title||'')+'</span><span>'+ps.length+' صورة ‹</span></div>'
+       :'<div class="nw-alb-h" style="cursor:default"><span>🖼️ صور مرتبطة بالخبر</span><span>'+ps.length+'</span></div>')+
+    (strip?'<div class="nw-alb-strip">'+strip+'</div>':'')+'</div>';
+}
+function newsCardHtml(n){
+  const meta=[];
+  if(n.date)meta.push('<span>📅 '+esc(n.date)+'</span>');
+  if(n.place)meta.push('<span>📍 '+esc(n.place)+'</span>');
+  return'<div class="nw-card" id="nwc-'+escAttr(n.id)+'"><div class="nw-head"><div class="nw-tag" data-news-cat="'+escAttr(n.cat||'')+'" style="cursor:pointer">'+esc(n.cat||'خبر')+'</div></div>'+
+    '<div class="nw-title">'+esc(n.title)+'</div>'+
+    (meta.length?'<div class="nw-meta">'+meta.join('')+'</div>':'')+
+    newsGalleryHtml(n)+newsVideoUrlHtml(n.videoUrl)+
+    (n.body?'<div class="nw-body">'+esc(n.body)+'</div>':'')+
+    newsAlbumHtml(n)+
+    (isAdmin?'<div class="nw-date"><button class="btn btn-ghost btn-sm" onclick="openEditNews(\''+escAttr(n.id)+'\')">✏️ تعديل</button><button class="btn btn-danger btn-sm" onclick="delNw(\''+escAttr(n.id)+'\')">حذف</button></div>':'')+'</div>';
+}
+// ── عارض الصور/الفيديو مع التنقل ──
+async function lbShow(){
+  const g=_lbGal;if(!g)return;
+  const m=g.items[g.i];const box=byId('lb-content');
+  byId('lb-count').textContent=(g.i+1)+' / '+g.items.length;
+  byId('lightbox').classList.toggle('gal',g.items.length>1);
+  const tok=g.tok=(g.tok||0)+1;
+  if(m.thumb&&m.type==='image')box.innerHTML='<img src="'+escAttr(m.thumb)+'" alt="">';
+  else box.innerHTML='<div class="lb-load">جاري التحميل…</div>';
+  const src=await nmFull(m);
+  if(_lbGal!==g||g.tok!==tok)return;
+  if(m.type==='video'){
+    box.innerHTML=src?'<video controls autoplay playsinline src="'+escAttr(src)+'"></video>':(m.thumb?'<img src="'+escAttr(m.thumb)+'" alt="">':'<div class="lb-load">تعذّر تحميل الفيديو</div>');
+  }else if(src)box.innerHTML='<img src="'+escAttr(src)+'" alt="">';
+  else if(!m.thumb)box.innerHTML='<div class="lb-load">تعذّر تحميل الصورة</div>';
+}
+window.openNewsLb=function(newsId,i){
+  const n=news.find(function(x){return x.id===newsId;});if(!n||!(n.media||[]).length)return;
+  haptic();_lbGal={items:n.media.slice(),i:Math.max(0,Math.min(i|0,n.media.length-1))};
+  byId('lightbox').classList.add('on');lbShow();
+};
+window.lbStep=function(d){
+  const g=_lbGal;if(!g||g.items.length<2)return;
+  g.i=(g.i+d+g.items.length)%g.items.length;lbShow();
+};
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-nw-lb]');
+  if(t)openNewsLb(t.getAttribute('data-nw-lb'),+t.getAttribute('data-i')||0);
+});
+document.addEventListener('keydown',function(e){
+  if(!_lbGal||!byId('lightbox').classList.contains('on'))return;
+  if(e.key==='ArrowLeft')lbStep(1);else if(e.key==='ArrowRight')lbStep(-1);else if(e.key==='Escape')closeLb();
+});
+(function(){
+  let x0=null;
+  document.addEventListener('touchstart',function(e){if(_lbGal&&e.target.closest&&e.target.closest('#lightbox'))x0=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;
+    if(Math.abs(dx)>50)lbStep(dx>0?1:-1); // RTL: السحب لليمين = التالي
+  },{passive:true});
+})();
+
+// ══ EDIT / ADD NEWS ══
 var editingNwId=null;
 document.addEventListener('click',function(e){
   const c=e.target.closest&&e.target.closest('[data-news-cat]');
   if(c)setNewsCat(c.getAttribute('data-news-cat'));
 });
+function newsAlbumOptions(sel){
+  return albumOptionsHtml(sel||'').replace('— الألبوم الرئيسي —','— بدون ربط —');
+}
+function fillNewsForm(nw){
+  nw=nw||{};
+  byId('nw-title').value=nw.title||'';
+  byId('nw-cat').innerHTML=newsCatOptionsHtml(nw.cat||newsCatFilter||'');
+  if(nw.cat)byId('nw-cat').value=nw.cat;
+  byId('nw-body').value=nw.body||'';
+  byId('nw-date').value=nw.date||new Date().toISOString().split('T')[0];
+  byId('nw-place').value=nw.place||'';
+  byId('nw-video-url').value=nw.videoUrl||'';
+  byId('nw-album').innerHTML=newsAlbumOptions(nw.albumId);
+  byId('nw-album').value=nw.albumId&&albumById(nw.albumId)?nw.albumId:'';
+  _nmPending=(nw.media||[]).map(function(m){return Object.assign({},m,{isNew:false});});
+  _nmRemoved=[];renderNewsPrevs();
+  const b=byId('nw-save-btn');b.disabled=false;
+}
 window.openEditNews=function(id){
   const nw=news.find(function(n){return n.id===id;});if(!nw)return;
-  editingNwId=id;
-  byId('nw-title').value=nw.title||'';
-  byId('nw-cat').innerHTML=newsCatOptionsHtml(nw.cat||'');
-  byId('nw-cat').value=nw.cat||byId('nw-cat').value;
-  byId('nw-body').value=nw.body||'';
+  editingNwId=id;fillNewsForm(nw);
   document.querySelector('#ov-news .modal-title').textContent='تعديل الخبر';
-  document.querySelector('#ov-news .btn-primary').textContent='حفظ التعديل';
-  document.querySelector('#ov-news .btn-primary').onclick=saveEditNews;
+  const b=byId('nw-save-btn');b.textContent='حفظ التعديل';b.onclick=saveNews;
   openOv('ov-news');haptic();
 };
-
-window.saveEditNews=async function(){
-  const title=byId('nw-title').value.trim();if(!title)return;
-  const nw=news.find(function(n){return n.id===editingNwId;});if(!nw)return;
-  nw.title=title;
-  nw.cat=byId('nw-cat').value;
-  nw.body=byId('nw-body').value;
-  await dbSet('news',nw);
-  editingNwId=null;
-  document.querySelector('#ov-news .modal-title').textContent='إضافة خبر';
-  document.querySelector('#ov-news .btn-primary').textContent='نشر';
-  document.querySelector('#ov-news .btn-primary').onclick=saveNews;
-  closeOv('ov-news');
-  if(!configured)renderNews();
-  toast('تم تحديث الخبر ✓');haptic();
-};
 window.openAddNews=function(){
-  haptic();editingNwId=null;
-  ['nw-title','nw-body'].forEach(function(id){byId(id).value='';});
-  byId('nw-cat').innerHTML=newsCatOptionsHtml(newsCatFilter||'');
+  haptic();editingNwId=null;fillNewsForm(null);
   document.querySelector('#ov-news .modal-title').textContent='إضافة خبر';
-  document.querySelector('#ov-news .btn-primary').textContent='نشر';
-  document.querySelector('#ov-news .btn-primary').onclick=saveNews;
+  const b=byId('nw-save-btn');b.textContent='نشر';b.onclick=saveNews;
   openOv('ov-news');
 };
+window.saveEditNews=function(){return saveNews();};
+window.openNewsFromHome=function(id){
+  newsCatFilter='';goPage('news');
+  setTimeout(function(){const c=byId('nwc-'+id);if(c){try{c.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}c.style.boxShadow='var(--glow)';setTimeout(function(){c.style.boxShadow='';},1600);}},80);
+};
 window.saveNews=async function(){
-  const title=byId('nw-title').value.trim();if(!title)return;
-  const data={title:title,cat:byId('nw-cat').value,body:byId('nw-body').value,date:new Date().toISOString().split('T')[0]};
-  await dbSet('news',data);
-  ['nw-title','nw-body'].forEach(function(id){byId(id).value='';});
+  if(!requireAdmin())return;
+  const title=byId('nw-title').value.trim();if(!title){toast('اكتب عنوان الخبر',true);return;}
+  const vu=byId('nw-video-url').value.trim();
+  if(vu&&!/^https?:\/\//i.test(vu)){toast('رابط الفيديو يجب أن يبدأ بـ https://',true);return;}
+  const old=editingNwId?news.find(function(n){return n.id===editingNwId;}):null;
+  if(editingNwId&&!old){toast('الخبر غير موجود — ربما حُذف',true);return;}
+  const id=old?old.id:uid('nw');
+  const fresh=_nmPending.filter(function(m){return m.isNew;});
+  const data=Object.assign({},old||{},{
+    id:id,title:title,cat:byId('nw-cat').value,body:byId('nw-body').value,
+    date:byId('nw-date').value||new Date().toISOString().split('T')[0],
+    place:byId('nw-place').value.trim(),videoUrl:vu,albumId:byId('nw-album').value||'',
+    media:_nmPending.map(nmMeta)
+  });
+  if(approxBytes(data)>900000){toast('حجم الخبر كبير جداً — قلّل عدد الصور',true);return;}
+  const btn=byId('nw-save-btn'),lbl=btn.textContent;btn.disabled=true;btn.textContent='جاري الحفظ…';
+  try{
+    await nmUpload(id,fresh,function(d,t){btn.textContent='جاري رفع الوسائط '+Math.round(d*100/t)+'%';});
+    data.media=_nmPending.map(nmMeta);
+    btn.textContent='جاري الحفظ…';
+    await dbSet('news',data);
+  }catch(e){
+    btn.disabled=false;btn.textContent=lbl;
+    toast(adminWriteErr(e),true);
+    nmDelete(fresh); // تنظيف ما رُفع قبل الفشل
+    return;
+  }
+  fresh.forEach(function(m){if(m.full)_nmCache[m.mid]=m.type==='video'?dataUrlToBlobUrl(m.full):m.full;delete m.full;m.isNew=false;});
+  await nmDelete(_nmRemoved);
+  _nmRemoved=[];_nmPending=[];editingNwId=null;
+  btn.disabled=false;btn.textContent=lbl;
   closeOv('ov-news');
-  if(!configured)renderNews();
-  toast('تم النشر ✓');haptic();
+  if(!db){renderNews();if(active==='home')renderHome();}
+  toast(old?'تم تحديث الخبر ✓':'تم النشر ✓');haptic();
 };
 window.delNw=async function(id){
   if(!confirm('حذف الخبر؟'))return;
-  await dbDel('news',id);
-  if(!configured){news=news.filter(function(n){return n.id!==id;});}
+  const nw=news.find(function(n){return n.id===id;});
+  try{await dbDel('news',id);}catch(e){toast(adminWriteErr(e),true);return;}
+  if(nw)await nmDelete(nw.media);
+  if(!db){news=news.filter(function(n){return n.id!==id;});}
   renderNews();toast('تم الحذف');
 };
 
@@ -3908,23 +4221,23 @@ function renderAdminRequests(){
 
 window.deleteRequest=async function(id){
   if(!confirm('حذف هذا الطلب نهائياً؟'))return;
-  await dbDel('registrationRequests',id);
+  try{await dbDel('registrationRequests',id);}catch(e){toast(adminWriteErr(e),true);return;}
   if(!configured)registrationRequests=registrationRequests.filter(function(r){return r.id!==id;});
   renderAdminRequests();
   toast('تم حذف الطلب');
 };
 window.approveRequest=async function(id){
   const r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
-  r.status='approved';
-  await dbSet('registrationRequests',r);
+  const prev=r.status;r.status='approved';
+  try{await dbSet('registrationRequests',r);}catch(e){r.status=prev;toast(adminWriteErr(e),true);return;}
   renderAdminRequests();
   toast('تمت الموافقة على الطلب ✓');haptic();
 };
 window.cancelRequest=async function(id){
   if(!confirm('إلغاء هذا الطلب؟'))return;
   const r=registrationRequests.find(function(x){return x.id===id;});if(!r)return;
-  r.status='cancelled';
-  await dbSet('registrationRequests',r);
+  const prev=r.status;r.status='cancelled';
+  try{await dbSet('registrationRequests',r);}catch(e){r.status=prev;toast(adminWriteErr(e),true);return;}
   renderAdminRequests();
   toast('تم إلغاء الطلب');
 };
@@ -3948,7 +4261,7 @@ var pendingLogo=null;
 
 function loadSettings(){
   const raw=localStorage.getItem('familySiteSettings');
-  if(raw){try{siteSettings=Object.assign({},siteSettings,JSON.parse(raw));}catch(e){}}
+  if(raw){try{const loc=JSON.parse(raw);Object.keys(loc).forEach(function(k){if(isAssetRef(loc[k]))delete loc[k];else if(Array.isArray(loc[k]))loc[k]=loc[k].filter(function(x){return!isAssetRef(x);});});siteSettings=Object.assign({},siteSettings,loc);}catch(e){}}
   loadSettingsExtrasLocal();
   applySettings();
   shadowSettingsSnap();
@@ -3956,26 +4269,12 @@ function loadSettings(){
     db.collection('siteConfig').doc('settings').get().then(function(doc){
       if(doc.exists){
         const data=doc.data();
-        if(data&&data.json){
-          try{
-            siteSettings=Object.assign({},siteSettings,JSON.parse(data.json));
-            localStorage.setItem('familySiteSettings',data.json);
-            shadowSettingsSnap();
-            applySettings();
-          }catch(e){}
-        }
+        if(data&&data.json)applyRemoteSettingsJson(data.json);
       }
     }).catch(function(e){console.log('Settings load from Firestore skipped:',e);});
     if(typeof loadSettingsExtras==='function')loadSettingsExtras();
     db.collection('siteConfig').doc('settings').onSnapshot(function(doc){
-      if(doc.exists&&doc.data()&&doc.data().json){
-        try{
-          siteSettings=Object.assign({},siteSettings,JSON.parse(doc.data().json));
-          localStorage.setItem('familySiteSettings',doc.data().json);
-          shadowSettingsSnap();
-          applySettings();
-        }catch(e){}
-      }
+      if(doc.exists&&doc.data()&&doc.data().json)applyRemoteSettingsJson(doc.data().json);
     });
   }
 }
@@ -4002,10 +4301,10 @@ function appIconBg(){return siteSettings.appIconBg||'#ffffff';}
 // يرسم أيقونة مربعة غير شفافة (آيفون يملأ الشفافية بالأسود)
 function drawAppIcon(size,maskable){
   return new Promise(function(res){
-    const c=document.createElement('canvas');c.width=c.height=size;
-    const g=c.getContext('2d');
     const logo=siteSettings.appIcon||siteSettings.logo||null;
+    // بدون شعار (أو تعذّر رسمه): الحرف الأول على تدرّج اللون الأساسي — على لوحة جديدة دائماً
     const fallback=function(){
+      const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
       const gr=g.createLinearGradient(0,0,size,size);
       gr.addColorStop(0,siteSettings.primaryColor||'#b8935a');gr.addColorStop(1,siteSettings.secondaryColor||'#d4aa72');
       g.fillStyle=gr;g.fillRect(0,0,size,size);
@@ -4013,11 +4312,12 @@ function drawAppIcon(size,maskable){
       g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';
       g.font='700 '+Math.round(size*(maskable?.42:.52))+'px Tajawal, sans-serif';
       g.fillText(ch,size/2,size*.53);
-      res(c.toDataURL('image/png'));
+      try{res(c.toDataURL('image/png'));}catch(e){res('');}
     };
-    if(!logo){fallback();return;}
+    if(!logo||String(logo).indexOf('@asset:')===0){fallback();return;}
     const img=new Image();
     img.onload=function(){
+      const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
       g.fillStyle=appIconBg();g.fillRect(0,0,size,size);
       const pad=size*(maskable?.2:.1),box=size-pad*2;
       const sc=Math.min(box/img.width,box/img.height);
@@ -4029,6 +4329,28 @@ function drawAppIcon(size,maskable){
     img.onerror=fallback;
     img.src=logo;
   });
+}
+// أيقونة تبويب المتصفح: الشعار نفسه بخلفية شفافة
+function drawFavicon(size){
+  return new Promise(function(res){
+    const logo=currentLogo&&currentLogo()||siteSettings.logo||'';
+    if(!logo||String(logo).indexOf('@asset:')===0){drawAppIcon(size,false).then(res);return;}
+    const img=new Image();
+    img.onload=function(){
+      const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
+      const sc=Math.min(size/img.width,size/img.height),w=img.width*sc,h=img.height*sc;
+      g.imageSmoothingQuality='high';g.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+      try{res(c.toDataURL('image/png'));}catch(e){res(logo);}
+    };
+    img.onerror=function(){drawAppIcon(size,false).then(res);};
+    img.src=logo;
+  });
+}
+async function updateFavicon(){
+  const href=_staticPWA?'icon-192.png':await drawFavicon(64);
+  if(!href)return;
+  setHeadLink('icon',href,{type:'image/png'});
+  if(href.indexOf('data:')===0){try{localStorage.setItem('familyFavicon',href);}catch(e){}}
 }
 function setHeadLink(rel,href,attrs){
   let l=document.querySelector('link[rel="'+rel+'"]');
@@ -4069,14 +4391,16 @@ async function updateAppIcons(){
   const name=siteSettings.siteName||'شجرة العائلة';
   setMeta('apple-mobile-web-app-title',name);setMeta('application-name',name);
   const logo=siteSettings.appIcon||siteSettings.logo||'';
-  const key=[logo.length,logo.slice(-48),appIconBg(),name,siteSettings.primaryColor,siteSettings.familyName].join('|');
+  const key=[logo.length,logo.slice(-48),appIconBg(),name,siteSettings.primaryColor,siteSettings.familyName,(siteSettings.logoDark||'').length].join('|');
   if(key===_appIconKey)return;
   _appIconKey=key;
   if(await detectStaticPWA()){
     setHeadLink('manifest','manifest.webmanifest');
     setHeadLink('apple-touch-icon','apple-touch-icon.png',{sizes:'180x180'});
+    updateFavicon();
     return;
   }
+  updateFavicon();
   const i180=await drawAppIcon(180,false);
   if(key!==_appIconKey)return; // تغيّر الشعار أثناء الرسم
   setHeadLink('apple-touch-icon',i180,{sizes:'180x180'});
@@ -4087,7 +4411,6 @@ async function updateAppIcons(){
   const json=Object.assign({},mf.json,{id:start,start_url:start,scope:start.replace(/[^/]*$/,'')});
   const url=URL.createObjectURL(new Blob([JSON.stringify(json)],{type:'application/manifest+json'}));
   setHeadLink('manifest',url);
-  setHeadLink('icon',mf.icons.i192,{type:'image/png',sizes:'192x192'});
   if(_manifestUrl)setTimeout(function(u){return function(){URL.revokeObjectURL(u);};}(_manifestUrl),5000);
   _manifestUrl=url;
   const pv=byId('appicon-preview');if(pv)pv.src=i180;
@@ -4432,27 +4755,138 @@ window.saveSettings=function(){
   pendingLogo=null;
   Object.keys(LIST_KEYS).forEach(function(k){if(Array.isArray(_lstPending[k]))siteSettings[k]=_lstPending[k].slice();});
   const extras=takeSettingsExtras();
-  persistSettings();
   applySettings();
-  closeOv('ov-settings');
-  runSettingsExtras(extras);
-  toast('تم حفظ الإعدادات ✓');
+  const btn=document.querySelector('#ov-settings .modal-footer .btn-primary');
+  const lbl=btn?btn.textContent:'';
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…';}
+  persistSettings().then(function(){
+    if(btn){btn.disabled=false;btn.textContent=lbl;}
+    closeOv('ov-settings');
+    toast(configured&&db?'✓ تم حفظ الإعدادات في Firebase':'تم حفظ الإعدادات ✓');
+    runSettingsExtras(extras);
+  }).catch(function(e){
+    console.error('settings save:',e);
+    if(btn){btn.disabled=false;btn.textContent=lbl;}
+    toast(settingsSaveErr(e),true);
+    runSettingsExtras(extras);
+  });
 };
-// حفظ الإعدادات + تسجيل الحقول التي تغيّرت
+// ══════════════════════════════════════════════════
+//  V66: صور الإعدادات (الشعارات وصور الغلاف) تُحفظ كأجزاء مستقلة في siteConfig
+//  حتى لا يتجاوز مستند الإعدادات حد Firestore (١ ميغابايت) فيُرفض الحفظ
+// ══════════════════════════════════════════════════
+var ASSET_MIN=20000,ASSET_CHUNK=700000,_assetCache={},_assetOnServer={},_refsSettings=null,_refsHeroDark=null;
+function _fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+function assetIdOf(d){return'a'+_fnv(d).toString(36)+d.length.toString(36);}
+function isAssetRef(v){return typeof v==='string'&&v.indexOf('@asset:')===0;}
+function parseAssetRef(v){const p=v.split(':');return{id:p[1],n:parseInt(p[2],10)||1};}
+// يستبدل كل صورة كبيرة بمرجع '@asset:<id>:<عدد الأجزاء>'
+function splitAssets(obj){
+  const assets={};
+  function conv(v){
+    if(typeof v==='string'&&v.indexOf('data:')===0&&v.length>ASSET_MIN){
+      const id=assetIdOf(v),n=Math.ceil(v.length/ASSET_CHUNK);
+      assets[id]={id:id,data:v,n:n};_assetCache[id]=v;
+      return'@asset:'+id+':'+n;
+    }
+    return v;
+  }
+  let out;
+  if(Array.isArray(obj))out=obj.map(conv);
+  else{out={};for(const k in obj){const v=obj[k];out[k]=Array.isArray(v)?v.map(conv):conv(v);}}
+  return{json:out,assets:Object.keys(assets).map(function(k){return assets[k];}),ids:Object.keys(assets)};
+}
+function refsIn(obj){
+  const ids=[];
+  (function walk(v){if(isAssetRef(v))ids.push(parseAssetRef(v).id);else if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')for(const k in v)walk(v[k]);})(obj);
+  return ids;
+}
+async function uploadAssets(assets){
+  const ops=[];
+  assets.forEach(function(a){
+    if(_assetOnServer[a.id])return;
+    for(let i=0;i<a.n;i++)ops.push({t:'set',ref:db.collection('siteConfig').doc('asset_'+a.id+'_'+i),data:{data:a.data.slice(i*ASSET_CHUNK,(i+1)*ASSET_CHUNK),n:a.n,i:i}});
+  });
+  if(ops.length)await commitOpsInChunks(ops);
+  assets.forEach(function(a){_assetOnServer[a.id]=a.n;});
+}
+// يحذف أجزاء الصور التي لم تعد مستخدمة (الإعدادات + غلاف الوضع الليلي)
+async function cleanupAssets(oldIds){
+  const keep=new Set([].concat(_refsSettings||[],_refsHeroDark||[]));
+  const gone=(oldIds||[]).filter(function(id){return!keep.has(id);});
+  if(!gone.length||!(configured&&db))return;
+  const ops=[];
+  gone.forEach(function(id){const n=_assetOnServer[id]||1;for(let i=0;i<n;i++)ops.push({t:'del',ref:db.collection('siteConfig').doc('asset_'+id+'_'+i)});delete _assetOnServer[id];});
+  try{await commitOpsInChunks(ops);}catch(e){console.warn('cleanupAssets:',e&&e.message);}
+}
+// يحوّل المراجع إلى الصور الفعلية (من الذاكرة، أو من مستندات محلية، أو من الخادم)
+async function resolveAssets(obj,localDocs){
+  const ids={};refsIn(obj).forEach(function(id){ids[id]=1;});
+  const need=[];
+  (function walk(v){if(isAssetRef(v)){const r=parseAssetRef(v);if(!_assetCache[r.id])need.push(r);}else if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')for(const k in v)walk(v[k]);})(obj);
+  const uniq={};need.forEach(function(r){uniq[r.id]=r;});
+  await Promise.all(Object.keys(uniq).map(async function(id){
+    const r=uniq[id];let parts=[];
+    if(localDocs){
+      for(let i=0;i<r.n;i++){const d=localDocs.find(function(x){return x&&x.id==='asset_'+id+'_'+i;});parts.push(d?d.data:null);}
+    }else if(configured&&db){
+      parts=await Promise.all(Array.from({length:r.n},function(_,i){
+        return db.collection('siteConfig').doc('asset_'+id+'_'+i).get().then(function(s){return s.exists?s.data().data:null;}).catch(function(){return null;});
+      }));
+    }
+    if(parts.length&&parts.every(function(x){return typeof x==='string';})){_assetCache[id]=parts.join('');_assetOnServer[id]=r.n;}
+  }));
+  function res(v){if(isAssetRef(v)){const id=parseAssetRef(v).id;return _assetCache[id]||null;}return v;}
+  if(Array.isArray(obj))return obj.map(res).filter(function(x){return x!==null;});
+  const out={};
+  for(const k in obj){
+    const v=obj[k];
+    if(Array.isArray(v))out[k]=v.map(res).filter(function(x){return x!==null;});
+    else{const r=res(v);if(r!==null)out[k]=r;else if(siteSettings[k]!==undefined)out[k]=siteSettings[k];}
+  }
+  return out;
+}
+function cacheSettingsLocal(full,refJson){
+  try{localStorage.setItem('familySiteSettings',JSON.stringify(full));}
+  catch(e){try{localStorage.setItem('familySiteSettings',refJson);}catch(_){}}
+}
+// إعدادات قادمة من الخادم (قد تحتوي مراجع صور)
+var _settingsApplySeq=0;
+function applyRemoteSettingsJson(str){
+  let raw;try{raw=JSON.parse(str);}catch(e){return;}
+  _refsSettings=refsIn(raw);
+  const seq=++_settingsApplySeq;
+  resolveAssets(raw).then(function(full){
+    if(seq!==_settingsApplySeq)return;
+    siteSettings=Object.assign({},siteSettings,full);
+    cacheSettingsLocal(siteSettings,str);
+    shadowSettingsSnap();
+    applySettings();
+  });
+}
+
+// حفظ الإعدادات + تسجيل الحقول التي تغيّرت — يُرجع وعداً ينجح فقط بعد تأكيد Firebase
 function persistSettings(){
   const before=_shadowSettings;
-  const json=JSON.stringify(siteSettings);
-  localStorage.setItem('familySiteSettings',json);
+  const split=splitAssets(siteSettings);
+  const json=JSON.stringify(split.json);
+  cacheSettingsLocal(siteSettings,json);
   const item=before?logItem('settings','settings',before,siteSettings):null;
   shadowSettingsSnap();
-  if(configured&&db){
-    return db.collection('siteConfig').doc('settings').set({json:json,updated:new Date().toISOString()}).then(function(){pushLog([item]);}).catch(function(e){
-      console.log('Firestore settings save error:',e);
-      toast(json.length>1000000?'⚠️ تعذّر حفظ الإعدادات: صور الغلاف كبيرة جداً — احذف بعضها ثم احفظ':'⚠️ تعذّر حفظ الإعدادات في السحابة'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':''),true);
-    });
-  }
-  pushLog([item]);
-  return Promise.resolve();
+  if(!(configured&&db)){pushLog([item]);return Promise.resolve(true);}
+  if(json.length>900000)return Promise.reject(new Error('الإعدادات كبيرة جداً ('+Math.round(json.length/1024)+' KB)'));
+  const oldRefs=(_refsSettings||[]).slice();
+  return(async function(){
+    await uploadAssets(split.assets);
+    await db.collection('siteConfig').doc('settings').set({json:json,updated:new Date().toISOString()});
+    _refsSettings=split.ids;
+    pushLog([item]);
+    cleanupAssets(oldRefs);
+    return true;
+  })();
+}
+function settingsSaveErr(e){
+  return'⚠️ لم تُحفظ الإعدادات في Firebase'+(e&&e.code==='permission-denied'?' — لا تملك صلاحية (سجّل الدخول كمدير)':(e&&e.message?': '+e.message:''))+' — حاول مرة أخرى';
 }
 
 // ══ APPLY THEME ══
@@ -4588,13 +5022,17 @@ function setHeroDarkLocal(arr){
   markDirty('home');if(active==='home')refreshPage('home');
 }
 async function persistHeroDark(arr){
-  const json=JSON.stringify(arr||[]);
-  if(json!==JSON.stringify(heroDarkImages||[]))pushLog([],{info:'تحديث صور غلاف الوضع الليلي ('+(arr||[]).length+' صورة)',col:'siteConfig'});
+  const changed=JSON.stringify(arr||[])!==JSON.stringify(heroDarkImages||[]);
   if(configured&&db){
-    if(json.length>1000000){toast('⚠️ صور الغلاف الليلية كبيرة جداً — احذف بعضها ثم احفظ',true);return false;}
-    try{await db.collection('siteConfig').doc('heroDark').set({json:json,updated:new Date().toISOString()});}
-    catch(e){toast('⚠️ تعذّر حفظ صور الغلاف الليلية'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':''),true);return false;}
+    const split=splitAssets(arr||[]),json=JSON.stringify(split.json),oldRefs=(_refsHeroDark||[]).slice();
+    try{
+      await uploadAssets(split.assets);
+      await db.collection('siteConfig').doc('heroDark').set({json:json,updated:new Date().toISOString()});
+      _refsHeroDark=split.ids;cleanupAssets(oldRefs);
+    }
+    catch(e){toast('⚠️ لم تُحفظ صور الغلاف الليلية في Firebase'+(e&&e.code==='permission-denied'?' (لا تملك صلاحية)':'')+' — حاول مرة أخرى',true);return false;}
   }
+  if(changed)pushLog([],{info:'تحديث صور غلاف الوضع الليلي ('+(arr||[]).length+' صورة)',col:'siteConfig'});
   setHeroDarkLocal(arr);
   return true;
 }
@@ -4607,8 +5045,11 @@ function loadSettingsExtras(){
   db.collection('siteConfig').doc('heroDark').onSnapshot(function(doc){
     let arr=[];
     if(doc.exists&&doc.data()&&doc.data().json){try{arr=JSON.parse(doc.data().json)||[];}catch(e){arr=[];}}
-    if(JSON.stringify(arr)!==JSON.stringify(heroDarkImages))setHeroDarkLocal(arr);
-    if(byId('ov-settings')&&!byId('ov-settings').classList.contains('on')){pendingHeroDarkImgs=null;renderHeroDarkPreview();}
+    _refsHeroDark=refsIn(arr);
+    resolveAssets(arr).then(function(full){
+      if(JSON.stringify(full)!==JSON.stringify(heroDarkImages))setHeroDarkLocal(full);
+      if(byId('ov-settings')&&!byId('ov-settings').classList.contains('on')){pendingHeroDarkImgs=null;renderHeroDarkPreview();}
+    });
   },function(e){console.warn('heroDark:',e&&e.message);});
   db.collection('siteConfig').doc('fonts').onSnapshot(function(doc){
     let arr=[];
@@ -6088,8 +6529,10 @@ async function fetchCollectionRaw(col){
   return snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});
 }
 function demoSiteConfigDocs(){
-  const out=[{id:'settings',json:JSON.stringify(siteSettings),updated:new Date().toISOString()}];
-  if(heroDarkImages.length)out.push({id:'heroDark',json:JSON.stringify(heroDarkImages)});
+  const sp=splitAssets(siteSettings),hd=splitAssets(heroDarkImages||[]);
+  const out=[{id:'settings',json:JSON.stringify(sp.json),updated:new Date().toISOString()}];
+  if(heroDarkImages.length)out.push({id:'heroDark',json:JSON.stringify(hd.json)});
+  sp.assets.concat(hd.assets).forEach(function(a){for(let i=0;i<a.n;i++)out.push({id:'asset_'+a.id+'_'+i,data:a.data.slice(i*ASSET_CHUNK,(i+1)*ASSET_CHUNK),n:a.n,i:i});});
   if(fontFiles.length){
     out.push({id:'fonts',json:JSON.stringify(fontFiles)});
     fontFiles.forEach(function(f){
@@ -6105,14 +6548,14 @@ window.exportFullBackup=async function(){
   const backup={
     format:2,version:APP_VERSION,date:new Date().toISOString(),
     siteName:siteSettings.siteName||'شجرة العائلة',
-    members:members,events:events,news:news,photos:photos,albums:albums,documents:docs,documentFiles:[],
+    members:members,events:events,news:news,newsMedia:[],photos:photos,albums:albums,documents:docs,documentFiles:[],
     heroDarkImages:heroDarkImages,siteSettings:siteSettings,
     siteConfig:[],users:[],logins:[],registrationRequests:[]
   };
   const missing=[];
   if(configured&&db){
     // قراءة مباشرة من الخادم حتى لا يفوت شيء
-    const cols={members:'members',events:'events',news:'news',photos:'photos',albums:'albums',documents:'documents',documentFiles:'documentFiles',
+    const cols={members:'members',events:'events',news:'news',newsMedia:'newsMedia',photos:'photos',albums:'albums',documents:'documents',documentFiles:'documentFiles',
       siteConfig:'siteConfig',users:'users',logins:'logins',registrationRequests:'registrationRequests'};
     for(const k in cols){
       try{backup[k]=await fetchCollectionRaw(cols[k]);}
@@ -6120,12 +6563,14 @@ window.exportFullBackup=async function(){
     }
     if(missing.indexOf('members')>=0)backup.members=members; // احتياط: النسخة المحمّلة في الصفحة
   }else{
+    Object.keys(_nmLocal).forEach(function(mid){const d=_nmLocal[mid]||'',n=Math.max(1,Math.ceil(d.length/NM_CHUNK));
+      for(let i=0;i<n;i++)backup.newsMedia.push({id:mid+'_'+i,mid:mid,i:i,n:n,data:d.slice(i*NM_CHUNK,(i+1)*NM_CHUNK)});});
     backup.documentFiles=Object.keys(_demoDocFiles).map(function(k){return Object.assign({id:k},_demoDocFiles[k]);});
     backup.siteConfig=demoSiteConfigDocs();
     backup.users=(typeof demoUsers!=='undefined'?demoUsers:[]).map(function(u){return Object.assign({},u,{id:u.uid||u.id});});
     backup.registrationRequests=registrationRequests||[];
   }
-  backup.counts={members:backup.members.length,events:backup.events.length,news:backup.news.length,photos:backup.photos.length,albums:(backup.albums||[]).length,
+  backup.counts={members:backup.members.length,events:backup.events.length,news:backup.news.length,newsMedia:(backup.newsMedia||[]).length,photos:backup.photos.length,albums:(backup.albums||[]).length,
     documents:backup.documents.length,siteConfig:backup.siteConfig.length,users:backup.users.length,logins:backup.logins.length,
     registrationRequests:backup.registrationRequests.length};
   const json=JSON.stringify(backup);
@@ -6194,6 +6639,7 @@ window.importFullBackup=function(e){
           }
           await replaceCollection('members',restoredMembers,'imp');
           if(arr('events'))await replaceCollection('events',backup.events,'ev');
+          if(arr('newsMedia'))await replaceCollection('newsMedia',backup.newsMedia,'nm',{stripId:true});
           if(arr('news'))await replaceCollection('news',backup.news,'nw');
           if(arr('photos'))await replaceCollection('photos',backup.photos,'ph');
           if(arr('albums'))await replaceCollection('albums',backup.albums,'alb');
@@ -6204,7 +6650,7 @@ window.importFullBackup=function(e){
           if(arr('siteConfig')){
             await replaceCollection('siteConfig',backup.siteConfig,'cfg',{stripId:true});
           }else{
-            if(backup.siteSettings)await db.collection('siteConfig').doc('settings').set({json:JSON.stringify(backup.siteSettings),updated:new Date().toISOString()});
+            if(backup.siteSettings){siteSettings=Object.assign({},siteSettings,backup.siteSettings);await persistSettings();}
             if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
           }
           const me=(fbAuth&&fbAuth.currentUser)?fbAuth.currentUser.uid:'';
@@ -6212,11 +6658,20 @@ window.importFullBackup=function(e){
           if(arr('logins'))await replaceCollection('logins',backup.logins,'l',{stripId:true});
           if(arr('registrationRequests'))await replaceCollection('registrationRequests',backup.registrationRequests,'rq',{stripId:true});
           const ss=settingsFrom(backup.siteConfig);
-          if(ss){siteSettings=ss;localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));applySettings();}
+          if(ss){
+            _refsSettings=refsIn(ss);
+            siteSettings=Object.assign({},siteSettings,await resolveAssets(ss,backup.siteConfig||null));
+            cacheSettingsLocal(siteSettings,JSON.stringify(ss));applySettings();
+          }
         }else{
           members=restoredMembers;
           if(arr('events'))events=backup.events;
           if(arr('news'))news=backup.news;
+          if(arr('newsMedia')){
+            _nmLocal={};_nmCache={};
+            const g={};backup.newsMedia.forEach(function(c){if(c&&c.mid){(g[c.mid]=g[c.mid]||[])[c.i|0]=c.data||'';}});
+            Object.keys(g).forEach(function(mid){_nmLocal[mid]=g[mid].join('');});
+          }
           if(arr('photos'))photos=backup.photos;
           if(arr('albums'))albums=backup.albums.slice();
           if(arr('documents')){
@@ -6225,10 +6680,10 @@ window.importFullBackup=function(e){
           }
           const sc=arr('siteConfig');
           const ss=settingsFrom(sc);
-          if(ss){siteSettings=ss;localStorage.setItem('familySiteSettings',JSON.stringify(siteSettings));}
+          if(ss){siteSettings=Object.assign({},siteSettings,await resolveAssets(ss,sc||null));cacheSettingsLocal(siteSettings,JSON.stringify(ss));}
           if(sc){
             const hd=sc.find(function(x){return x.id==='heroDark';});
-            setHeroDarkLocal(hd&&hd.json?JSON.parse(hd.json):[]);
+            setHeroDarkLocal(hd&&hd.json?await resolveAssets(JSON.parse(hd.json),sc):[]);
             const fd=sc.find(function(x){return x.id==='fonts';});
             const man=fd&&fd.json?JSON.parse(fd.json):[];
             _demoFontData={};_fontUrlCache={};
@@ -6707,25 +7162,17 @@ function renderHome(){
   // إحصائيات الأسماء والأجيال
   html2+=nameStatsSectionHtml();
 
-  // أحدث الفعاليات
-  if(events.length){
-    let evCards='';
-    events.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).slice(0,5).forEach(function(e){
-      const img=(e.media&&e.media.length&&e.media[0].type==='image')?e.media[0].src:'';
-      evCards+='<div class="img-card" onclick="goPage(\'events\')">'+
-        (img?'<img class="img-card-img" src="'+escAttr(img)+'" loading="lazy" decoding="async" alt="">':'<div class="img-card-img" style="background:linear-gradient(140deg,#d4b896,#c4a882);display:flex;align-items:center;justify-content:center;font-size:2rem">📅</div>')+
-        '<div class="img-card-body"><div class="img-card-tag">فعالية</div><div class="img-card-title">'+esc(e.title)+'</div><div class="img-card-meta">'+esc(e.date||'')+(e.place?' · '+esc(e.place):'')+'</div></div></div>';
-    });
-    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">أحدث المناسبات</div></div></div><div class="img-cards">'+evCards+'</div></div>';
-  }
-
   // آخر الأخبار
   if(news.length){
     let nwCards='';
     news.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).slice(0,5).forEach(function(n){
-      nwCards+='<div class="img-card" onclick="goPage(\'news\')">'+
-        '<div class="img-card-img" style="background:linear-gradient(140deg,#b8c8d8,#a0b8cc);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>'+
-        '<div class="img-card-body"><div class="img-card-tag">'+esc(n.cat||'خبر')+'</div><div class="img-card-title">'+esc(n.title)+'</div><div class="img-card-meta">'+esc(n.date||'')+'</div></div></div>';
+      const th=(n.media||[]).find(function(m){return m&&m.thumb;});
+      let img=th?th.thumb:'';
+      if(!img&&n.albumId){const c=albumCover(n.albumId);if(c)img=c;}
+      nwCards+='<div class="img-card" onclick="openNewsFromHome(\''+escAttr(n.id)+'\')">'+
+        (img?'<div style="position:relative"><img class="img-card-img" src="'+escAttr(img)+'" loading="lazy" decoding="async" alt="">'+(th&&th.type==='video'?'<div class="nw-play"><span>▶</span></div>':'')+'</div>'
+            :'<div class="img-card-img" style="background:linear-gradient(140deg,#b8c8d8,#a0b8cc);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>')+
+        '<div class="img-card-body"><div class="img-card-tag">'+esc(n.cat||'خبر')+'</div><div class="img-card-title">'+esc(n.title)+'</div><div class="img-card-meta">'+esc(n.date||'')+(n.place?' · '+esc(n.place):'')+'</div></div></div>';
     });
     html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">آخر الأخبار</div></div></div><div class="img-cards">'+nwCards+'</div></div>';
   }
@@ -7135,6 +7582,13 @@ function writeErrMsg(e){
   return'حدث خطأ أثناء الحفظ: '+((e&&e.message)||e);
 }
 
+// أخطاء حفظ المحتوى العام (الأخبار، الطلبات…) — رسالة واضحة بدل الصمت
+function adminWriteErr(e){
+  if(e&&(e.code==='permission-denied'||/permission/i.test(e.message||'')))
+    return'⛔ لم يُحفظ في Firebase — رفض الخادم العملية. تأكد أنك داخل كمدير وأن قواعد Firestore الأخيرة (V66) منشورة';
+  if(e&&(e.code==='unavailable'||/offline|network/i.test(e.message||'')))return'⚠️ لا يوجد اتصال — لم يكتمل الحفظ، حاول مرة أخرى';
+  return'⚠️ لم يكتمل الحفظ: '+((e&&e.message)||e);
+}
 // ══ COMMIT — كل كتابة على الأعضاء تمر من هنا ══
 // تحسب فهرس الفروع (ancestors) للأفراد المتأثرين وذريتهم، وتتحقق من الصلاحية، ثم تكتب.
 async function commitMemberChanges(upserts,deleteIds,opts){
@@ -7630,7 +8084,7 @@ function renderPermList(){
   const el=byId('perm-list');if(!el)return;
   const accs=listAccounts().slice().sort(function(a,b){
     if(a.role!==b.role)return a.role==='admin'?-1:1;
-    return String(a.name||'').localeCompare(String(b.name||''),'ar');
+    return accountDisplayName(a).localeCompare(accountDisplayName(b),'ar');
   });
   if(!accs.length){el.innerHTML='<div class="empty" style="padding:1.5rem 1rem"><div class="empty-ico">🛡️</div><p>لا توجد صلاحيات بعد</p></div>';return;}
   el.innerHTML='<div class="settings-sec-title" style="margin:.5rem 0 .6rem">الحسابات ('+accs.length+')</div>'+accs.map(function(u){
@@ -7640,7 +8094,7 @@ function renderPermList(){
     const legacy=!u.phone;
     const roleLbl=u.role==='admin'?'مدير':'محرر فرع';
     return'<div class="perm-card'+(on?'':' off')+'">'+
-      '<div class="perm-head"><div><div class="perm-name">'+esc(u.name||'—')+'<span class="perm-role '+u.role+'">'+roleLbl+'</span>'+(legacy?'<span class="perm-role legacy">حساب بريد قديم</span>':'')+(self?'<span class="perm-role legacy">أنت</span>':'')+'</div>'+
+      '<div class="perm-head"><div><div class="perm-name">'+esc(accountDisplayName(u))+'<span class="perm-role '+u.role+'">'+roleLbl+'</span>'+(legacy?'<span class="perm-role legacy">حساب بريد قديم</span>':'')+(self?'<span class="perm-role legacy">أنت</span>':'')+'</div>'+
         '<div class="perm-mail" dir="ltr">'+esc(u.phone||u.email||'')+'</div></div>'+
       '<span class="perm-state '+(on?'on':'off')+'">'+(on?'● فعّال':'○ موقوف')+'</span></div>'+
       (u.role==='editor'?'<div class="perm-branch">الفرع: '+(root?'<b>'+esc(permMemberLabel(root))+'</b> · '+n+' فرد':'<span style="color:var(--err)">⚠️ رأس الفرع محذوف — اختر فرعاً جديداً</span>')+'</div>':'<div class="perm-branch">كل الصلاحيات</div>')+
@@ -7676,7 +8130,7 @@ async function updateUserProfile(u,patch){
   if(db)await db.collection('users').doc(u).set(patch,{merge:true});
   else{const x=demoUsers.find(function(d){return d.uid===u;});if(x)Object.assign(x,patch);}
   const who=(typeof findEditor==='function'&&findEditor(u))||{};
-  pushLog([],{info:'تعديل صلاحية: '+(who.name||who.phone||who.email||u)+(patch.active===false?' (إيقاف)':(patch.active===true?' (تفعيل)':'')),col:'users'});
+  pushLog([],{info:'تعديل صلاحية: '+(accountMember(who)?accountDisplayName(who):(who.name||who.phone||who.email||u))+(patch.active===false?' (إيقاف)':(patch.active===true?' (تفعيل)':'')),col:'users'});
 }
 // إنشاء حساب دخول لرقم جوال: حساب Firebase + ملف الصلاحية + ربط الرقم بالحساب
 async function issuePhoneAccount(key,pass,profile){
@@ -7715,7 +8169,7 @@ window.savePermission=async function(){
   if(listAccounts().some(function(u){return phoneKey(u.phone)===key;})){toast('لهذا الرقم صلاحية مسبقاً — عدّلها من القائمة',true);return;}
   btn.disabled=true;btn.textContent='جاري الإنشاء…';
   try{
-    const profile={role:role,name:m.name||'',memberId:m.id,branchRootId:role==='editor'?root:null,active:true,createdAt:new Date().toISOString()};
+    const profile={role:role,name:tripleNameKunya(m)||m.name||'',memberId:m.id,branchRootId:role==='editor'?root:null,active:true,createdAt:new Date().toISOString()};
     if(db)await issuePhoneAccount(key,pass,profile);
     else demoUsers.push(Object.assign({uid:uid('u'),password:pass,phone:key},profile));
     toast('✓ تم منح '+(m.name||'')+' صلاحية '+(role==='admin'?'المدير':'الفرع')+' — يدخل برقم '+(m.phone||key)+' وكلمة المرور');
@@ -7735,7 +8189,7 @@ window.editPermission=function(u){
   byId('perm-member-q').value='';
   byId('perm-role').value=x.role==='admin'?'admin':'editor';onPermRoleChange();
   byId('perm-pass-wrap').style.display='none';
-  byId('perm-form-title').textContent='تعديل صلاحية: '+(x.name||x.phone||x.email);
+  byId('perm-form-title').textContent='تعديل صلاحية: '+(accountMember(x)?accountDisplayName(x):(x.name||x.phone||x.email));
   byId('perm-submit').textContent='حفظ التغيير';
   byId('perm-cancel').style.display='';
   filterPermBranch();
@@ -7762,7 +8216,7 @@ window.resetEditorPassword=async function(u){
     if(fbAuth&&x.email){try{await fbAuth.sendPasswordResetEmail(x.email);toast('✓ أُرسل رابط تعيين كلمة المرور إلى '+x.email);}catch(e){toast(authErrMsg(e),true);}}
     return;
   }
-  const pass=window.prompt('كلمة المرور الجديدة لـ '+(x.name||x.phone)+' (6 أحرف على الأقل):','');
+  const pass=window.prompt('كلمة المرور الجديدة لـ '+accountDisplayName(x)+' (6 أحرف على الأقل):','');
   if(pass===null)return;
   if(String(pass).length<6){toast('كلمة المرور 6 أحرف على الأقل',true);return;}
   try{
@@ -7773,7 +8227,7 @@ window.resetEditorPassword=async function(u){
     }else{
       x.password=pass;
     }
-    toast('✓ تم تعيين كلمة مرور جديدة لـ '+(x.name||x.phone));
+    toast('✓ تم تعيين كلمة مرور جديدة لـ '+accountDisplayName(x));
     renderPermList();
   }catch(e){toast(authErrMsg(e),true);}
 };
@@ -7781,11 +8235,11 @@ window.removePermission=async function(u){
   if(!requireAdmin())return;
   const x=findEditor(u);if(!x)return;
   if(isSelfAccount(u)){toast('لا يمكنك حذف حسابك بنفسك',true);return;}
-  if(!confirm('سحب جميع صلاحيات '+(x.name||x.phone||x.email)+'؟\nسيبقى قادراً على تصفح الموقع برقم جواله فقط.'))return;
+  if(!confirm('سحب جميع صلاحيات '+accountDisplayName(x)+'؟\nسيبقى قادراً على تصفح الموقع برقم جواله فقط.'))return;
   try{
     if(db){
       await db.collection('users').doc(u).delete();
-      pushLog([],{info:'سحب صلاحية: '+(x.name||x.phone||x.email||''),col:'users'});
+      pushLog([],{info:'سحب صلاحية: '+accountDisplayName(x),col:'users'});
       const key=phoneKey(x.phone);
       if(key){
         const ls=await db.collection('logins').doc(key).get();
