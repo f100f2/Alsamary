@@ -617,6 +617,27 @@ img{-webkit-user-drag:none}
 .about-block{background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);font-size:clamp(1rem,.95rem + .25vw,1.08rem);line-height:2;color:var(--ink2);position:relative;overflow:hidden}
 .about-block::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:linear-gradient(to bottom,var(--gold),transparent);box-shadow:var(--glow)}
 /* V59: نسب الأسرة — بدون بطاقة، في المنتصف، بخط العناوين وأكبر من خط النبذة */
+.ftree-card{display:flex;gap:1.1rem;align-items:center;background:var(--white);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem;box-shadow:var(--shadow)}
+.ftree-thumb{position:relative;flex:0 0 auto;width:clamp(110px,28vw,170px);aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:var(--sand2);border:1px solid var(--sand3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .25s var(--spring)}
+.ftree-thumb:hover{transform:translateY(-2px)}
+.ftree-thumb img{width:100%;height:100%;object-fit:cover;object-position:top}
+.ftree-ico{width:62%;height:auto}
+.ftree-badge{position:absolute;bottom:6px;left:6px;background:#c0392b;color:#fff;font-size:.6rem;font-weight:800;padding:.1rem .4rem;border-radius:6px;letter-spacing:.04em}
+.ftree-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
+.ftree-name{font-size:1rem;font-weight:700;color:var(--ink);line-height:1.5}
+.ftree-meta{font-size:.74rem;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ftree-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem}
+.ftree-live{background:none;border:none;color:var(--gold);font-weight:600;font-size:.76rem;cursor:pointer;padding:.2rem 0;text-align:start;font-family:inherit}
+.ftree-empty{cursor:pointer;border-style:dashed;color:var(--ink3);font-size:.82rem}
+.ftree-empty .ftree-ico{width:54px;flex:0 0 auto}
+.ftree-set{display:flex;gap:.8rem;align-items:center;border:1px solid var(--sand3);border-radius:12px;padding:.6rem;background:var(--sand)}
+.ftree-set-th{width:64px;height:84px;flex:0 0 auto;border-radius:8px;overflow:hidden;background:var(--sand2);display:flex;align-items:center;justify-content:center}
+.ftree-set-th img{width:100%;height:100%;object-fit:cover;object-position:top}
+.ftree-set-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.2rem}
+.ftree-set-name{font-size:.8rem;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ftree-set-meta{font-size:.7rem;color:var(--ink3)}
+.ftree-set-meta:empty{display:none}
+.ftree-set-btns{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.25rem}
 .lineage-body{text-align:center;font-family:var(--display-font);font-size:clamp(1.2rem,1.05rem + .6vw,1.5rem);line-height:2;color:var(--ink);max-width:760px;margin:0 auto;padding:.2rem .4rem}
 .lineage-body p{margin:0 0 .8em;overflow-wrap:anywhere}
 .lineage-body p:last-child{margin-bottom:0}
@@ -836,7 +857,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
         <span id="admin-req-count" class="req-badge" style="display:none">0</span>
       </button>
-      <button id="settings-btn" class="top-action-btn" style="display:none" onclick="initListEditors();openOv('ov-settings');drawAppIcon(180,false).then(function(d){var p=byId('appicon-preview');if(p)p.src=d;})" title="الإعدادات">
+      <button id="settings-btn" class="top-action-btn" style="display:none" onclick="initListEditors();resetTreePending();openOv('ov-settings');drawAppIcon(180,false).then(function(d){var p=byId('appicon-preview');if(p)p.src=d;})" title="الإعدادات">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
       </button>
       <button id="theme-btn" class="top-action-btn" onclick="toggleTheme()" title="الوضع الليلي / النهاري" aria-label="تبديل المظهر">
@@ -1037,7 +1058,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
     </div>
     <button class="btn btn-sm du-pass" id="drawer-chpass" style="display:none" onclick="openChangePass()">🔑 تغيير كلمة المرور</button>
   </div>
-  <div class="drawer-footer" id="drawer-footer">V67 · شجرة العائلة</div>
+  <div class="drawer-footer" id="drawer-footer">V68 · شجرة العائلة</div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1566,6 +1587,13 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none}
         <textarea id="settings-about-text" rows="10" placeholder="اكتب نبذة تفصيلية عن العائلة وتاريخها…&#10;&#10;اترك سطراً فارغاً بين الفقرات." style="resize:vertical;min-height:12rem;line-height:1.9" oninput="updateAboutCount()"></textarea>
         <div class="field-count" id="about-count"></div>
       </div>
+      <div class="field"><label>🌳 شجرة العائلة (نسخة ورقية PDF)</label>
+        <div id="tree-pdf-box"></div>
+        <input type="file" id="tree-pdf-in" accept="application/pdf,.pdf" style="display:none" onchange="onTreePdfSelect(event)">
+        <input type="file" id="tree-img-in" accept="image/*" style="display:none" onchange="onTreeImgSelect(event)">
+        <input id="tree-pdf-url" dir="ltr" placeholder="أو رابط خارجي للملف (اختياري) https://…" style="margin-top:.5rem" oninput="this.dataset.touched=1">
+        <div class="v53-hint">يظهر قسم «شجرة العائلة» في الصفحة الرئيسية تحت «نبذة عن الأسرة» بصورة مصغّرة وزر تحميل. الصورة تُصنع تلقائياً من الصفحة الأولى ويمكنك اختيار صورة أخرى. الحد 25 ميغابايت — للملفات الأكبر ضع رابطاً (Google Drive مثلاً).</div>
+      </div>
       <div class="field"><label>صورة الغلاف الرئيسية</label>
         <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap" id="hero-imgs-preview"></div>
         <button class="btn btn-sm" onclick="document.getElementById('hero-img-in').click()" style="margin-top:.4rem">+ إضافة صورة</button>
@@ -1792,7 +1820,7 @@ const firebaseConfig={
 const ADMIN_EMAILS=["f100f2@gmail.com","maas1424@gmail.com"];
 // كلمة مرور الوضع التجريبي فقط (عند تعذّر الاتصال بـ Firebase) — لا تُستخدم مع البيانات الحقيقية
 const ADMIN_PASSWORD="admin123";
-const APP_VERSION='V67';
+const APP_VERSION='V68';
 
 // ══ STATE ══
 var db=null,isAdmin=false,editingId=null,currentId=null;
@@ -2189,7 +2217,7 @@ var FIELD_AR={name:'الاسم',fullName:'الاسم الكامل',_fullName:'ا
   bio:'النبذة',externalKids:'أبناء من خارج العائلة',photo:'الصورة',parentId:'الأب',order:'ترتيب الميلاد',
   title:'العنوان',cat:'التصنيف',body:'النص',date:'التاريخ',place:'المكان',desc:'الوصف',media:'الوسائط',caption:'الوصف',tags:'الأشخاص',
   eventId:'الفعالية',newsId:'الخبر',albumId:'الألبوم',category:'التصنيف',src:'الصورة',createdAt:'تاريخ الإنشاء',
-  siteName:'اسم الموقع',familyName:'اسم العائلة',aboutText:'نبذة عن الأسرة',lineageText:'نسب الأسرة',homeSubtitle:'العنوان الفرعي',heroText:'نص الغلاف',
+  siteName:'اسم الموقع',familyName:'اسم العائلة',aboutText:'نبذة عن الأسرة',lineageText:'نسب الأسرة',treePdf:'ملف شجرة العائلة (PDF)',treeImage:'صورة شجرة العائلة',treePdfUrl:'رابط ملف الشجرة',homeSubtitle:'العنوان الفرعي',heroText:'نص الغلاف',
   heroImages:'صور الغلاف',logo:'الشعار',logoDark:'الشعار الداكن',drawerLogo:'شعار القائمة',drawerLogoDark:'شعار القائمة الداكن',
   primaryColor:'اللون الأساسي',secondaryColor:'اللون الثانوي',bgColor:'لون الخلفية',textColor:'لون النص',textSecondary:'لون النص الثانوي',textMuted:'لون النص الخافت',
   fontFamily:'خط النصوص',displayFont:'خط العناوين',positions:'المناصب',newsCategories:'تصنيفات الأخبار',albumCategories:'تصنيفات الألبومات'};
@@ -2435,6 +2463,11 @@ var active='home';
 window.goPage=function(p){
   haptic();
   if(p==='events')p='news'; // V66: الفعاليات مخفية — حلّت محلها الأخبار
+  // V68: الخروج من الألبوم ثم العودة (أو الضغط عليه مرة أخرى) يفتح الألبوم الرئيسي
+  if(p==='album'||active==='album'){
+    if(typeof curAlbumId!=='undefined'&&!window._keepAlbum){curAlbumId=null;albumCatFilter='';const aq=byId('album-q');if(aq)aq.value='';}
+  }
+  window._keepAlbum=false;
   if(p==='inlaws'&&!isAdmin){if(typeof denied==='function')denied('⛔ صفحة الأنسباء متاحة للمدير فقط');p='home';}
   if(p==='docs'&&!(isAdmin||isEditor)){if(typeof denied==='function')denied('⛔ صفحة الوثائق متاحة لأصحاب الصلاحية فقط');p='home';}
   const d=byId('drawer'),ov=byId('drawer-overlay'),hb=byId('hamburger-btn');
@@ -4595,6 +4628,7 @@ function applySettingsRest(){
   if(sht)sht.value=siteSettings.heroText||'';
   const sab=byId('s-appicon-bg');if(sab)sab.value=appIconBg();
   updateAboutCount();
+  renderTreePdfSettings();
   pendingHeroImgs=null;renderHeroPreview();
   fillColorInputs();
   // شعار القائمة الجانبية
@@ -4759,7 +4793,13 @@ window.saveSettings=function(){
   const btn=document.querySelector('#ov-settings .modal-footer .btn-primary');
   const lbl=btn?btn.textContent:'';
   if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…';}
-  persistSettings().then(function(){
+  let treeCleanup=null;
+  prepTreeSettings(function(d,t){if(btn)btn.textContent='جاري رفع ملف الشجرة '+Math.round(d*100/t)+'%';}).then(function(c){
+    treeCleanup=c;if(btn)btn.textContent='جاري الحفظ…';
+    applySettings();
+    return persistSettings();
+  }).then(function(){
+    if(treeCleanup)treeCleanup();
     if(btn){btn.disabled=false;btn.textContent=lbl;}
     closeOv('ov-settings');
     toast(configured&&db?'✓ تم حفظ الإعدادات في Firebase':'تم حفظ الإعدادات ✓');
@@ -5270,6 +5310,198 @@ function runSettingsExtras(x){
   }
 }
 
+// ══════════════════════════════════════════════════
+//  V68: «شجرة العائلة» — النسخة الورقية PDF في الصفحة الرئيسية
+//  الملف يُحفظ أجزاءً في siteConfig/treepdf_<id>_<i> (≤700KB)، والمعلومات في siteSettings.treePdf
+//  الصورة المصغّرة siteSettings.treeImage (تُصنع من الصفحة الأولى أو يختارها المدير)
+// ══════════════════════════════════════════════════
+var TREE_PDF_MAX=25*1024*1024,TREE_CHUNK=700000;
+var pendingTreePdf=null,pendingTreeImg=null,_treePdfLocal={},_treePdfBlob={};
+var _pdfjsP=null;
+function loadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(_pdfjsP)return _pdfjsP;
+  _pdfjsP=new Promise(function(res,rej){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=function(){
+      try{window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';res(window.pdfjsLib);}
+      catch(e){rej(e);}
+    };
+    s.onerror=function(){_pdfjsP=null;rej(new Error('pdf.js'));};
+    document.head.appendChild(s);
+  });
+  return _pdfjsP;
+}
+// صورة مصغّرة من الصفحة الأولى (إن تعذّر: null)
+async function pdfFirstPageThumb(buf){
+  try{
+    const lib=await loadPdfJs();
+    const pdf=await lib.getDocument({data:new Uint8Array(buf)}).promise;
+    const pg=await pdf.getPage(1);
+    const v0=pg.getViewport({scale:1});
+    const sc=Math.min(4,900/Math.max(v0.width,v0.height));
+    const vp=pg.getViewport({scale:sc});
+    const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);
+    const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
+    await pg.render({canvasContext:g,viewport:vp}).promise;
+    try{pdf.destroy();}catch(e){}
+    return c.toDataURL('image/jpeg',.82);
+  }catch(e){console.warn('pdf thumb:',e&&e.message);return null;}
+}
+function fmtBytes(n){n=+n||0;return n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
+window.resetTreePending=function(){pendingTreePdf=null;pendingTreeImg=null;renderTreePdfSettings();};
+window.onTreePdfSelect=async function(e){
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  if(!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name)){toast('اختر ملف PDF',true);return;}
+  if(f.size>TREE_PDF_MAX){toast('الملف أكبر من 25 ميغابايت — ضع رابطاً خارجياً بدلاً منه',true);return;}
+  const st=byId('tree-pdf-state');if(st)st.textContent='جاري قراءة الملف…';
+  try{
+    const buf=await f.arrayBuffer();
+    const dataUrl=await readAsDataURL(f);
+    pendingTreePdf={dataUrl:dataUrl.replace(/^data:[^;,]*/,'data:application/pdf'),name:f.name,size:f.size};
+    renderTreePdfSettings();
+    if(!pendingTreeImg||pendingTreeImg==='__remove__'){
+      if(st)st.textContent='جاري تجهيز الصورة المصغّرة…';
+      const th=await pdfFirstPageThumb(buf);
+      if(th&&pendingTreePdf&&pendingTreePdf.name===f.name)pendingTreeImg=th;
+    }
+  }catch(err){toast('تعذّرت قراءة الملف',true);}
+  renderTreePdfSettings();
+};
+window.onTreeImgSelect=async function(e){
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  const raw=await readAsDataURL(f);
+  const img=await nmImageFrom(raw,900,.82);
+  if(!img){toast('تعذّرت قراءة الصورة',true);return;}
+  pendingTreeImg=img;renderTreePdfSettings();
+};
+window.removeTreePdf=function(){
+  if(!confirm('حذف ملف الشجرة من الموقع؟'))return;
+  pendingTreePdf='__remove__';pendingTreeImg='__remove__';
+  const u=byId('tree-pdf-url');if(u)u.value='';
+  renderTreePdfSettings();
+};
+function treeImgCurrent(){
+  if(pendingTreeImg==='__remove__')return null;
+  return pendingTreeImg||siteSettings.treeImage||null;
+}
+function renderTreePdfSettings(){
+  const box=byId('tree-pdf-box');if(!box)return;
+  const cur=pendingTreePdf==='__remove__'?null:(pendingTreePdf||siteSettings.treePdf||null);
+  const img=treeImgCurrent();
+  const u=byId('tree-pdf-url');if(u&&document.activeElement!==u&&!u.dataset.touched)u.value=siteSettings.treePdfUrl||'';
+  box.innerHTML='<div class="ftree-set">'+
+    '<div class="ftree-set-th">'+(img?'<img src="'+escAttr(img)+'" alt="">':treeIconSvg())+'</div>'+
+    '<div class="ftree-set-info">'+
+      (cur?'<div class="ftree-set-name">📄 '+esc(cur.name||'شجرة العائلة.pdf')+'</div><div class="ftree-set-meta">'+fmtBytes(cur.size)+(pendingTreePdf&&pendingTreePdf!=='__remove__'?' · <b style="color:var(--gold)">جديد — يُرفع عند الحفظ</b>':'')+'</div>'
+          :'<div class="ftree-set-meta">'+(pendingTreePdf==='__remove__'?'سيُحذف الملف عند الحفظ':'لم يُرفع ملف بعد')+'</div>')+
+      '<div class="ftree-set-meta" id="tree-pdf-state"></div>'+
+      '<div class="ftree-set-btns">'+
+        '<button type="button" class="btn btn-sm btn-outline-gold" onclick="document.getElementById(\'tree-pdf-in\').click()">'+(cur?'تغيير الملف':'+ رفع ملف PDF')+'</button>'+
+        '<button type="button" class="btn btn-sm" onclick="document.getElementById(\'tree-img-in\').click()">🖼️ '+(img?'تغيير الصورة':'اختيار صورة')+'</button>'+
+        (cur||img||siteSettings.treePdfUrl?'<button type="button" class="btn btn-sm btn-danger" onclick="removeTreePdf()">حذف</button>':'')+
+      '</div></div></div>';
+}
+function treeIconSvg(){
+  return'<svg viewBox="0 0 64 64" class="ftree-ico" aria-hidden="true"><circle cx="32" cy="22" r="14" fill="var(--gold)" opacity=".85"/><circle cx="20" cy="30" r="10" fill="var(--gold2)" opacity=".8"/><circle cx="44" cy="30" r="10" fill="var(--gold2)" opacity=".8"/><rect x="29" y="30" width="6" height="22" rx="2" fill="var(--ink3)"/><path d="M32 42 L22 34 M32 38 L42 32" stroke="var(--ink3)" stroke-width="3" stroke-linecap="round"/><rect x="16" y="52" width="32" height="4" rx="2" fill="var(--ink3)" opacity=".5"/></svg>';
+}
+// يُستدعى قبل حفظ الإعدادات: يرفع الملف الجديد ويضبط المعلومات — ويُرجع دالة تنظيف تُنفّذ بعد نجاح الحفظ
+async function prepTreeSettings(onProg){
+  const oldMeta=siteSettings.treePdf||null;
+  const ui=byId('tree-pdf-url');
+  if(ui){const v=ui.value.trim();if(v&&!/^https?:\/\//i.test(v))throw new Error('رابط ملف الشجرة يجب أن يبدأ بـ https://');siteSettings.treePdfUrl=v;delete ui.dataset.touched;}
+  if(pendingTreeImg==='__remove__')siteSettings.treeImage=null;
+  else if(pendingTreeImg)siteSettings.treeImage=pendingTreeImg;
+  let cleanup=null;
+  if(pendingTreePdf==='__remove__'){
+    siteSettings.treePdf=null;
+    if(oldMeta)cleanup=function(){return deleteTreeChunks(oldMeta);};
+  }else if(pendingTreePdf){
+    const p=pendingTreePdf,id='t'+Date.now().toString(36),d=p.dataUrl,n=Math.max(1,Math.ceil(d.length/TREE_CHUNK));
+    if(configured&&db){
+      const ops=[];
+      for(let i=0;i<n;i++)ops.push({t:'set',ref:db.collection('siteConfig').doc('treepdf_'+id+'_'+i),data:{data:d.slice(i*TREE_CHUNK,(i+1)*TREE_CHUNK),n:n,i:i}});
+      for(let k=0;k<ops.length;k+=6){await commitOpsInChunks(ops.slice(k,k+6));if(onProg)onProg(Math.min(ops.length,k+6),ops.length);}
+    }else _treePdfLocal[id]=d;
+    _treePdfBlob[id]=null;
+    siteSettings.treePdf={id:id,name:p.name,size:p.size,n:n,updated:new Date().toISOString().slice(0,10)};
+    if(oldMeta)cleanup=function(){return deleteTreeChunks(oldMeta);};
+  }
+  pendingTreePdf=null;pendingTreeImg=null;
+  return cleanup;
+}
+async function deleteTreeChunks(meta){
+  if(!meta||!meta.id)return;
+  delete _treePdfLocal[meta.id];delete _treePdfBlob[meta.id];
+  if(!(configured&&db))return;
+  const ops=[];for(let i=0;i<(meta.n||1);i++)ops.push({t:'del',ref:db.collection('siteConfig').doc('treepdf_'+meta.id+'_'+i)});
+  try{await commitOpsInChunks(ops);}catch(e){console.warn('tree pdf cleanup:',e&&e.message);}
+}
+async function treePdfBlobUrl(){
+  const meta=siteSettings.treePdf;if(!meta||!meta.id)return null;
+  if(_treePdfBlob[meta.id])return _treePdfBlob[meta.id];
+  let d=_treePdfLocal[meta.id]||null;
+  if(!d&&configured&&db){
+    const parts=await Promise.all(Array.from({length:meta.n||1},function(_,i){return db.collection('siteConfig').doc('treepdf_'+meta.id+'_'+i).get();}));
+    if(parts.every(function(p){return p.exists;}))d=parts.map(function(p){return p.data().data||'';}).join('');
+  }
+  if(!d)return null;
+  const url=dataUrlToBlobUrl(d);
+  _treePdfBlob[meta.id]=url;return url;
+}
+var _treeBusy=false;
+window.downloadTreePdf=async function(){
+  haptic();
+  const meta=siteSettings.treePdf;
+  if(!meta){if(siteSettings.treePdfUrl)window.open(siteSettings.treePdfUrl,'_blank','noopener');return;}
+  if(_treeBusy)return;_treeBusy=true;
+  if(!_treePdfBlob[meta.id])toast('جاري تحميل الشجرة…');
+  try{
+    const url=await treePdfBlobUrl();
+    if(!url){toast('تعذّر تحميل الملف — حاول لاحقاً',true);return;}
+    const a=document.createElement('a');a.href=url;a.download=meta.name||'شجرة العائلة.pdf';
+    document.body.appendChild(a);a.click();a.remove();
+    toast('✓ تم تحميل الشجرة');
+  }catch(e){toast('تعذّر تحميل الملف — تحقق من الاتصال',true);}
+  finally{_treeBusy=false;}
+};
+window.viewTreePdf=async function(){
+  haptic();
+  const meta=siteSettings.treePdf;
+  if(!meta){if(siteSettings.treePdfUrl)window.open(siteSettings.treePdfUrl,'_blank','noopener');return;}
+  // نفتح النافذة فوراً (حتى لا يمنعها المتصفح) ثم نضع الملف فيها
+  const w=_treePdfBlob[meta.id]?null:window.open('','_blank');
+  if(w){try{w.document.write('<p style="font-family:sans-serif;text-align:center;margin-top:40vh" dir="rtl">جاري تحميل الشجرة…</p>');}catch(e){}}
+  try{
+    const url=await treePdfBlobUrl();
+    if(!url){if(w)w.close();toast('تعذّر تحميل الملف',true);return;}
+    if(w)w.location.href=url;else window.open(url,'_blank');
+  }catch(e){if(w)w.close();toast('تعذّر تحميل الملف — تحقق من الاتصال',true);}
+};
+function familyTreeSectionHtml(){
+  const meta=siteSettings.treePdf,link=siteSettings.treePdfUrl;
+  if(!meta&&!link){
+    if(!isAdmin)return'';
+    return'<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">شجرة العائلة</div></div></div>'+
+      '<div class="ftree-card ftree-empty" onclick="initListEditors();openOv(\'ov-settings\')">'+treeIconSvg()+'<div>لم يُرفع ملف الشجرة بعد — اضغط لإضافته من الإعدادات (يظهر لك كمدير فقط)</div></div></div>';
+  }
+  const img=siteSettings.treeImage;
+  const metaLine=meta?('PDF · '+fmtBytes(meta.size)+(meta.updated?' · تحديث '+esc(meta.updated):'')):'رابط خارجي';
+  return'<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">شجرة العائلة</div></div></div>'+
+    '<div class="ftree-card">'+
+      '<div class="ftree-thumb" onclick="viewTreePdf()" title="عرض الشجرة">'+(img?'<img src="'+escAttr(img)+'" alt="شجرة العائلة" loading="lazy" decoding="async">':treeIconSvg())+'<span class="ftree-badge">PDF</span></div>'+
+      '<div class="ftree-info">'+
+        '<div class="ftree-name">النسخة الورقية من شجرة العائلة</div>'+
+        '<div class="ftree-meta">'+metaLine+'</div>'+
+        '<div class="ftree-actions">'+
+          '<button type="button" class="btn btn-primary" onclick="downloadTreePdf()">⬇️ تحميل الشجرة</button>'+
+          '<button type="button" class="btn btn-ghost" onclick="viewTreePdf()">👁 عرض</button>'+
+        '</div>'+
+        '<button type="button" class="ftree-live" onclick="goPage(\'tree\')">أو تصفّح الشجرة التفاعلية ‹</button>'+
+      '</div></div></div>';
+}
+
 // ══ HERO IMAGES ══
 var pendingHeroImgs=null;
 window.onHeroImgSelect=function(e){
@@ -5437,7 +5669,7 @@ function renderAlbum(q){
 window.openAlbum=function(id){
   curAlbumId=id||null;albumCatFilter='';
   const q=byId('album-q');if(q)q.value='';
-  if(active!=='album')goPage('album');else renderAlbum('');
+  if(active!=='album'){window._keepAlbum=true;goPage('album');}else renderAlbum('');
   try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
 };
 document.addEventListener('click',function(e){
@@ -6533,6 +6765,8 @@ function demoSiteConfigDocs(){
   const out=[{id:'settings',json:JSON.stringify(sp.json),updated:new Date().toISOString()}];
   if(heroDarkImages.length)out.push({id:'heroDark',json:JSON.stringify(hd.json)});
   sp.assets.concat(hd.assets).forEach(function(a){for(let i=0;i<a.n;i++)out.push({id:'asset_'+a.id+'_'+i,data:a.data.slice(i*ASSET_CHUNK,(i+1)*ASSET_CHUNK),n:a.n,i:i});});
+  Object.keys(_treePdfLocal).forEach(function(id){const d=_treePdfLocal[id]||'',n=Math.max(1,Math.ceil(d.length/TREE_CHUNK));
+    for(let i=0;i<n;i++)out.push({id:'treepdf_'+id+'_'+i,data:d.slice(i*TREE_CHUNK,(i+1)*TREE_CHUNK),n:n,i:i});});
   if(fontFiles.length){
     out.push({id:'fonts',json:JSON.stringify(fontFiles)});
     fontFiles.forEach(function(f){
@@ -6692,6 +6926,9 @@ window.importFullBackup=function(e){
               _demoFontData[f.id]=d;
             });
             fontFiles=man;_thmKey='';
+            _treePdfLocal={};_treePdfBlob={};
+            const tm=siteSettings.treePdf;
+            if(tm&&tm.id){let d='';for(let i=0;i<(tm.n||1);i++){const c=sc.find(function(x){return x.id==='treepdf_'+tm.id+'_'+i;});d+=c&&c.data?c.data:'';}if(d)_treePdfLocal[tm.id]=d;}
           }else if(Array.isArray(backup.heroDarkImages))await persistHeroDark(backup.heroDarkImages);
           if(arr('users')&&typeof demoUsers!=='undefined'){demoUsers.length=0;backup.users.forEach(function(u){const c=Object.assign({},u);delete c.id;demoUsers.push(c);});}
           if(arr('registrationRequests'))registrationRequests=backup.registrationRequests.slice();
@@ -7143,6 +7380,9 @@ function renderHome(){
       '</div>'+(longAbout?'<button type="button" class="about-more" onclick="toggleAbout()">اقرأ المزيد ▾</button>':'')+'</div></div>';
   }
 
+  // V68: شجرة العائلة — النسخة الورقية PDF
+  html2+=familyTreeSectionHtml();
+
   // الإحصائيات
   const total=members.length;
   const males=members.filter(function(m){return m.gender==='ذكر'}).length;
@@ -7162,7 +7402,7 @@ function renderHome(){
   // إحصائيات الأسماء والأجيال
   html2+=nameStatsSectionHtml();
 
-  // آخر الأخبار
+  // أخبار العائلة
   if(news.length){
     let nwCards='';
     news.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).slice(0,5).forEach(function(n){
@@ -7174,7 +7414,7 @@ function renderHome(){
             :'<div class="img-card-img" style="background:linear-gradient(140deg,#b8c8d8,#a0b8cc);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>')+
         '<div class="img-card-body"><div class="img-card-tag">'+esc(n.cat||'خبر')+'</div><div class="img-card-title">'+esc(n.title)+'</div><div class="img-card-meta">'+esc(n.date||'')+(n.place?' · '+esc(n.place):'')+'</div></div></div>';
     });
-    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">آخر الأخبار</div></div></div><div class="img-cards">'+nwCards+'</div></div>';
+    html2+='<div class="home-sec"><div class="home-sec-header"><div><div class="home-sec-title">أخبار العائلة</div></div></div><div class="img-cards">'+nwCards+'</div></div>';
   }
 
   html2+='<div style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--ink3)">'+APP_VERSION+' · '+esc(siteSettings.siteName||'شجرة العائلة')+'</div>';
